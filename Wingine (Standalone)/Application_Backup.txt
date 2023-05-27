@@ -1,0 +1,313 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Wingine.UI;
+
+namespace Wingine
+{
+    [Serializable]
+    public partial class Application : Form
+    {
+        public List<PictureBox> RenderPlanes = new List<PictureBox>();
+
+        static Bitmap CurrentBuffer;
+        static Bitmap BackBuffer;
+        static Bitmap FrontBuffer;
+
+        public static int RESOLUTION_WIDTH = 800;
+        public static int RESOLUTION_HEIGHT = 600;
+
+        public Scene CurrentScene;
+        
+
+        static Application()
+        {
+            InitBuffers();
+        }
+
+        public Application()
+        {
+            InitializeComponent();
+            RenderPlanes.Add(Display);
+
+            Development();
+        }
+
+        ~Application()
+        {
+            GC.Collect();
+        }
+        
+        public void Render()
+        {
+            Graphics g = GetWrittableBuffer();
+
+            Camera mainCamera = Camera.Main;
+
+            if(mainCamera == null || mainCamera.GameObject.ActiveInHierarchy() == false || mainCamera.Enabled == false)
+            {
+                g.Clear(Color.Black);
+                g.DrawString("No Rendering Camera",
+                    new Font("Arial", 24, FontStyle.Bold),
+                    new SolidBrush(Color.White), 
+                    new Point((int) (RESOLUTION_WIDTH / 2 - 17.5f * (19 / 2)), RESOLUTION_HEIGHT / 2 - 20));
+                SwapBuffers();
+                return;
+            }
+            g.Clear(mainCamera.BackgroundColor);
+            var camera_scale = mainCamera.Transform.GetScale();
+            g.ScaleTransform(camera_scale.X, camera_scale.Y);
+            var camera_position = mainCamera.Transform.GetPosition();
+            g.TranslateTransform(-camera_position.X, camera_position.Y);
+
+            lock (CurrentScene.GameObjects)
+            {
+                for (int i = 0; i < CurrentScene.GameObjects.Count; i++)
+                {
+                    var go = CurrentScene.GameObjects[i];
+
+                    if (!go.ActiveInHierarchy()) continue;
+                    if (!mainCamera.WithinBounds(go.Transform.Position)) continue;
+
+                    var origin = g.RenderingOrigin;
+                    var container = g.BeginContainer();
+
+                    #region Renderer
+                    if (go.ComponentExists<PixelRenderer>())
+                    {
+                        try
+                        {
+
+                            g.RotateTransform((float)go.Transform.Rotation);
+                            var scale = go.Transform.GetScale();
+                            g.ScaleTransform(scale.X, scale.Y);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Write(ex.Message);
+                        }
+
+                        PixelRenderer r = go.GetComponent<PixelRenderer>();
+
+                        var extreme = r.GetExtreme();
+
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                        g.RenderingOrigin = new Point((int) go.Transform.Position.X, (int) go.Transform.Position.Y);
+
+                        for (int j = 0; j < r.Pixels.Count; j++)
+                        {
+                            var pixel = r.Pixels[j];
+
+                            Vector2 pos = go.Transform.GetPosition();
+                            Point point = new Point((int)(pos.X + pixel.Item1.X), (int)(-pos.Y + pixel.Item1.Y));
+                            PointF pointf = new PointF((pos.X + pixel.Item1.X), (-pos.Y + pixel.Item1.Y));
+                            
+
+                            switch (pixel.Item3)
+                            {
+                                case PixelType.Rectangle:
+                                    if (pixel.Item4 == FillType.Fill) g.FillRectangle(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    else if (pixel.Item4 == FillType.Empty) g.DrawRectangle(new Pen(new SolidBrush(pixel.Item2), 1), new Rectangle(point, new Size((int)r.PixelSize.X, (int)r.PixelSize.Y)));
+                                    break;
+                                case PixelType.Circle:
+                                    if (pixel.Item4 == FillType.Fill) g.FillEllipse(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    else if (pixel.Item4 == FillType.Empty) g.DrawEllipse(new Pen(new SolidBrush(pixel.Item2), 1), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        
+                    }
+                    #endregion
+
+
+                    g.EndContainer(container);
+
+                    #region UI - Canvas
+                    if (go.ComponentExists<Canvas>())
+                    {
+                        var canvas = go.GetComponent<Canvas>();
+                        if (canvas.Enabled)
+                        {
+                            var canvasContainer = g.BeginContainer();
+
+                            var ui_comps = canvas.GetUIComponents();
+                            ui_comps.Sort(new IUIComponentComparer());
+
+                            for (int j = 0; j < ui_comps.Count; j++)
+                            {
+                                var ui_comp = ui_comps[i];
+                                ui_comp.Render(g, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+                            }
+
+                            g.EndContainer(canvasContainer);
+                        }
+                    }
+                    #endregion
+
+                    g.RenderingOrigin = origin;
+                }
+            }
+
+
+            SwapBuffers();
+        }
+
+
+
+
+        public Graphics GetWrittableBuffer() => CurrentBuffer == BackBuffer ? Graphics.FromImage(FrontBuffer) : Graphics.FromImage(BackBuffer);
+        public void SwapBuffers()
+        {
+            Bitmap buffer = CurrentBuffer == BackBuffer ? FrontBuffer : BackBuffer;
+            CurrentBuffer = buffer;
+
+            for (int i = 0; i < RenderPlanes.Count; i++)
+            {
+                var renderPlane = RenderPlanes[i];
+                renderPlane.Image = buffer;
+            }
+        }
+        static void InitBuffers()
+        {
+            BackBuffer = new Bitmap(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+            FrontBuffer = new Bitmap(BackBuffer);
+            CurrentBuffer = FrontBuffer;
+        }
+
+        void Development()
+        {
+            
+        }
+
+        public void UpdateGame()
+        {
+            bool ff = firstFrame;
+
+            CurrentScene.GameObjects.ForEach((b) =>
+            {
+                if (!b.ActiveInHierarchy()) return;
+
+                b.GetComponents().ForEach((comp) =>
+                {
+                    if (!comp.Enabled) return;
+
+                    comp.Tick();
+
+                    if (comp is MonoBehaviour)
+                    {
+                        var mb = ((MonoBehaviour)comp);
+
+                        if (ff) 
+                            try
+                            {
+                                mb.Start();
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
+                            };
+
+                        if (!mb.Awaked)
+                        {
+                            mb.Awaked = true;
+                            try
+                            {
+                                mb.Awake();
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
+                            }
+                        }
+
+                        try
+                        {
+                            mb.Update();
+                        }catch (Exception e)
+                        {
+                            Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
+                        }
+
+                    }
+                });
+            });
+
+            firstFrame = false;
+        }
+
+        public bool IsRunning => running;
+
+        public void Start()
+        {
+            firstFrame = true;
+
+            RunGameLoop();
+            RenderLoop.Start();
+        }
+
+        public void Stop()
+        {
+            running = false;
+            RenderLoop.Stop();
+        }
+
+        bool firstFrame = true;
+
+
+        private void Application_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Stop();
+            if (Runner.InEditor)
+            {
+                this.Hide();
+                e.Cancel = true;
+                
+            }
+        }
+
+
+        bool running = false;
+        DateTime previousTime = DateTime.Now;
+        internal double dt = 0;
+        async void RunGameLoop()
+        {
+            running = true;
+            while (running)
+            {
+                await Task.Delay(1);
+
+                DateTime currentTime = DateTime.Now;
+                TimeSpan deltaTime = currentTime - previousTime;
+                previousTime = currentTime;
+                dt = deltaTime.TotalSeconds;
+
+                UpdateGame();
+            }
+        }
+
+        private void RenderLoop_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                Render();
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.Message, Debug.DebugType.Error);
+            }
+        }
+    }
+}
