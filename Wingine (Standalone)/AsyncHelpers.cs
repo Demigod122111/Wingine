@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -129,6 +127,27 @@ namespace Wingine.Helpers
             public override SynchronizationContext CreateCopy()
             {
                 return this;
+            }
+        }
+    }
+
+    public static class ListHelpers
+    {
+        public static void AddIfNotPresent<T>(this List<T> list, T item)
+        {
+            if (!list.Contains(item))
+                list.Add(item);
+        }
+    }
+
+    public static class IFHelper
+    {
+        public static void IFStateDo(ref bool state, Action _do, bool _if, bool change)
+        {
+            if (state == _if)
+            {
+                _do.Invoke();
+                state = change;
             }
         }
     }

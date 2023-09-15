@@ -76,7 +76,11 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'BoolInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BoolInputField.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'BoolInputField.Value'
         public System.Windows.Forms.CheckBox Value;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BoolInputField.Value'
     }
 }

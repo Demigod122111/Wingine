@@ -6,6 +6,7 @@ namespace Wingine.Editor
     public partial class ColorInputField : UserControl
     {
         public object ValueObject;
+
         public ColorInputField()
         {
             InitializeComponent();

@@ -65,6 +65,8 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'LoadSceneMenu.View'
         public System.Windows.Forms.TreeView View;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'LoadSceneMenu.View'
     }
 }

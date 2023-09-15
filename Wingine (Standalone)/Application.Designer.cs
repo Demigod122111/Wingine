@@ -28,9 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Application));
             this.Display = new System.Windows.Forms.PictureBox();
-            this.RenderLoop = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.Display)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,10 +44,6 @@
             this.Display.TabIndex = 0;
             this.Display.TabStop = false;
             // 
-            // RenderLoop
-            // 
-            this.RenderLoop.Tick += new System.EventHandler(this.RenderLoop_Tick);
-            // 
             // Application
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -57,6 +52,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.Display);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Application";
             this.Text = "[Application]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);
@@ -68,7 +64,6 @@
         #endregion
 
         public System.Windows.Forms.PictureBox Display;
-        private System.Windows.Forms.Timer RenderLoop;
     }
 }
 

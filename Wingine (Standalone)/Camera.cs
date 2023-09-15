@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wingine
 {
     [Serializable]
     public class Camera : IComponent
     {
-        public static Camera Main => GameObject.FindByTag("MainCamera")?.GetComponent<Camera>();
+        public static Camera Main => GameObject.FindByTag("MainCamera")?.GetComponentOfType<Camera>();
 
         public Color BackgroundColor = Color.White;
 
@@ -27,7 +23,7 @@ namespace Wingine
             var upperBounds = bounds.Item1;
             var lowerBounds = bounds.Item2;
 
-            if(point.X >= upperBounds.X && point.Y <= upperBounds.Y &&
+            if (point.X >= upperBounds.X && point.Y <= upperBounds.Y &&
                point.X <= lowerBounds.X && point.Y >= lowerBounds.Y)
             {
                 return true;
@@ -38,12 +34,12 @@ namespace Wingine
 
         public override void Begin()
         {
-            
+
         }
 
         public override void Tick()
         {
-            
+
         }
     }
 }

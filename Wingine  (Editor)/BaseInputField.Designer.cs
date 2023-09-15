@@ -79,7 +79,11 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Value'
         public System.Windows.Forms.RichTextBox Value;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Value'
     }
 }

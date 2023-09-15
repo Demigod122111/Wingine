@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wingine
 {
@@ -12,7 +8,24 @@ namespace Wingine
         /// <summary>
         /// The local position of the GameObject.
         /// </summary>
-        public Vector2 Position { get; set; }
+        public Vector2 LocalPosition { get; set; }
+        
+        [HideInInspector]
+        /// <summary>
+        /// The position of the GameObject.
+        /// </summary>
+        public Vector2 Position
+        {
+            get
+            {
+                return GetPosition();
+            }
+
+            set
+            {
+                LocalPosition = ToLocalPosition(value);
+            }
+        }
 
         /// <summary>
         /// Returns the true position of the GameObject in respect of it's parent.
@@ -22,9 +35,19 @@ namespace Wingine
         {
             if (this.GameObject.Parent != null)
             {
-                return this.GameObject.Parent.Transform.GetPosition() + this.Position;
+                return this.GameObject.Parent.Transform.GetPosition() + this.LocalPosition;
             }
-            return this.Position;
+            return this.LocalPosition;
+        }
+
+        Vector2 ToLocalPosition(Vector2 position)
+        {
+            if (this.GameObject.Parent != null)
+            {
+                return position - this.GameObject.Parent.Transform.GetPosition();
+            }
+
+            return position;
         }
 
         /// <summary>
@@ -46,9 +69,12 @@ namespace Wingine
         }
 
 
-        public int Rotation = 0;
+        [HideInInspector]
+        public const int Rotation = 0;
 
+#pragma warning disable CS0108 // 'Transform.GameObject' hides inherited member 'IComponent.GameObject'. Use the new keyword if hiding was intended.
         public readonly GameObject GameObject;
+#pragma warning restore CS0108 // 'Transform.GameObject' hides inherited member 'IComponent.GameObject'. Use the new keyword if hiding was intended.
 
         public Transform(GameObject go)
         {
@@ -57,12 +83,12 @@ namespace Wingine
 
         public override void Begin()
         {
-            
+
         }
 
         public override void Tick()
         {
-            
+
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Wingine.Editor
 {
-    partial class AddComponentMenu
+    partial class ComponentMenu
     {
         /// <summary>
         /// Required designer variable.
@@ -65,6 +65,8 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ComponentMenu.View'
         public System.Windows.Forms.TreeView View;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ComponentMenu.View'
     }
 }

@@ -109,9 +109,15 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Title'
         private System.Windows.Forms.SplitContainer splitContainer1;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value'
         public Cyotek.Windows.Forms.ColorWheel Value;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value2'
         public Cyotek.Windows.Forms.ColorEditor Value2;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value2'
     }
 }

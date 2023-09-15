@@ -93,8 +93,14 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value1'
         public CustomNumericUpDown Value1;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value1'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value2'
         public CustomNumericUpDown Value2;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value2'
     }
 }

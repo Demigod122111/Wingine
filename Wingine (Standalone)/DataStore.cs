@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace Wingine
 {
@@ -24,8 +20,15 @@ namespace Wingine
         {
             using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
             {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                binaryFormatter.Serialize(stream, objectToWrite);
+                try
+                {
+                    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    binaryFormatter.Serialize(stream, objectToWrite);
+                }
+                catch (Exception e)
+                {
+                    Debug.Write(e.Message, Debug.DebugType.Error);
+                }
             }
         }
 
@@ -93,6 +96,16 @@ namespace Wingine
             }
         }
 
+        public static JsonSerializerSettings JSS = new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+            ObjectCreationHandling = ObjectCreationHandling.Auto,
+            TypeNameHandling = TypeNameHandling.Objects,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+        };
+
         /// <summary>
         /// Writes the given object instance to a Json file.
         /// <para>Object type must have a parameterless constructor.</para>
@@ -108,7 +121,8 @@ namespace Wingine
             TextWriter writer = null;
             try
             {
-                var contentsToWriteToFile = Newtonsoft.Json.JsonConvert.SerializeObject(objectToWrite);
+                var contentsToWriteToFile = JsonConvert.SerializeObject(objectToWrite, Formatting.None, JSS);
+
                 writer = new StreamWriter(filePath, append);
                 writer.Write(contentsToWriteToFile);
             }
@@ -133,7 +147,56 @@ namespace Wingine
             {
                 reader = new StreamReader(filePath);
                 var fileContents = reader.ReadToEnd();
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(fileContents);
+                return JsonConvert.DeserializeObject<T>(fileContents, JSS);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
+
+
+        /// <summary>
+        /// Writes the given object instance to a Json file.
+        /// <para>Object type must have a parameterless constructor.</para>
+        /// <para>Only Public properties and variables will be written to the file. These can be any type though, even other classes.</para>
+        /// <para>If there are public properties/variables that you do not want written to the file, decorate them with the [JsonIgnore] attribute.</para>
+        /// </summary>
+        /// <param name="filePath">The file path to write the object instance to.</param>
+        /// <param name="objectToWrite">The object instance to write to the file.</param>
+        /// <param name="append">If false the file will be overwritten if it already exists. If true the contents will be appended to the file.</param>
+        public static void WriteObjectToJsonFile(string filePath, object objectToWrite, bool append = false)
+        {
+            TextWriter writer = null;
+            try
+            {
+                var contentsToWriteToFile = JsonConvert.SerializeObject(objectToWrite, Formatting.None, JSS);
+
+                writer = new StreamWriter(filePath, append);
+                writer.Write(contentsToWriteToFile);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
+        }
+
+        /// <summary>
+        /// Reads an object instance from an Json file.
+        /// <para>Object type must have a parameterless constructor.</para>
+        /// </summary>
+        /// <param name="filePath">The file path to read the object instance from.</param>
+        /// <returns>Returns a new instance of the object read from the Json file.</returns>
+        public static object ReadObjectFromJsonFile(string filePath)
+        {
+            TextReader reader = null;
+            try
+            {
+                reader = new StreamReader(filePath);
+                var fileContents = reader.ReadToEnd();
+                return JsonConvert.DeserializeObject(fileContents, JSS);
             }
             finally
             {

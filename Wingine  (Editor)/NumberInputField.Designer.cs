@@ -75,7 +75,11 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Value'
         public CustomNumericUpDown Value;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Value'
     }
 }

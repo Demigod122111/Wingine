@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Wingine.SceneManagement;
 using XCoolForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Wingine.Editor
 {
@@ -19,24 +16,28 @@ namespace Wingine.Editor
     {
         public static Runner Runner = new Runner();
 
-        public int TARGET_FPS = 240;
+        public int TARGET_FPS = 60;
 
         object preSelectedObject;
         object SelectedObject;
 
         bool preventHierarchyNodeClick_Once = false;
 
+        RichTextBox EditorLogs = new RichTextBox();
+
         #region Hierarchy
 
         Dictionary<string, TreeNode> HierarchyItems = new Dictionary<string, TreeNode>();
         Dictionary<TreeNode, bool> HierarchyItemsExpansion = new Dictionary<TreeNode, bool>();
 
+        // Missing XML comment for publicly visible type or member 'Window.ReloadHierarchyObject(GameObject)'
         public void ReloadHierarchyObject(GameObject go)
         {
             LoadHierarchy(true);
         }
 
-        public async void LoadHierarchy(bool fully = true, List<GameObject> partials = null)
+        // Missing XML comment for publicly visible type or member 'Window.LoadHierarchy(bool, List<GameObject>)'
+        public void LoadHierarchy(bool fully = true, List<GameObject> partials = null)
         {
             if (fully)
             {
@@ -67,29 +68,28 @@ namespace Wingine.Editor
                 if (node != null)
                 {
                     node.Tag = go;
+                    go.SetActive(go.ActiveSelf);
                 }
             }
 
-            async void LoadGameObjects(List<GameObject> gos)
+            void LoadGameObjects(List<GameObject> gos)
             {
                 List<GameObject> Unloaded = new List<GameObject>();
 
+                EditorLogs.Parent = this;
+                EditorLogs.SendToBack();
+                EditorLogs.Location = new Point(Width / 2, Height / 2);
                 for (int i = 0; i < gos.Count; i++)
                 {
                     var go = gos[i];
+                    EditorLogs.AppendText($"Loading {go.Name}");
+
 
                     if (go.Parent != null)
                     {
                         string piid = go.Parent.GetInspectorID();
 
-                        if (!string.IsNullOrWhiteSpace(piid) && HierarchyItems.ContainsKey(piid))
-                        {
-                            AddGameObject(go, HierarchyItems[piid]);
-                        }
-                        else
-                        {
-                            Unloaded.Add(go);
-                        }
+                        AddGameObject(go, HierarchyItems[piid]);
                     }
                     else
                     {
@@ -97,19 +97,11 @@ namespace Wingine.Editor
                     }
                 }
 
-                if (Unloaded.Count > 0)
-                {
-                    var task = new Task(() => { LoadGameObjects(Unloaded); });
-                    task.RunSynchronously();
-                    await Task.Run(() => { while (!task.IsCompleted) { } });
-                }
             }
 
             if (Runner.App.CurrentScene != null)
             {
-                var task = new Task(() => { LoadGameObjects(fully == true ? Runner.App.CurrentScene.GameObjects : partials); });
-                task.RunSynchronously();
-                await Task.Run(() => { while (!task.IsCompleted) { } });
+                LoadGameObjects(fully == true ? Runner.App.CurrentScene.GameObjects : partials);
             }
         }
         #endregion
@@ -132,6 +124,12 @@ namespace Wingine.Editor
 
         public async void LoadGameObjectInspector(GameObject go)
         {
+            if (go == null)
+            {
+                ClearInspector();
+                return;
+            }
+
             CoverPanelText.Text = $"Probing '{go.Name}'";
             CoverPanel.BringToFront();
 
@@ -151,11 +149,14 @@ namespace Wingine.Editor
 
         public void HandleLoadGameObjectInspector(GameObject go)
         {
-
+            
             int InspectorItemHeight = 49;
             int InspectorItemPadding = 10;
 
             Inspector.Controls.Clear();
+
+            CoverPanel.BringToFront();
+            Inspector.SuspendLayout();
 
             var nameInputField = new BaseInputField();
             nameInputField.Title.Text = "Name";
@@ -239,7 +240,7 @@ namespace Wingine.Editor
                 var head = new ComponentHeader();
                 head.Title.Text = comp.GetType().Name;
 
-                if ((object)comp == (object)go.Transform)
+                if (comp == go.Transform)
                 {
                     head.X.Parent = null;
                     head.CB.Parent = null;
@@ -258,24 +259,83 @@ namespace Wingine.Editor
                 };
                 AddItemToInspector(head);
 
-                var props = comp.GetType().GetProperties();
 
-                for (int i = 0; i < props.Length; i++)
+                var members = comp.GetType().GetMembers();
+
+                for (int i = 0; i < members.Length; i++)
                 {
-                    var member = props[i];
+                    if (members[i].MemberType == MemberTypes.Field)
+                    {
+                        LoadField((FieldInfo) members[i]);
+                    }
+                    else if (members[i].MemberType == MemberTypes.Property)
+                    {
+                        LoadProperty((PropertyInfo)members[i]);
+                    }
+                }
 
-                    if (member.GetSetMethod() == null || !member.GetSetMethod().IsPublic) continue;
+                void LoadProperty(PropertyInfo prop)
+                {
+                    var member = prop;
+
+                    if (member.GetSetMethod() == null || !member.GetSetMethod().IsPublic) return;
 
                     Type t = member.PropertyType;
 
                     if (Attribute.IsDefined(member, typeof(Wingine.HideInInspector)))
                     {
-                        continue;
+                        return;
+                    }
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.Header)))
+                    {
+                        Wingine.Header hdr = ((Wingine.Header[])member.GetCustomAttributes(typeof(Wingine.Header), false))[0];
+                        var hdrd = new ComponentSubHeader();
+                        hdrd.Title.Text = hdr.Text;
+                        AddItemToInspector(hdrd);
+                    }
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.Space)))
+                    {
+                        Wingine.Space spce = ((Wingine.Space[])member.GetCustomAttributes(typeof(Wingine.Space), false))[0];
+                        NewPos = new Point(NewPos.X, NewPos.Y + spce.Spacing);
                     }
 
                     #region Types
 
-                    if (t == typeof(Color))
+                    if (t.IsEnum)
+                    {
+                        var inputField = new EnumInputField();
+                        inputField.Name = member.Name;
+                        inputField.Title.Text = member.Name.AddSpacesToSentence();
+
+                        var possibleValues = Enum.GetValues(t);
+
+                        foreach (var val in possibleValues)
+                        {
+                            inputField.Value.Items.Add(val);
+                        }
+                        inputField.Value.SelectedItem = member.GetValue(comp);
+                        inputField.Tag = member;
+                        inputField.ValueObject = comp;
+                        EventHandler col = (s, e) =>
+                        {
+                            try
+                            {
+                                member.SetValue(comp, Enum.Parse(t, inputField.Value.Items[inputField.Value.SelectedIndex].ToString()));
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                            }
+
+                            comp.Tick();
+                        };
+                        inputField.Value.SelectedIndexChanged += col;
+
+                        AddItemToInspector(inputField);
+                    }
+                    else if (t == typeof(Color))
                     {
                         if (Attribute.IsDefined(member, typeof(Wingine.ExtendColor)))
                         {
@@ -295,6 +355,8 @@ namespace Wingine.Editor
                                 {
                                     Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                                 }
+
+                                comp.Tick();
                             };
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
@@ -319,6 +381,8 @@ namespace Wingine.Editor
                                 {
                                     Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                                 }
+
+                                comp.Tick();
                             };
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
@@ -366,6 +430,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -396,6 +462,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         inputField.Value2.ValueChanged += (s, e) =>
                         {
@@ -407,6 +475,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -430,6 +500,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -453,6 +525,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -477,6 +551,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -501,6 +577,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -516,12 +594,14 @@ namespace Wingine.Editor
                         {
                             try
                             {
-                                member.SetValue(comp, (object)inputField.Value.Text);
+                                member.SetValue(comp, inputField.Value.Text);
                             }
                             catch (Exception ex)
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
 
                         if (Attribute.IsDefined(member, typeof(Wingine.Multiline)))
@@ -546,25 +626,69 @@ namespace Wingine.Editor
                         AddItemToInspector(inputField);
                     }
                     #endregion
-
                 }
 
-                var fields = comp.GetType().GetFields();
-                for (int i = 0; i < fields.Length; i++)
+                void LoadField(FieldInfo field)
                 {
-                    var member = fields[i];
+                    var member = field;
 
-                    if (!member.IsPublic || member.IsStatic || member.IsInitOnly) continue;
+                    if (!member.IsPublic || member.IsStatic || member.IsInitOnly) return;
 
                     Type t = member.FieldType;
 
                     if (Attribute.IsDefined(member, typeof(Wingine.HideInInspector)))
                     {
-                        continue;
+                        return;
+                    }
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.Header)))
+                    {
+                        Wingine.Header hdr = ((Wingine.Header[])member.GetCustomAttributes(typeof(Wingine.Header), false))[0];
+                        var hdrd = new ComponentSubHeader();
+                        hdrd.Title.Text = hdr.Text;
+                        AddItemToInspector(hdrd);
+                    }
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.Space)))
+                    {
+                        Wingine.Space spce = ((Wingine.Space[])member.GetCustomAttributes(typeof(Wingine.Space), false))[0];
+                        NewPos = new Point(NewPos.X, NewPos.Y + spce.Spacing);
                     }
 
                     #region Types
-                    if (t == typeof(Color))
+                    if (t.IsEnum)
+                    {
+                        var inputField = new EnumInputField();
+                        inputField.Name = member.Name;
+                        inputField.Title.Text = member.Name.AddSpacesToSentence();
+
+                        var possibleValues = Enum.GetValues(t);
+
+                        foreach (var val in possibleValues)
+                        {
+                            inputField.Value.Items.Add(val);
+                        }
+                        inputField.Value.SelectedItem = member.GetValue(comp);
+                        inputField.Tag = member;
+                        inputField.ValueObject = comp;
+                        EventHandler col = (s, e) =>
+                        {
+                            try
+                            {
+                                member.SetValue(comp, Enum.Parse(t, inputField.Value.Items[inputField.Value.SelectedIndex].ToString()));
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                            }
+
+                            comp.Tick();
+                        };
+                        inputField.Value.SelectedIndexChanged += col;
+
+                        AddItemToInspector(inputField);
+                    }
+                    else if (t == typeof(Color))
                     {
                         if (Attribute.IsDefined(member, typeof(Wingine.ExtendColor)))
                         {
@@ -584,6 +708,8 @@ namespace Wingine.Editor
                                 {
                                     Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                                 }
+
+                                comp.Tick();
                             };
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
@@ -608,6 +734,8 @@ namespace Wingine.Editor
                                 {
                                     Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                                 }
+
+                                comp.Tick();
                             };
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
@@ -633,6 +761,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -663,6 +793,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         inputField.Value2.ValueChanged += (s, e) =>
                         {
@@ -674,6 +806,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -697,6 +831,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -720,6 +856,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -744,6 +882,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -768,6 +908,8 @@ namespace Wingine.Editor
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
                         AddItemToInspector(inputField);
                     }
@@ -783,12 +925,14 @@ namespace Wingine.Editor
                         {
                             try
                             {
-                                member.SetValue(comp, (object)inputField.Value.Text);
+                                member.SetValue(comp, inputField.Value.Text);
                             }
                             catch (Exception ex)
                             {
                                 Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
                             }
+
+                            comp.Tick();
                         };
 
                         if (Attribute.IsDefined(member, typeof(Wingine.Multiline)))
@@ -827,6 +971,7 @@ namespace Wingine.Editor
                 c.Parent = Inspector;
                 c.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Left;
                 c.Location = NewPos;
+                c.Width = Inspector.Width;
                 InspectorItemHeight = c.Height;
                 NewPos = new Point(0, c.Location.Y + InspectorItemHeight + InspectorItemPadding);
             }
@@ -836,23 +981,33 @@ namespace Wingine.Editor
             AddComponent.Action.Text = "Add Component";
             ACEH = (s, e) =>
             {
-                AddComponentMenu ACM = new AddComponentMenu();
+                try
+                {
+                    ACM?.Dispose();
+                }
+                catch { }
+
+                ACM = new ComponentMenu();
 
                 ACM.View.NodeMouseClick += (s1, e1) =>
                 {
                     ((GameObject)SelectedObject).AddComponent(e1.Node.Tag as Type);
-                    ACM.Close();
+                    ACM.Dispose();
                     LoadGameObjectInspector((GameObject)SelectedObject);
                 };
 
-                ACM.ShowDialog();
+                ACM.ShowDialog(this);
             };
             AddComponent.Action.Click += ACEH;
             AddItemToInspector(AddComponent.Action);
 
             Inspector.Visible = true;
 
+            Inspector.ResumeLayout();
+            CoverPanel.SendToBack();
         }
+
+        ComponentMenu ACM;
 
         #endregion
 
@@ -943,7 +1098,6 @@ namespace Wingine.Editor
 
             this.TitleBar.TitleBarCaptionFont = new Font("Algerian", 12);
             this.TitleBar.TitleBarCaptionColor = Color.MintCream;
-            this.TitleBar.TitleBarCaption = $"{Runner.CurrentProject?.Item1} : Wingine";
 
             this.TitleBar.TitleBarType = XTitleBar.XTitleBarType.Angular;
 
@@ -968,6 +1122,8 @@ namespace Wingine.Editor
 
             Open(proj, urgent: false);
 
+            this.TitleBar.TitleBarCaption = $"{(string.IsNullOrEmpty(Runner.CurrentProject?.Item1) ? string.Empty : Runner.CurrentProject?.Item1 + " : ")}Wingine";
+
             Development();
 
             CoverPanel = new Panel();
@@ -975,7 +1131,7 @@ namespace Wingine.Editor
             CoverPanel.Parent = Inspector.Parent;
             CoverPanel.BackColor = Inspector.BackColor;
             CoverPanel.Dock = Inspector.Dock;
-            
+
             CoverPanelText = new Label();
             CoverPanelText.Parent = CoverPanel;
             CoverPanelText.AutoSize = false;
@@ -1019,7 +1175,19 @@ namespace Wingine.Editor
 
             Wingine.GameObject.ActiveChanged += (s, e) =>
             {
+                GameObject go = (GameObject)s;
+                HierarchyItems[go.GetInspectorID()].ForeColor = go.ActiveInHierarchy() ? Color.Goldenrod : Color.DarkRed;
+            };
 
+            Wingine.GameObject.NameChanged += (s, e) =>
+            {
+                GameObject go = (GameObject)s;
+                HierarchyItems[go.GetInspectorID()].Text = go.Name;
+            };
+
+            Wingine.Debug.CanRepeatChanged += (s, e) =>
+            {
+                debugRepeatToolStripMenuItem.Checked = Wingine.Debug.CanRepeat;
             };
 
             Wingine.Debug.DebugEventOccured += (msg, type) =>
@@ -1037,6 +1205,9 @@ namespace Wingine.Editor
                     case Debug.DebugType.Error:
                         Console.AppendText(tmsg, Color.Crimson);
                         break;
+                    case Debug.DebugType.Editor:
+                        Console.AppendText(tmsg, Color.MediumPurple);
+                        break;
                     default:
                         Console.AppendText(tmsg, Color.Beige);
                         break;
@@ -1050,12 +1221,18 @@ namespace Wingine.Editor
                 ClearInspector();
                 reloadToolStripMenuItem.PerformClick();
             };
+
+            Wingine.Application.OnGameUpdate += (s, e) =>
+            {
+
+            };
         }
         #endregion
 
         #region Development
         void Development()
         {
+
         }
 
         #endregion
@@ -1092,23 +1269,28 @@ namespace Wingine.Editor
                 efps++;
             }
 
-            PlayStopTSB.Image = RunningApp ? global::Wingine.Editor.Properties.Resources.stop2 : global::Wingine.Editor.Properties.Resources.play2;
+            EDITOR_FPS_STATUS.Visible = showFPSToolStripMenuItem.Checked;
+            HIERARCHY_FPS_STATUS.Visible = showFPSToolStripMenuItem.Checked;
+            INSPECTOR_FPS_STATUS.Visible = showFPSToolStripMenuItem.Checked;
 
-
-            if (Runner.App.CurrentScene != null && !Runner.App.IsRunning) Runner.App.Render();
-
-            if(Runner.App.CurrentScene == null)
+            if (Runner.App.CurrentScene != null && !Runner.App.IsRunning)
             {
-                if(Runner.CurrentProject?.Item2?.Count != 0)
+                Runner.App.Render();
+
+            }
+
+            if (Runner.App.CurrentScene == null)
+            {
+                if (Runner.CurrentProject?.Item3?.Count != 0)
                 {
-                    SceneManagement.SceneManager.LoadFirstScene();
+                    SceneManager.LoadFirstScene();
                 }
             }
 
             if (Runner.App.CurrentScene == null ||
                 Runner.CurrentProject == null ||
-                Runner.CurrentProject.Item2 == null ||
-                Runner.CurrentProject.Item2.Count == 0)
+                Runner.CurrentProject.Item3 == null ||
+                Runner.CurrentProject.Item3.Count == 0)
             {
                 HierarchyUpdater.Enabled = false;
                 InspectorUpdater.Enabled = false;
@@ -1118,6 +1300,9 @@ namespace Wingine.Editor
                 HierarchyUpdater.Enabled = true;
                 InspectorUpdater.Enabled = true;
             }
+
+            var drtsmis = debugRepeatToolStripMenuItem.Checked ? "On" : "Off";
+            debugRepeatToolStripMenuItem.Text = $"Debug Repeat ({drtsmis})";
         }
 
         private void Window_Load(object sender, EventArgs e)
@@ -1125,9 +1310,15 @@ namespace Wingine.Editor
             LoadAssetFolder(homeAssetDirectory);
         }
 
-        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        void ClearConsole()
         {
             Console.Text = "";
+            Debug.lastMsg = null;
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearConsole();
         }
 
         private void Hierarchy_MouseUp(object sender, MouseEventArgs e)
@@ -1175,12 +1366,12 @@ namespace Wingine.Editor
 
         private void Hierarchy_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            
+
         }
 
         private void Hierarchy_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if(HierarchyItemsExpansion.ContainsKey(e.Node) && e.Node.IsExpanded != HierarchyItemsExpansion[e.Node])
+            if (HierarchyItemsExpansion.ContainsKey(e.Node) && e.Node.IsExpanded != HierarchyItemsExpansion[e.Node])
             {
                 HierarchyItemsExpansion[e.Node] = e.Node.IsExpanded;
                 return;
@@ -1203,7 +1394,7 @@ namespace Wingine.Editor
             UpdateInspector();
         }
 
-        async void UpdateInspector()
+        void UpdateInspector()
         {
             var currentSecond = DateTime.Now.Ticks;
             var tbln = currentSecond - ilastSecond;
@@ -1230,7 +1421,7 @@ namespace Wingine.Editor
             {
                 var c = k[i];
                 Type t = c.GetType();
-                bool fi = ((Control)c).Tag is FieldInfo;
+                bool fi = c.Tag is FieldInfo;
 
 
                 #region Types
@@ -1321,6 +1512,17 @@ namespace Wingine.Editor
                         ipf.Value2.Value = decimal.Parse(((Vector2)val).Y.ToString());
                     }
                 }
+                else if (t == typeof(EnumInputField))
+                {
+                    var ipf = (EnumInputField)c;
+
+                    if (!ipf.Value.Focused)
+                    {
+                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
+
+                        ipf.Value.SelectedItem = val;
+                    }
+                }
                 #endregion
             }
         }
@@ -1342,7 +1544,7 @@ namespace Wingine.Editor
                 HierarchyItems[go.GetInspectorID()].EnsureVisible();
 
                 TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while(node != null)
+                while (node != null)
                 {
                     HierarchyItemsExpansion[node] = node.IsExpanded;
                     node = node.Parent;
@@ -1385,56 +1587,9 @@ namespace Wingine.Editor
             }
         }
 
-        public bool RunningApp = false;
-
-        int returnSceneIndex;
-        List<Scene> rollbackObject;
-
-        void RollBack()
-        {
-            Runner.CurrentProject = new Tuple<string, List<Scene>>(Runner.CurrentProject.Item1, rollbackObject);
-            Runner.App.CurrentScene = Runner.CurrentProject.Item2[returnSceneIndex];
-            reloadToolStripMenuItem.PerformClick();
-
-            ClearInspector();
-            LoadHierarchy();
-        }
-
         private void PlayStopTSB_Click(object sender, EventArgs e)
         {
-            if (!RunningApp)
-            {
-                rollbackObject = Runner.CurrentProject.Item2;
-                returnSceneIndex = SceneManager.CurrentSceneIndex;
-
-                if (Runner.App != null && Runner.App.CurrentScene != null)
-                {
-                    Runner.InEditor = true;
-                    Runner.App?.Start();
-                    Runner.App?.Show();
-                    RunningApp = true;
-
-                    Runner.App.FormClosing += (s, se) =>
-                    {
-                        RunningApp = false;
-                        RollBack();
-                    };
-                }
-                else
-                {
-                    Debug.Write(Runner.App == null ? "Error Launching Application, Please restart the Editor!" : "Error Launching Application, No Loaded Scene was found!", Debug.DebugType.Error);
-                }
-            }
-            else
-            {
-                if (Runner.App != null)
-                {
-                    Runner.App?.Stop();
-                    Runner.App?.Hide();
-                    RunningApp = false;
-                    RollBack();
-                }
-            }
+            StartStopApp();
         }
 
         private void emptyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1473,7 +1628,7 @@ namespace Wingine.Editor
         {
             if (Runner.CurrentProject != null && Runner.App.CurrentScene != null)
             {
-                Runner.CurrentProject?.Item2.Remove(Runner.App?.CurrentScene);
+                Runner.CurrentProject?.Item3.Remove(Runner.App?.CurrentScene);
                 SceneManager.LoadFirstScene();
             }
         }
@@ -1534,6 +1689,33 @@ namespace Wingine.Editor
                 OpenFile(sItem.Tag.ToString());
             }
         }
+
+        private void PixelEditor_TSB_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PixelEditor.PixelEditor editor = new PixelEditor.PixelEditor();
+                editor.Show(this);
+            }
+            catch (TypeLoadException)
+            {
+                Debug.Write("Pixel Editor's DLL was not found!", Debug.DebugType.Error);
+            }
+        }
+
+        private void debugRepeatToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            Debug.CanRepeat = debugRepeatToolStripMenuItem.Checked;
+        }
+
+        private void Window_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                exitToolStripMenuItem?.PerformClick();
+            }
+        }
         #endregion
 
         #region Saving and Loading
@@ -1554,33 +1736,44 @@ namespace Wingine.Editor
             Save();
         }
 
-        public void Open(string proj, bool urgent = false)
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            currentFile = "";
+            Runner.CurrentProject = new Tuple<string, string, List<Scene>, Dictionary<string, object>>("Unnamed Project", DateTime.UtcNow.Ticks.ToString(), new List<Scene>(), new Dictionary<string, object>());
+            LoadHierarchy(fully: true);
+            ClearInspector();
+
+        }
+
+        public void Open(string proj, bool urgent = false, bool changePointer = true)
         {
             if (File.Exists(proj) && proj.EndsWith(".wingine"))
             {
-                currentFile = proj;
                 try
                 {
-                    Runner.CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, List<Scene>>>(currentFile);
+                    Runner.CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, List<Scene>, Dictionary<string, object>>>(proj);
+
+                    if (changePointer) currentFile = proj;
+                    string nme = DateTime.Now.Ticks.ToString();
+
+                    if (Runner.CurrentProject != null) nme = Runner.CurrentProject.Item1;
+
+                    if (Runner.CurrentProject.Item3 == null || Runner.CurrentProject.Item3.Count == 0)
+                    {
+                        Runner.CurrentProject = new Tuple<string, string, List<Scene>, Dictionary<string, object>>(nme, DateTime.UtcNow.Ticks.ToString(), new List<Scene>(), new Dictionary<string, object>());
+                        Runner.CurrentProject.Item3.Add(new Wingine.Scene());
+                    }
+
+                    Runner.App.CurrentScene = Runner.CurrentProject.Item3[0];
+                    LoadHierarchy(fully: true);
+                    ClearInspector();
+
+                    Text = $"{(Runner.CurrentProject != null ? Runner.CurrentProject.Item1 + " - " : string.Empty)}Wingine";
                 }
                 catch
                 {
-                    Runner.CurrentProject = new Tuple<string, List<Scene>>("[Unknown]", null);
+                    Debug.Write($"Unable to load Wingine Project from '{proj}'", Debug.DebugType.Error);
                 }
-
-                string nme = DateTime.Now.Ticks.ToString();
-
-                if (Runner.CurrentProject != null) nme = Runner.CurrentProject.Item1;
-
-                if (Runner.CurrentProject.Item2 == null || Runner.CurrentProject.Item2.Count == 0)
-                {
-                    Runner.CurrentProject = new Tuple<string, List<Scene>>(nme, new List<Scene>());
-                    Runner.CurrentProject.Item2.Add(new Wingine.Scene());
-                }
-
-                Runner.App.CurrentScene = Runner.CurrentProject.Item2[0];
-                LoadHierarchy(fully: true);
-                ClearInspector();
             }
             else
             {
@@ -1600,11 +1793,12 @@ namespace Wingine.Editor
                 Open(ofd.FileName);
             }
         }
+
         public void Save()
         {
             if (File.Exists(currentFile))
             {
-                DataStore.WriteToBinaryFile<Tuple<string, List<Scene>>>(currentFile, Runner.CurrentProject);
+                DataStore.WriteToBinaryFile(currentFile, Runner.CurrentProject);
             }
             else
             {
@@ -1612,21 +1806,127 @@ namespace Wingine.Editor
             }
         }
 
-        public void SaveAs()
+        public void SaveAs(string file = "", bool changePointer = true)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = fileFilter;
-            //sfd.InitialDirectory = Environment.CurrentDirectory;
             sfd.Title = "Save Wingine Project As";
 
-            if (sfd.ShowDialog() == DialogResult.OK)
+            string fname = file;
+
+            if (string.IsNullOrWhiteSpace(file) && sfd.ShowDialog() == DialogResult.OK)
             {
-                currentFile = sfd.FileName;
-                DataStore.WriteToBinaryFile<Tuple<string, List<Scene>>>(currentFile, Runner.CurrentProject);
+                fname = sfd.FileName;
+                DataStore.WriteToBinaryFile(fname, Runner.CurrentProject);
             }
+
+            if (changePointer) currentFile = fname;
         }
+
 
         #endregion
 
+        #region Building
+        private void BuildGameTSB_Click(object sender, EventArgs e)
+        {
+            if (Runner.CurrentProject == null)
+            {
+                Debug.Write("No Project Found To Build!", Debug.DebugType.Error);
+                return;
+            }
+
+            Debug.Write($"Building '{Runner.CurrentProject.Item1}'...", Debug.DebugType.Editor);
+            var st = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            Save();
+
+            DataStore.WriteToBinaryFile($"./{Runner.CurrentProject.Item1}.wingine_app", new CartageSave() { Game = Runner.CurrentProject });
+            var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
+            var fp = Path.GetFullPath($"./{Runner.CurrentProject.Item1}.wingine_app");
+            Debug.Write($"Building Completed in {et - st}ms!\nSee '{fp}' for finished build.", Debug.DebugType.Editor);
+        }
+        #endregion
+
+        #region Runtime
+        public bool RunningApp = false;
+
+        int returnSceneIndex;
+        void RollBack()
+        {
+            Open(currentFile, changePointer: false);
+            SceneManager.LoadScene(returnSceneIndex);
+
+
+            //SceneManager.ReloadScene();
+            if (SelectedObject != null)
+            {
+                LoadGameObjectInspector(SceneManager.CurrentScene.Get(((GameObject)SelectedObject)?.ID));
+            }
+        }
+
+
+        void StopApp()
+        {
+            Runner.App?.Stop();
+            Runner.App?.Hide();
+            RunningApp = false;
+
+            Runner.CurrentProject = null;
+            Runner.App.CurrentScene = null;
+            RollBack();
+
+            //Runner.App?.RenderPlanes.Add(Scene);
+
+            PlayStopTSB.Image = Properties.Resources.play2;
+        }
+
+        void StartApp()
+        {
+            Save();
+
+            returnSceneIndex = Runner.App.CurrentScene.SceneIndex;
+
+            Runner.InEditor = true;
+            Runner.App.FormClosing += (s, e) =>
+            {
+                e.Cancel = true;
+                StopApp();
+            };
+
+            //Runner.App?.RenderPlanes.Remove(Scene);
+
+            Runner.App?.Start();
+            Runner.App?.Show();
+            RunningApp = true;
+
+            PlayStopTSB.Image = Properties.Resources.stop2;
+            ClearConsole();
+        }
+
+        void StartStopApp()
+        {
+            if (!RunningApp)
+            {
+                if (Runner.App != null && Runner.App.CurrentScene != null)
+                {
+                    StartApp();
+                }
+                else
+                {
+                    Debug.Write(Runner.App == null ?
+                        "Error Launching Application, Please restart the Editor!" :
+                        "Error Launching Application, No Loaded Scene was found!",
+                    Debug.DebugType.Error);
+                }
+            }
+            else
+            {
+                if (Runner.App != null)
+                {
+                    StopApp();
+                }
+            }
+        }
+        #endregion
     }
 }

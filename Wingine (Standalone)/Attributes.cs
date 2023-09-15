@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wingine
 {
@@ -36,6 +32,23 @@ namespace Wingine
         public string Text
         {
             get { return text; }
+        }
+
+    }
+
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public sealed class Space : Attribute
+    {
+        readonly int spacing;
+
+        public Space(int spacing)
+        {
+            this.spacing = spacing;
+        }
+
+        public int Spacing
+        {
+            get { return spacing; }
         }
 
     }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wingine
 {
@@ -20,13 +17,24 @@ namespace Wingine
         public List<GameObject> GameObjectsQueue = new List<GameObject>();
 
         public List<GameObject> GameObjects;
-        public int SceneIndex => Runner.CurrentProject.Item2.IndexOf(this);
+
+        public GameObject Get(string ID)
+        {
+            foreach (GameObject gameObject in GameObjects)
+            {
+                if (gameObject.ID == ID) return gameObject;
+            }
+            return null;
+        }
+
+        public int SceneIndex => Runner.CurrentProject.Item3.IndexOf(this);
+
 
         public Scene(List<GameObject> gameObjects = null)
         {
             if (Runner.CurrentProject != null)
             {
-                Runner.CurrentProject.Item2.Add(this);
+                Runner.CurrentProject?.Item3?.Add(this);
             }
 
             GameObjects = gameObjects != null ? gameObjects : new List<GameObject>();
@@ -37,12 +45,12 @@ namespace Wingine
                 GameObjectsQueue.Remove(go);
             }
 
-            
+
         }
 
         public void AddGameObject(GameObject go)
         {
-            if(GameObjects == null)
+            if (GameObjects == null)
             {
                 GameObjectsQueue.Add(go);
                 return;

@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wingine (Editor)", "Wingine
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wingine (Standalone)", "Wingine (Standalone)\Wingine (Standalone).csproj", "{4799E3DE-77FD-4C36-94E2-1CFF319DC169}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wingine (Pixel Editor)", "Wingine (Pixel Editor)\Wingine (Pixel Editor).csproj", "{B3F83848-9D70-419B-9535-D8994697EF7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wingine (Hub)", "Wingine (Hub)\Wingine (Hub).csproj", "{C2C20988-E8B3-4750-8B28-C125E4DF9BB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{4799E3DE-77FD-4C36-94E2-1CFF319DC169}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4799E3DE-77FD-4C36-94E2-1CFF319DC169}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4799E3DE-77FD-4C36-94E2-1CFF319DC169}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F83848-9D70-419B-9535-D8994697EF7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F83848-9D70-419B-9535-D8994697EF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F83848-9D70-419B-9535-D8994697EF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F83848-9D70-419B-9535-D8994697EF7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2C20988-E8B3-4750-8B28-C125E4DF9BB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C20988-E8B3-4750-8B28-C125E4DF9BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C20988-E8B3-4750-8B28-C125E4DF9BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C20988-E8B3-4750-8B28-C125E4DF9BB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

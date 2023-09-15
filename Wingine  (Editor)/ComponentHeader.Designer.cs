@@ -87,8 +87,14 @@
         }
 
         #endregion
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.X'
         public System.Windows.Forms.Button X;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.X'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.CB'
         public System.Windows.Forms.CheckBox CB;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ComponentHeader.CB'
     }
 }

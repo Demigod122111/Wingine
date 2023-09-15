@@ -1,31 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Wingine.UI;
 
 namespace Wingine.Editor
 {
-    public partial class AddComponentMenu : Form
+    public partial class ComponentMenu : Form
     {
-        public static List<Type> Components = new List<Type>();
+        internal static List<Type> Components = new List<Type>();
 
-        static AddComponentMenu()
+        static ComponentMenu()
         {
-            Components.Add(typeof(Camera));
-            Components.Add(typeof(PixelRenderer));
-            Components.Add(typeof(Canvas));
-            Components.Add(typeof(Text));
-            Components.Add(typeof(Player));
+            // BUILT-IN
+            Add(typeof(Wingine.Camera));
+            Add(typeof(Wingine.PixelRenderer));
+            Add(typeof(Wingine.Script));
+            Add(typeof(Wingine.PhysicsBody));
+            Add(typeof(Wingine.Collider));
+            Add(typeof(Wingine.UI.Canvas));
+            Add(typeof(Wingine.UI.TextRenderer));
+            Add(typeof(Wingine.UI.Button));
+            //Add(typeof(Wingine.AudioSource));
         }
 
-        public AddComponentMenu()
+        public ComponentMenu()
         {
             InitializeComponent();
 
             foreach (var comp in Components)
             {
-                View.Nodes.Add(comp.Name.AddSpacesToSentence()).Tag = comp;
+                var n = comp.Name.AddSpacesToSentence();
+                var v = View.Nodes.Add(n);
+
+                v.Name = n;
+                v.Tag = comp;
             }
+
+            View.Sort();
+        }
+
+        public static void Add(Type componentType)
+        {
+            object resolve = Activator.CreateInstance(componentType);
+            bool valid = false;
+
+
+            valid = valid || (
+                resolve is MonoBehaviour ||
+                resolve is IComponent ||
+                resolve.GetType() == typeof(IComponent) ||
+                resolve.GetType() == typeof(MonoBehaviour) ||
+                resolve.GetType().IsSubclassOf(typeof(MonoBehaviour)) ||
+                resolve.GetType().IsSubclassOf(typeof(IComponent))
+            );
+
+
+            if (!valid)
+            {
+                Debug.Write($"Cannot Add Type `{componentType}`. Type must be/derive from a IComponent or MonoBehaviour.", Debug.DebugType.Error);
+                return;
+            }
+
+            if (!Has(componentType))
+            {
+                Components.Add(componentType);
+            }
+            else
+            {
+                Debug.Write($"Type `{componentType}` already exists in the Component Menu.", Debug.DebugType.Warning);
+            }
+        }
+
+        public static bool Has(Type type)
+        {
+            foreach (var c in Components)
+            {
+                if (type.IsEquivalentTo(c)) return true;
+            }
+
+            return false;
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Wingine.Editor
     public partial class BoolInputField : UserControl
     {
         public object ValueObject;
+
         public BoolInputField()
         {
             InitializeComponent();

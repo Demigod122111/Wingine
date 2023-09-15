@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wingine.UI
 {
@@ -11,12 +8,13 @@ namespace Wingine.UI
     public abstract class IUIComponent : IComponent
     {
         [HideInInspector]
-        public Canvas Surface { get { return surface; } set { surface = value;  surface?.AddComponent(this); }  }
+        public Canvas Surface { get { return surface; } set { surface = value; surface?.AddComponent(this); } }
         Canvas surface;
 
         public int RenderOrder = 0;
 
         public abstract void Render(Graphics g, int max_width, int max_height);
+        public virtual void MainThreadTick() { }
 
     }
 

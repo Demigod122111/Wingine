@@ -6,6 +6,7 @@ namespace Wingine.Editor
     public partial class BaseInputField : UserControl
     {
         public object ValueObject;
+
         public BaseInputField()
         {
             InitializeComponent();

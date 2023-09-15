@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Wingine.UI
 {
+    public enum RenderSpace
+    {
+        Screen,
+        World,
+    }
+
     [Serializable]
     public class Canvas : IComponent
     {
@@ -18,6 +19,8 @@ namespace Wingine.UI
         internal void RemoveComponent(IUIComponent component) => UI_Components.Remove(component);
 
         public List<IUIComponent> GetUIComponents() => UI_Components;
+
+        public RenderSpace RenderSpace = RenderSpace.Screen;
 
         //public Color BackgroundTint = Color.Transparent;
         public Action Reset { get; set; } = () =>
@@ -33,7 +36,15 @@ namespace Wingine.UI
 
         public override void Tick()
         {
-
+            for (int i = 0; i < UI_Components.Count; i++)
+            {
+                if (!Runner.App.CurrentScene.GameObjects.Contains(UI_Components[i].GameObject)
+                    ||
+                    !UI_Components[i].GameObject.GetComponents().Contains(UI_Components[i]))
+                {
+                    UI_Components.Remove(UI_Components[i]);
+                }
+            }
         }
     }
 }

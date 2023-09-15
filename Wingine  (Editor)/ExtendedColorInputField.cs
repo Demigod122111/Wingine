@@ -6,6 +6,7 @@ namespace Wingine.Editor
     public partial class ExtendedColorInputField : UserControl
     {
         public object ValueObject;
+
         public ExtendedColorInputField()
         {
             InitializeComponent();

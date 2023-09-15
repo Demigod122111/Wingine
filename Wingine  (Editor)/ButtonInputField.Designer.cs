@@ -77,7 +77,11 @@
 
         #endregion
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ButtonInputField.Title'
         public System.Windows.Forms.Label Title;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ButtonInputField.Title'
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ButtonInputField.Action'
         public System.Windows.Forms.Button Action;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ButtonInputField.Action'
     }
 }
