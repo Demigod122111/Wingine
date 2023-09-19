@@ -52,7 +52,7 @@ namespace Wingine
                 }
                 catch (Exception)
                 {
-                    Debug.Write($"Each pixel in the Pixel Data should follow the format:\n[horizontal position, vertical position, alpha, red, green, blue, pixel_type, fill_type]\nand ends with a ';'", Debug.DebugType.Warning);
+                    if(Runner.UnderlyingDebug) Debug.Write($"Each pixel in the Pixel Data should follow the format:\n[horizontal position, vertical position, alpha, red, green, blue, pixel_type, fill_type]\nand ends with a ';'", Debug.DebugType.Warning);
                 }
             }
             return extractedPixels;

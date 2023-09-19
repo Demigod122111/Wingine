@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Wingine.SceneManagement;
+using Wingine.UI;
 using XCoolForm;
 
 namespace Wingine.Editor
@@ -72,6 +73,7 @@ namespace Wingine.Editor
                 }
             }
 
+            List<GameObject> Loaded = new List<GameObject>();
             void LoadGameObjects(List<GameObject> gos)
             {
                 List<GameObject> Unloaded = new List<GameObject>();
@@ -82,11 +84,16 @@ namespace Wingine.Editor
                 for (int i = 0; i < gos.Count; i++)
                 {
                     var go = gos[i];
+
+                    if (Loaded.Contains(go)) continue;
+
                     EditorLogs.AppendText($"Loading {go.Name}");
 
 
                     if (go.Parent != null)
                     {
+                        LoadGameObjects(new List<GameObject> { go.Parent });
+
                         string piid = go.Parent.GetInspectorID();
 
                         AddGameObject(go, HierarchyItems[piid]);
@@ -95,6 +102,8 @@ namespace Wingine.Editor
                     {
                         AddGameObject(go, null);
                     }
+
+                    Loaded.Add(go);
                 }
 
             }
@@ -1142,6 +1151,8 @@ namespace Wingine.Editor
             CoverPanelText.Font = new Font("Microsoft Sans Serif", 11f, FontStyle.Bold);
 
             homeAssetDirectory = Directory.Exists(homeAssetDir) ? homeAssetDir : Environment.CurrentDirectory;
+
+            debugRepeatToolStripMenuItem.Checked = Debug.CanRepeat;
         }
         #endregion
 
@@ -1193,6 +1204,8 @@ namespace Wingine.Editor
             Wingine.Debug.DebugEventOccured += (msg, type) =>
             {
                 var tmsg = $"[{type} | {DateTime.Now.TimeOfDay}]: {msg}\n";
+
+                if (Wingine.Debug.Repeated(msg, type) && !Wingine.Debug.CanRepeat) return;
 
                 switch (type)
                 {
@@ -1321,6 +1334,47 @@ namespace Wingine.Editor
             ClearConsole();
         }
 
+        TreeNode dragNode = null;
+        bool draggingNode => dragNode != null;
+        private void Hierarchy_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            dragNode = (TreeNode)e.Item;
+
+        }
+
+        private void Hierarchy_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
+        {
+            var hNode = e.Node;
+
+            if(hNode != dragNode && draggingNode)
+            {
+
+            }
+        }
+
+        private void Hierarchy_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.End)
+            {
+                if (Hierarchy.SelectedNode != null)
+                {
+                    var node = Hierarchy.SelectedNode;
+                    var parent = node.Parent;
+
+                    node.Remove();
+
+                    if (parent != null) parent.Nodes.Add(node);
+                    else Hierarchy.Nodes.Add(node);
+                    Hierarchy.SelectedNode = node;
+                    node.EnsureVisible();
+
+                    GameObject go = (GameObject)node.Tag;
+                    Runner.App.CurrentScene.GameObjects.Remove(go);
+                    Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go), go);
+                }
+            }
+        }
+
         private void Hierarchy_MouseUp(object sender, MouseEventArgs e)
         {
             var ht = Hierarchy.HitTest(e.Location);
@@ -1332,6 +1386,54 @@ namespace Wingine.Editor
                 Hierarchy.SelectedNode = null;
                 Hierarchy.HideSelection = true;
                 ClearInspector();
+            }
+
+            if (draggingNode)
+            {
+                Hierarchy.Nodes.Remove(dragNode);
+                GameObject go = (GameObject)dragNode.Tag;
+
+                if (ht.Node != null)
+                {
+                    if (e.Button != MouseButtons.Left)
+                    {
+                        if (ht.Node.Parent != null)                        {
+                            ht.Node.Parent.Nodes.Insert(ht.Node.Index, dragNode);
+                            go.SetParent((GameObject)ht.Node.Parent.Tag);
+                        }
+                        else
+                        {
+                            Hierarchy.Nodes.Insert(ht.Node.Index, dragNode);
+                            go.SetParent(null);
+                        }
+                    }
+                    else
+                    {
+                        ht.Node.Nodes.Insert(0, dragNode);
+                        go.SetParent((GameObject)ht.Node.Tag);
+                    }
+                }
+                else
+                {
+                    Hierarchy.Nodes.Insert(Hierarchy.Nodes.Count, dragNode);
+                    go.SetParent(null);
+                }
+
+                HierarchyItems[go.GetInspectorID()] = dragNode;
+
+                dragNode.EnsureVisible();
+                dragNode = null;
+
+                Runner.App.CurrentScene.GameObjects.Remove(go);
+                Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go), go);
+            }
+        }
+
+        private void Hierarchy_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (draggingNode)
+            {
+                dragNode = null;
             }
         }
 
@@ -1534,8 +1636,91 @@ namespace Wingine.Editor
                 LoadAssetFolder(homeAssetDirectory);
             }
         }
-        private void gameObjectToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void canvasToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // Create Canvas
+            GameObject go = new GameObject(name: "New Canvas");
+            var tn = Hierarchy.SelectedNode;
+            if (tn != null)
+            {
+                go.SetParent((GameObject)tn.Tag);
+                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+
+                TreeNode node = HierarchyItems[go.GetInspectorID()];
+                while (node != null)
+                {
+                    HierarchyItemsExpansion[node] = node.IsExpanded;
+                    node = node.Parent;
+                }
+            }
+
+            go.AddComponent<Canvas>();
+        }
+
+        private void textToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Create Text
+            GameObject go = new GameObject(name: "New Text");
+            var tn = Hierarchy.SelectedNode;
+            if (tn != null)
+            {
+                go.SetParent((GameObject)tn.Tag);
+                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+
+                TreeNode node = HierarchyItems[go.GetInspectorID()];
+                while (node != null)
+                {
+                    HierarchyItemsExpansion[node] = node.IsExpanded;
+                    node = node.Parent;
+                }
+            }
+
+            go.AddComponent<Wingine.UI.TextRenderer>();
+        }
+
+        private void buttonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Create Button
+            GameObject go = new GameObject(name: "New Button");
+            var tn = Hierarchy.SelectedNode;
+            if (tn != null)
+            {
+                go.SetParent((GameObject)tn.Tag);
+                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+
+                TreeNode node = HierarchyItems[go.GetInspectorID()];
+                while (node != null)
+                {
+                    HierarchyItemsExpansion[node] = node.IsExpanded;
+                    node = node.Parent;
+                }
+            }
+
+            go.AddComponent<Wingine.UI.Button>();
+
+            GameObject got = new GameObject(name: "Text");
+            var tnt = HierarchyItems[go.GetInspectorID()];
+
+            if (tnt != null)
+            {
+                got.SetParent((GameObject)tnt.Tag);
+                //HierarchyItems[got.GetInspectorID()].EnsureVisible();
+
+                TreeNode node = HierarchyItems[got.GetInspectorID()];
+                while (node != null)
+                {
+                    HierarchyItemsExpansion[node] = node.IsExpanded;
+                    node = node.Parent;
+                }
+            }
+
+            got.AddComponent<Wingine.UI.TextRenderer>().Text = "New Button";
+        }
+
+        private void emptyToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // Create Empty GameObject
             GameObject go = new GameObject();
             var tn = Hierarchy.SelectedNode;
             if (tn != null)
@@ -1550,6 +1735,27 @@ namespace Wingine.Editor
                     node = node.Parent;
                 }
             }
+        }
+
+        private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Create Camera
+            GameObject go = new GameObject(name: "New Camera");
+            var tn = Hierarchy.SelectedNode;
+            if (tn != null)
+            {
+                go.SetParent((GameObject)tn.Tag);
+                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+
+                TreeNode node = HierarchyItems[go.GetInspectorID()];
+                while (node != null)
+                {
+                    HierarchyItemsExpansion[node] = node.IsExpanded;
+                    node = node.Parent;
+                }
+            }
+
+            go.AddComponent<Wingine.Camera>();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1927,6 +2133,28 @@ namespace Wingine.Editor
                 }
             }
         }
+
         #endregion
+
+        #region Helper Funcs
+        /*
+         * Object Index = Parent Index + Node Index
+         * No parent 
+         *   0 | 1
+         *   First Node
+         *    0 | 1
+         *    
+         *   -> 0 + 0 = 0 | 1 + 1 = 2
+         */
+        public int GetObjectIndex(GameObject go)
+        {
+            int parentIndex = go.Parent != null ? GetObjectIndex(go.Parent) : 0;
+            var node = HierarchyItems[go.GetInspectorID()];
+            int nodeIndex = node.Index;
+
+            return parentIndex + nodeIndex;
+        }
+        #endregion
+
     }
 }

@@ -21,6 +21,7 @@ namespace Wingine
 
 
         public static bool InEditor = false;
+        public static bool UnderlyingDebug = false;
 
         static Runner()
         {

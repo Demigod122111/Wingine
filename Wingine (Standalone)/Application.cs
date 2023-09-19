@@ -162,7 +162,32 @@ namespace Wingine
                     var pixels = r.Pixels;
                     var pixelsCount = pixels.Count;
 
-                    
+                    for (int j = 0; j < pixelsCount; j++)
+                    {
+                        var pixel = pixels[j];
+
+                        Vector2 pos = go.Transform.GetPosition();
+                        Point point = new Point((int)(pos.X + pixel.Item1.X), (int)(-pos.Y + pixel.Item1.Y));
+                        PointF pointf = new PointF((pos.X + pixel.Item1.X), (-pos.Y + pixel.Item1.Y));
+
+                        switch (pixel.Item3)
+                        {
+                            case PixelType.Rectangle:
+                                if (pixel.Item4 == FillType.Fill)
+                                    g.FillRectangle(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                else if (pixel.Item4 == FillType.Empty)
+                                    g.DrawRectangle(new Pen(new SolidBrush(pixel.Item2)), new Rectangle(point, new Size((int)r.PixelSize.X, (int)r.PixelSize.Y)));
+                                break;
+                            case PixelType.Circle:
+                                if (pixel.Item4 == FillType.Fill)
+                                    g.FillEllipse(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                else if (pixel.Item4 == FillType.Empty)
+                                    g.DrawEllipse(new Pen(new SolidBrush(pixel.Item2)), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
                 #endregion
 

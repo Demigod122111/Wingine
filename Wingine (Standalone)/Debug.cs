@@ -28,12 +28,31 @@ namespace Wingine
 
         static bool canRepeat = false;
 
+
+        /// <summary>
+        /// Re-outputs the last log to the console
+        /// </summary>
+        public static void Repeat()
+        {
+            Write(lastMsg, lastType);
+        }
+
+        /// <summary>
+        /// Checks to see if message and type is the same as the latest logged.
+        /// </summary>
+        /// <param name="msg">The query message</param>
+        /// <param name="debugType">The query message type</param>
+        /// <returns></returns>
+        public static bool Repeated(object msg, DebugType debugType)
+        {
+            return lastType == debugType && lastMsg == msg;
+        }
         public static void Write(object msg) => Write(msg, DebugType.Log);
         public static void Write(object msg, DebugType debugType = DebugType.Log)
         {
             try
             {
-                if (!CanRepeat && lastType == debugType && lastMsg == msg) return;
+                if (!CanRepeat && Repeated(msg, debugType)) return;
 
                 switch (debugType)
                 {
