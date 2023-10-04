@@ -1397,31 +1397,37 @@ namespace Wingine.Editor
                 {
                     if (e.Button != MouseButtons.Left)
                     {
-                        if (ht.Node.Parent != null)                        {
-                            ht.Node.Parent.Nodes.Insert(ht.Node.Index, dragNode);
+                        if (ht.Node.Parent != null) {
+                            var count = ht.Node.Index;
+                            ht.Node.Parent.Nodes.Insert(count, dragNode);
+                            ht.Node.Parent.Nodes[count].EnsureVisible();
                             go.SetParent((GameObject)ht.Node.Parent.Tag);
                         }
                         else
                         {
-                            Hierarchy.Nodes.Insert(ht.Node.Index, dragNode);
+                            var count = ht.Node.Index;
+                            Hierarchy.Nodes.Insert(count, dragNode);
+                            Hierarchy.Nodes[count].EnsureVisible();
                             go.SetParent(null);
                         }
                     }
                     else
                     {
                         ht.Node.Nodes.Insert(0, dragNode);
+                        ht.Node.Nodes[0].EnsureVisible();
                         go.SetParent((GameObject)ht.Node.Tag);
                     }
                 }
                 else
                 {
-                    Hierarchy.Nodes.Insert(Hierarchy.Nodes.Count, dragNode);
+                    var count = Hierarchy.Nodes.Count;
+                    Hierarchy.Nodes.Insert(count, dragNode);
+                    Hierarchy.Nodes[count].EnsureVisible();
                     go.SetParent(null);
                 }
 
                 HierarchyItems[go.GetInspectorID()] = dragNode;
 
-                dragNode.EnsureVisible();
                 dragNode = null;
 
                 Runner.App.CurrentScene.GameObjects.Remove(go);
@@ -2041,6 +2047,17 @@ namespace Wingine.Editor
                 return;
             }
 
+            Save();
+
+            var pfp = $"./{Runner.CurrentProject.Item1}.wingine_app";
+
+            DataStore.WriteToBinaryFile(pfp, new CartageSave() { Game = Runner.CurrentProject });
+            var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
+            var fp = Path.GetFullPath(pfp);
+
+            Runner.Build(fp);
+            /*
             Debug.Write($"Building '{Runner.CurrentProject.Item1}'...", Debug.DebugType.Editor);
             var st = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             Save();
@@ -2050,6 +2067,8 @@ namespace Wingine.Editor
 
             var fp = Path.GetFullPath($"./{Runner.CurrentProject.Item1}.wingine_app");
             Debug.Write($"Building Completed in {et - st}ms!\nSee '{fp}' for finished build.", Debug.DebugType.Editor);
+            */
+            
         }
         #endregion
 

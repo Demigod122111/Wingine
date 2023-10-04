@@ -285,4 +285,21 @@ namespace Wingine
             }
         }
     }
+
+    [Serializable]
+    public class IGameObjectComparer : IComparer<GameObject>
+    {
+        public int Compare(GameObject x, GameObject y)
+        {
+            var i1 = Runner.App.CurrentScene.GameObjects.IndexOf(x);
+            var i2 = Runner.App.CurrentScene.GameObjects.IndexOf(y);
+
+            if (i1 == 0 || i2 == 0)
+            {
+                return 0;
+            }
+
+            return i1.CompareTo(i2);
+        }
+    }
 }

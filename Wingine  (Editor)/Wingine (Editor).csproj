@@ -421,7 +421,6 @@
     <ProjectReference Include="..\Wingine %28Standalone%29\Wingine %28Standalone%29.csproj">
       <Project>{4799e3de-77fd-4c36-94e2-1cff319dc169}</Project>
       <Name>Wingine %28Standalone%29</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

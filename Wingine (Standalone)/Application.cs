@@ -127,6 +127,8 @@ namespace Wingine
             var gameObjects = CurrentScene.GameObjects;
             var goCount = gameObjects.Count;
 
+            List<Canvas> all_canvas = new List<Canvas>();
+
             for (int i = 0; i < goCount; i++)
             {
                 var go = gameObjects[i];
@@ -219,22 +221,31 @@ namespace Wingine
                 if (go.ComponentExists<Canvas>())
                 {
                     var canvas = go.GetComponentOfType<Canvas>();
-                    var ui_g = canvas.RenderSpace == RenderSpace.Screen ? GetWritableBuffer() : g;
-
-                    var ui_comps = canvas.GetUIComponents();
-
-                    ui_comps.Sort(new IUIComponentComparer());
-
-                    for (int ui_i = 0; ui_i < ui_comps.Count; ui_i++)
-                    {
-                        var ui_e = ui_comps[ui_i];
-
-                        ui_e.Render(ui_g, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-                    }
+                    all_canvas.Add(canvas);
                 }
                 #endregion
 
                 //g.RenderingOrigin = origin;
+            }
+
+            for (int i = 0; i < all_canvas.Count; i++)
+            {
+                var canvas = all_canvas[i];
+                
+                var ui_g = canvas.RenderSpace == RenderSpace.Screen ? GetWritableBuffer() : g;
+
+                var ui_comps = canvas.GetUIComponents();
+
+                ui_comps.Sort(new IUIGameObjectComparer());
+                ui_comps.Sort(new IUIComponentComparer());
+                // ui_comps = ui_comps.OrderBy(c => CurrentScene.GameObjects.IndexOf(c.GameObject)).ThenBy(c => c.RenderOrder).ToList();
+
+                for (int ui_i = 0; ui_i < ui_comps.Count; ui_i++)
+                {
+                    var ui_e = ui_comps[ui_i];
+
+                    ui_e.Render(ui_g, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+                }
             }
 
             SwapBuffers();
