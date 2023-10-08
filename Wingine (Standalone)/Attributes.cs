@@ -70,4 +70,27 @@ namespace Wingine
 
         }
     }
+
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    public sealed class ActionButton : Attribute
+    {
+        readonly object[] args;
+        readonly bool reloadInspector;
+
+        public ActionButton(bool reloadInspector = false, params object[] args)
+        {
+            this.args = args;
+            this.reloadInspector = reloadInspector;
+        }
+
+        public object[] Arguments
+        {
+            get { return args; }
+        }
+
+        public bool ReloadInspector
+        {
+            get { return reloadInspector; }
+        }
+    }
 }

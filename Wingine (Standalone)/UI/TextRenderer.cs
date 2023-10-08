@@ -19,6 +19,11 @@ namespace Wingine.UI
         public bool Italic = false;
 
 
+        public float TrueSize()
+        {
+            return (float)(Size * (Math.Sqrt(Math.Pow(GameObject.Transform.Scale.X, 2) + Math.Pow(GameObject.Transform.Scale.Y, 2)) / 2 + 0.3f));
+        }
+
 
         Font Font = new Font("Times New Roman", 12);
         public Font GetFont() => Font;
@@ -34,7 +39,23 @@ namespace Wingine.UI
                 new PointF(Transform.Position.X, Transform.Position.Y) :
                 new PointF(Transform.Position.X, -Transform.Position.Y);
 
-            g.DrawString(Text, Font, new SolidBrush(Color), pos);
+            var container = g.BeginContainer();
+
+            SizeF textSize = g.MeasureString(Text, Font);
+
+            var ox = textSize.Width / 2;
+            var oy = textSize.Height / 2;
+
+            g.TranslateTransform(pos.X + ox, pos.Y + oy);
+
+            g.RotateTransform(GameObject.Transform.Rotation);
+
+            g.DrawString(Text, Font, new SolidBrush(Color), pos.X - ox, pos.Y - oy);
+
+            g.TranslateTransform(-(pos.X + ox), -(pos.Y + oy));
+
+
+            g.EndContainer(container);
         }
 
         public override void Tick()
@@ -59,7 +80,7 @@ namespace Wingine.UI
             else if (Strikeout) style = FontStyle.Strikeout;
             else if (Italic) style = FontStyle.Italic;
 
-            Font = new Font(Family, Size, style);
+            Font = new Font(Family, TrueSize(), style);
         }
     }
 }

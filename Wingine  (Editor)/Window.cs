@@ -344,6 +344,43 @@ namespace Wingine.Editor
 
                         AddItemToInspector(inputField);
                     }
+                    else if (t == typeof(Action))
+                    {
+                        if (Attribute.IsDefined(member, typeof(Wingine.ActionButton)))
+                        {
+                            var inputField = new ButtonInputField();
+                            inputField.Name = member.Name;
+                            inputField.Title.Parent = null;
+                            inputField.Height = inputField.Action.Height;
+                            inputField.Action.Dock = DockStyle.Fill;
+                            inputField.Action.Text = member.Name.AddSpacesToSentence();
+                            inputField.Tag = member;
+                            inputField.ValueObject = comp;
+                            EventHandler col = (s, e) =>
+                            {
+                                try
+                                {
+                                    Wingine.ActionButton ab = ((Wingine.ActionButton[])member.GetCustomAttributes(typeof(Wingine.ActionButton), false))[0];
+                                    ((Action)member.GetValue(comp)).DynamicInvoke(ab.Arguments);
+                                    if (ab.ReloadInspector)
+                                    {
+                                        var so = SelectedObject;
+                                        ClearInspector();
+                                        LoadGameObjectInspector((GameObject)so);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                                }
+
+                                comp.Tick();
+                            };
+                            inputField.Action.Click += col;
+
+                            AddItemToInspector(inputField);
+                        }
+                    }
                     else if (t == typeof(Color))
                     {
                         if (Attribute.IsDefined(member, typeof(Wingine.ExtendColor)))
@@ -697,6 +734,43 @@ namespace Wingine.Editor
 
                         AddItemToInspector(inputField);
                     }
+                    else if (t == typeof(Action))
+                    {
+                        if (Attribute.IsDefined(member, typeof(Wingine.ActionButton)))
+                        {
+                            var inputField = new ButtonInputField();
+                            inputField.Name = member.Name;
+                            inputField.Title.Parent = null;
+                            inputField.Height = inputField.Action.Height;
+                            inputField.Action.Dock = DockStyle.Fill;
+                            inputField.Action.Text = member.Name.AddSpacesToSentence();
+                            inputField.Tag = member;
+                            inputField.ValueObject = comp;
+                            EventHandler col = (s, e) =>
+                            {
+                                try
+                                {
+                                    Wingine.ActionButton ab = ((Wingine.ActionButton[])member.GetCustomAttributes(typeof(Wingine.ActionButton), false))[0];
+                                    ((Action)member.GetValue(comp)).DynamicInvoke(ab.Arguments);
+                                    if (ab.ReloadInspector)
+                                    {
+                                        var so = SelectedObject;
+                                        ClearInspector();
+                                        LoadGameObjectInspector((GameObject)so);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                                }
+
+                                comp.Tick();
+                            };
+                            inputField.Action.Click += col;
+
+                            AddItemToInspector(inputField);
+                        }
+                    }
                     else if (t == typeof(Color))
                     {
                         if (Attribute.IsDefined(member, typeof(Wingine.ExtendColor)))
@@ -988,6 +1062,7 @@ namespace Wingine.Editor
 
             AddComponent.Title.Text = "";
             AddComponent.Action.Text = "Add Component";
+            AddComponent.Action.ForeColor = Color.Beige;
             ACEH = (s, e) =>
             {
                 try
@@ -1314,8 +1389,9 @@ namespace Wingine.Editor
                 InspectorUpdater.Enabled = true;
             }
 
-            var drtsmis = debugRepeatToolStripMenuItem.Checked ? "On" : "Off";
-            debugRepeatToolStripMenuItem.Text = $"Debug Repeat ({drtsmis})";
+
+            debugRepeatToolStripMenuItem.Text = $"Debug Repeat ({(debugRepeatToolStripMenuItem.Checked ? "On" : "Off")})";
+            clearOnPlayToolStripMenuItem.Text = $"Clear On Play ({(clearOnPlayToolStripMenuItem.Checked ? "On" : "Off")})";
         }
 
         private void Window_Load(object sender, EventArgs e)
@@ -1521,7 +1597,7 @@ namespace Wingine.Editor
             var k = new List<Control>();
             try
             {
-                k.AddRange(Inspector.Controls as IEnumerable<Control>);
+                //k.AddRange(Inspector.Controls as IEnumerable<Control>);
             }
             catch { }
 
@@ -1582,7 +1658,7 @@ namespace Wingine.Editor
 
                     object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
 
-                    ipf.Action.Text = val.ToString();
+                    //ipf.Action.Text = val.ToString();
                 }
                 else if (t == typeof(BoolInputField))
                 {
@@ -2125,7 +2201,7 @@ namespace Wingine.Editor
             RunningApp = true;
 
             PlayStopTSB.Image = Properties.Resources.stop2;
-            ClearConsole();
+            if(clearOnPlayToolStripMenuItem.Checked) ClearConsole();
         }
 
         void StartStopApp()

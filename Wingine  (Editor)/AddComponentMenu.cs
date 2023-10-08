@@ -19,7 +19,8 @@ namespace Wingine.Editor
             Add(typeof(Wingine.UI.Canvas));
             Add(typeof(Wingine.UI.TextRenderer));
             Add(typeof(Wingine.UI.Button));
-            //Add(typeof(Wingine.AudioSource));
+            Add(typeof(Wingine.Audio.AudioSource));
+            Add(typeof(Wingine.SpriteRenderer));
         }
 
         public ComponentMenu()

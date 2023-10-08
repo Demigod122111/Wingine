@@ -286,7 +286,7 @@
     </Compile>
     <Compile Include="AsyncHelpers.cs" />
     <Compile Include="Attributes.cs" />
-    <Compile Include="AudioSource.cs" />
+    <Compile Include="Audio\AudioSource.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Collider.cs" />
     <Compile Include="DataStore.cs" />
@@ -294,6 +294,8 @@
     <Compile Include="EditorLink.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="IComponent.cs" />
+    <Compile Include="PhysicsEngine.cs" />
+    <Compile Include="SpriteRenderer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="MonoBehaviour.cs" />

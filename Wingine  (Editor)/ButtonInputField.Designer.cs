@@ -51,13 +51,12 @@
             this.Action.FlatAppearance.BorderSize = 0;
             this.Action.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.Action.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Action.ForeColor = System.Drawing.Color.ForestGreen;
+            this.Action.ForeColor = System.Drawing.Color.Silver;
             this.Action.Location = new System.Drawing.Point(0, 21);
             this.Action.Name = "Action";
             this.Action.Size = new System.Drawing.Size(325, 28);
             this.Action.TabIndex = 1;
             this.Action.Text = "[Action]";
-            this.Action.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.Action.UseVisualStyleBackColor = false;
             // 
             // ButtonInputField

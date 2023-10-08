@@ -26,6 +26,8 @@ namespace Wingine
 
         public Scene CurrentScene;
 
+        internal PhysicsEngine PhysicsEngine = new PhysicsEngine();
+
         static Application()
         {
             InitBuffers();
@@ -114,6 +116,7 @@ namespace Wingine
                     Brushes.White,
                     new Point((int)(RESOLUTION_WIDTH / 2 - 17.5f * (19 / 2)), RESOLUTION_HEIGHT / 2 - 20));
                 SwapBuffers();
+                doneRender = true;
                 return;
             }
 
@@ -141,7 +144,7 @@ namespace Wingine
 
                 var container = g.BeginContainer();
 
-                #region Renderer
+                #region Pixel Renderer
                 if (go.ComponentExists<PixelRenderer>())
                 {
                     PixelRenderer r = go.GetComponentOfType<PixelRenderer>();
@@ -193,22 +196,55 @@ namespace Wingine
                 }
                 #endregion
 
-                #region Collision Debugger
-                if (go.ComponentExists<Collider>())
+                #region Sprite Renderer
+                if (go.ComponentExists<SpriteRenderer>())
                 {
-                    var cld = go.GetComponentOfType<Collider>();
-                    var cldp = VectorToPoint(go.Transform.GetPosition(), -cld.Size.X, -cld.Size.Y);
+                    SpriteRenderer r = go.GetComponentOfType<SpriteRenderer>();
 
-                    if (cld.ShowBounds)
+                    try
+                    {
+                        g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
+
+                        var scale = go.Transform.GetScale();
+                        g.ScaleTransform(scale.X, scale.Y);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Write(ex.Message);
+                    }
+
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                    Bitmap img = r.GetImage();
+
+                    var subContainer = g.BeginContainer();
+
+                    var ox = img.Width / 2;
+                    var oy = img.Height / 2;
+                    var pos = go.Transform.Position;
+
+                    g.TranslateTransform(pos.X + ox, pos.Y - oy);
+
+                    g.DrawImage(RotateImage(img, go.Transform.Rotation), VectorToPointF(pos - new Vector2(ox, oy) - new Vector2(img.Width / 2, -(img.Height / 2))));
+
+                    g.TranslateTransform(-(pos.X + ox), -(pos.Y - oy));
+
+                    g.EndContainer(subContainer);
+                }
+                #endregion
+
+                #region PhysicsBody Debugger
+                    if (go.ComponentExists<PhysicsBody>())
+                {
+                    var cld = go.GetComponentOfType<PhysicsBody>();
+                    var cldp = cld.BoundingBox;
+
+                    if (cld.showBoundingBox)
                     {
                         g.DrawRectangle(
                             new Pen(new SolidBrush(Color.RoyalBlue), 5),
-                            new Rectangle(cldp, new Size((int)(cld.Size.X * 2), (int)(cld.Size.Y * 2))));
-                    }
-
-                    if (cld.ShowPhysicsData)
-                    {
-                        g.DrawString($"{go.Name}: {cld.frc}N ({cld.PhysicsBody.CapturedForce}) ", new Font("RomanC", 64), Brushes.Gold, new Point(cldp.X + 130, cldp.Y + 0));
+                            new Rectangle((int)cldp.X, (int)-cldp.Y, (int)cldp.Width, (int)cldp.Height));
                     }
 
                 }
@@ -480,41 +516,17 @@ namespace Wingine
             #region Physics Loop
             async void PhysicsLoop()
             {
-                for (int i = 0; i < CurrentScene.GameObjects.Count; i++)
-                {
-                    var b = CurrentScene.GameObjects[i];
-
-                    if (!b.ActiveInHierarchy()) break;
-
-                    if (!IsRunning) break;
-
-                    var comps = b.GetComponentsOfType<PhysicsBody>();
-                    for (int ii = 0; ii < comps.Count; ii++)
-                    {
-                        var comp = comps[ii];
-
-                        if (!comp.Enabled) break;
-                        var pb = comp as PhysicsBody;
-
-                        pb.Init();
-                    }
-                }
-
-                PhysicsBody.PhysicsUpdate += () =>
-                {
-                    Runner.App.FixedUpdate();
-                };
-
                 while (running)
                 {
                     await Task.Delay((int)(1000 * Time.FixedDeltaTime));
 
-                    PhysicsBody.InternalPhysicsUpdate();
+                    PhysicsEngine.UpdatePhysics(Time.FixedDeltaTime);
+                    //Runner.App.FixedUpdate();
                 }
             }
 
 
-            //new Thread(new ThreadStart(() => { PhysicsLoop(); })).Start();
+            new Thread(new ThreadStart(() => { PhysicsLoop(); })).Start();
             #endregion
 
             #region Ticking Loop
@@ -554,19 +566,19 @@ namespace Wingine
 
         private Bitmap RotateImage(Bitmap bmp, float angle)
         {
-            Bitmap rotatedImage = new Bitmap(bmp.Width, bmp.Height);
+            Bitmap rotatedImage = new Bitmap(bmp.Width * 2, bmp.Height * 2);
             rotatedImage.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
 
             using (Graphics g = Graphics.FromImage(rotatedImage))
             {
                 // Set the rotation point to the center in the matrix
-                g.TranslateTransform(bmp.Width / 2, bmp.Height / 2);
+                g.TranslateTransform(bmp.Width, bmp.Height);
                 // Rotate
                 g.RotateTransform(angle);
                 // Restore rotation point in the matrix
-                g.TranslateTransform(-bmp.Width / 2, -bmp.Height / 2);
+                g.TranslateTransform(-bmp.Width, -bmp.Height);
                 // Draw the image on the bitmap
-                g.DrawImage(bmp, new Point(0, 0));
+                g.DrawImage(bmp, new Point(bmp.Width / 2, bmp.Height / 2));
             }
 
             return rotatedImage;

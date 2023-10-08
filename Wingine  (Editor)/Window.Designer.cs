@@ -94,6 +94,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.PlayStopTSB = new System.Windows.Forms.ToolStripButton();
             this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
+            this.clearOnPlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -419,10 +420,11 @@
             this.ConsoleCMS.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(29)))), ((int)(((byte)(29)))));
             this.ConsoleCMS.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.clearToolStripMenuItem,
-            this.debugRepeatToolStripMenuItem});
+            this.debugRepeatToolStripMenuItem,
+            this.clearOnPlayToolStripMenuItem});
             this.ConsoleCMS.Name = "ConsoleCMS";
             this.ConsoleCMS.ShowImageMargin = false;
-            this.ConsoleCMS.Size = new System.Drawing.Size(147, 52);
+            this.ConsoleCMS.Size = new System.Drawing.Size(156, 98);
             // 
             // clearToolStripMenuItem
             // 
@@ -431,7 +433,7 @@
             this.clearToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.clearToolStripMenuItem.ForeColor = System.Drawing.Color.Crimson;
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(146, 24);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.ToolTipText = "Clears the console of all it\'s contents";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
@@ -442,7 +444,7 @@
             this.debugRepeatToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.debugRepeatToolStripMenuItem.ForeColor = System.Drawing.Color.Beige;
             this.debugRepeatToolStripMenuItem.Name = "debugRepeatToolStripMenuItem";
-            this.debugRepeatToolStripMenuItem.Size = new System.Drawing.Size(146, 24);
+            this.debugRepeatToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
             this.debugRepeatToolStripMenuItem.Text = "Debug Repeat";
             this.debugRepeatToolStripMenuItem.ToolTipText = "Determines if the same message and type can be logged consecutively";
             this.debugRepeatToolStripMenuItem.CheckedChanged += new System.EventHandler(this.debugRepeatToolStripMenuItem_CheckedChanged);
@@ -814,6 +816,18 @@
             this.StatusBar.Size = new System.Drawing.Size(904, 28);
             this.StatusBar.TabIndex = 3;
             // 
+            // clearOnPlayToolStripMenuItem
+            // 
+            this.clearOnPlayToolStripMenuItem.Checked = true;
+            this.clearOnPlayToolStripMenuItem.CheckOnClick = true;
+            this.clearOnPlayToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.clearOnPlayToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.clearOnPlayToolStripMenuItem.ForeColor = System.Drawing.Color.Beige;
+            this.clearOnPlayToolStripMenuItem.Name = "clearOnPlayToolStripMenuItem";
+            this.clearOnPlayToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
+            this.clearOnPlayToolStripMenuItem.Text = "Clear On Play";
+            this.clearOnPlayToolStripMenuItem.ToolTipText = "Clears the console when entering play mode";
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -932,6 +946,7 @@
         private System.Windows.Forms.ToolStripMenuItem textToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem buttonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cameraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearOnPlayToolStripMenuItem;
     }
 }
 

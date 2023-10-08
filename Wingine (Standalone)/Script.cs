@@ -104,7 +104,7 @@ function update(){
             base.Begin();
         }
 
-        void InvokeFunction(string name, bool forceInit = false)
+        void InvokeFunction(string name, bool forceInit = false, params object[] args)
         {
             if (forceInit) InitEngine();
             else
@@ -118,7 +118,7 @@ function update(){
             {
                 var val = Core.engine.GetValue(name);
                 var v = val.IsObject() && val.AsObject().Class == "Function";
-                if (v) Core.engine.Invoke(name);
+                if (v) Core.engine.Invoke(name, args);
             }
             catch (Exception e)
             {
@@ -149,6 +149,11 @@ function update(){
         public override void FixedUpdate()
         {
             InvokeFunction("fixedUpdate");
+        }
+
+        public override void OnCollision(PhysicsBody other)
+        {
+            InvokeFunction("onCollision", false, other);
         }
     }
 }

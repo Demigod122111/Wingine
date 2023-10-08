@@ -90,13 +90,13 @@ namespace Wingine
                     var tpb = t.GameObject.GetComponentOfType<PhysicsBody>();
                     var pb = GameObject.GetComponentOfType<PhysicsBody>();
                     PhysicsBody = pb;
-                    frc = PhysicsBody.CapturedForce;
+                    //frc = PhysicsBody.CapturedForce;
 
                     var bConstant = (tpb.Mass / (pb.Mass + tpb.Mass));
-                    var hforce = pb.GetForce() / 2 * bConstant;
+                    //var hforce = pb.GetForce() / 2 * bConstant;
 
-                    tpb.AddForce(hforce * 4);
-                    pb.AddForce(-hforce * 2);
+                    //tpb.AddForce(hforce * 4);
+                    //pb.AddForce(-hforce * 2);
                 }
                 else
                 {

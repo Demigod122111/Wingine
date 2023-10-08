@@ -69,12 +69,9 @@ namespace Wingine
         }
 
 
-        [HideInInspector]
-        public const int Rotation = 0;
+        public int Rotation = 0;
 
-#pragma warning disable CS0108 // 'Transform.GameObject' hides inherited member 'IComponent.GameObject'. Use the new keyword if hiding was intended.
         public readonly GameObject GameObject;
-#pragma warning restore CS0108 // 'Transform.GameObject' hides inherited member 'IComponent.GameObject'. Use the new keyword if hiding was intended.
 
         public Transform(GameObject go)
         {
