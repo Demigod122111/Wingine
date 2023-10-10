@@ -51,6 +51,7 @@ function update(){
             };
 
             Core.engine = Core.engine.SetValue("Key", typeof(System.Windows.Input.Key));
+            Core.engine = Core.engine.SetValue("Application", Runner.App);
 
             for (int i = 0; i < targetNamespaces.Length; i++)
             {
@@ -65,6 +66,10 @@ function update(){
 
                     foreach (var type in types)
                     {
+                        if (type == typeof(Runner)) continue;
+                        if (type == typeof(Application)) continue;
+
+
                         var val = Core.engine.GetValue(type.Name);
 
                         if (val.Type == Jint.Runtime.Types.Undefined ||

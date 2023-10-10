@@ -93,4 +93,28 @@ namespace Wingine
             get { return reloadInspector; }
         }
     }
+
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public sealed class Range : Attribute
+    {
+        readonly double min;
+        readonly double max;
+
+        public Range(double min = double.MinValue, double max = double.MaxValue)
+        {
+            this.min = min;
+            this.max = max;
+        }
+
+        public double Min
+        {
+            get { return min; }
+        }
+
+        public double Max
+        {
+            get { return max; }
+        }
+
+    }
 }

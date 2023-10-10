@@ -283,6 +283,7 @@ namespace Wingine.Editor
                     }
                 }
 
+
                 void LoadProperty(PropertyInfo prop)
                 {
                     var member = prop;
@@ -436,28 +437,6 @@ namespace Wingine.Editor
                             AddItemToInspector(inputField);
                         }
                     }
-                    else if (t == typeof(Action))
-                    {
-                        var inputField = new ButtonInputField();
-                        inputField.Name = member.Name;
-                        inputField.Tag = member;
-                        inputField.ValueObject = comp;
-                        inputField.Action.Text = member.Name.AddSpacesToSentence();
-                        inputField.Title.Text = "";
-                        inputField.Action.Tag = t;
-                        inputField.Action.Click += (s, e) =>
-                        {
-                            try
-                            {
-
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
-                            }
-                        };
-                        //AddItemToInspector(inputField);
-                    }
                     else if (t == typeof(bool))
                     {
                         var inputField = new BoolInputField();
@@ -528,13 +507,23 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(long))
                     {
+                        decimal min = long.MinValue;
+                        decimal max = long.MaxValue;
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((long)ab.Min).ToString());
+                            max = decimal.Parse(((long)ab.Max).ToString());
+                        }
+                        
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
                         inputField.Value.ValueChanged += (s, e) =>
                         {
@@ -551,41 +540,27 @@ namespace Wingine.Editor
                         };
                         AddItemToInspector(inputField);
                     }
-                    else if (t == typeof(int))
-                    {
-                        var inputField = new NumberInputField();
-                        inputField.Name = member.Name;
-                        inputField.Title.Text = member.Name.AddSpacesToSentence();
-                        inputField.Tag = member;
-                        inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
-                        inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
-                        inputField.Value.ValueChanged += (s, e) =>
-                        {
-                            try
-                            {
-                                member.SetValue(comp, int.Parse(inputField.Value.Value.ToString()));
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
-                            }
-
-                            comp.Tick();
-                        };
-                        AddItemToInspector(inputField);
-                    }
                     else if (t == typeof(float))
                     {
+                        decimal min = decimal.Parse(float.MinValue.ToString());
+                        decimal max = decimal.Parse(float.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((float)ab.Min).ToString());
+                            max = decimal.Parse(((float)ab.Max).ToString());
+                        }
+
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
+                        inputField.Value.Increment = (decimal)0.01f;
                         inputField.Value.DecimalPlaces = 7;
                         inputField.Value.ValueChanged += (s, e) =>
                         {
@@ -604,13 +579,23 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(double))
                     {
+                        decimal min = decimal.Parse(double.MinValue.ToString());
+                        decimal max = decimal.Parse(double.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((double)ab.Min).ToString());
+                            max = decimal.Parse(((double)ab.Max).ToString());
+                        }
+
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
                         inputField.Value.DecimalPlaces = 15;
                         inputField.Value.ValueChanged += (s, e) =>
@@ -618,6 +603,41 @@ namespace Wingine.Editor
                             try
                             {
                                 member.SetValue(comp, double.Parse(inputField.Value.Value.ToString()));
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                            }
+
+                            comp.Tick();
+                        };
+                        AddItemToInspector(inputField);
+                    }
+                    else if (t == typeof(int))
+                    {
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((int)ab.Min).ToString());
+                            max = decimal.Parse(((int)ab.Max).ToString());
+                        }
+
+                        var inputField = new NumberInputField();
+                        inputField.Name = member.Name;
+                        inputField.Title.Text = member.Name.AddSpacesToSentence();
+                        inputField.Tag = member;
+                        inputField.ValueObject = comp;
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
+                        inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
+                        inputField.Value.ValueChanged += (s, e) =>
+                        {
+                            try
+                            {
+                                member.SetValue(comp, int.Parse(inputField.Value.Value.ToString()));
                             }
                             catch (Exception ex)
                             {
@@ -896,13 +916,23 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(long))
                     {
+                        decimal min = decimal.Parse(long.MinValue.ToString());
+                        decimal max = decimal.Parse(long.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((long)ab.Min).ToString());
+                            max = decimal.Parse(((long)ab.Max).ToString());
+                        }
+
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
                         inputField.Value.ValueChanged += (s, e) =>
                         {
@@ -919,42 +949,28 @@ namespace Wingine.Editor
                         };
                         AddItemToInspector(inputField);
                     }
-                    else if (t == typeof(int))
-                    {
-                        var inputField = new NumberInputField();
-                        inputField.Name = member.Name;
-                        inputField.Title.Text = member.Name.AddSpacesToSentence();
-                        inputField.Tag = member;
-                        inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
-                        inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
-                        inputField.Value.ValueChanged += (s, e) =>
-                        {
-                            try
-                            {
-                                member.SetValue(comp, int.Parse(inputField.Value.Value.ToString()));
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
-                            }
-
-                            comp.Tick();
-                        };
-                        AddItemToInspector(inputField);
-                    }
                     else if (t == typeof(float))
                     {
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((float)ab.Min).ToString());
+                            max = decimal.Parse(((float)ab.Max).ToString());
+                        }
+
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
                         inputField.Value.DecimalPlaces = 7;
+                        inputField.Value.Increment = (decimal) 0.01f;
                         inputField.Value.ValueChanged += (s, e) =>
                         {
                             try
@@ -972,13 +988,23 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(double))
                     {
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((double)ab.Min).ToString());
+                            max = decimal.Parse(((double)ab.Max).ToString());
+                        }
+
                         var inputField = new NumberInputField();
                         inputField.Name = member.Name;
                         inputField.Title.Text = member.Name.AddSpacesToSentence();
                         inputField.Tag = member;
                         inputField.ValueObject = comp;
-                        inputField.Value.Minimum = decimal.Parse(int.MinValue.ToString());
-                        inputField.Value.Maximum = decimal.Parse(int.MaxValue.ToString());
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
                         inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
                         inputField.Value.DecimalPlaces = 15;
                         inputField.Value.ValueChanged += (s, e) =>
@@ -986,6 +1012,41 @@ namespace Wingine.Editor
                             try
                             {
                                 member.SetValue(comp, double.Parse(inputField.Value.Value.ToString()));
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Write(ex.InnerException.Message, Debug.DebugType.Error);
+                            }
+
+                            comp.Tick();
+                        };
+                        AddItemToInspector(inputField);
+                    }
+                    else if (t == typeof(int))
+                    {
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
+
+                        if (Attribute.IsDefined(member, typeof(Wingine.Range)))
+                        {
+                            Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
+                            min = decimal.Parse(((int)ab.Min).ToString());
+                            max = decimal.Parse(((int)ab.Max).ToString());
+                        }
+
+                        var inputField = new NumberInputField();
+                        inputField.Name = member.Name;
+                        inputField.Title.Text = member.Name.AddSpacesToSentence();
+                        inputField.Tag = member;
+                        inputField.ValueObject = comp;
+                        inputField.Value.Minimum = decimal.Parse(min.ToString());
+                        inputField.Value.Maximum = decimal.Parse(max.ToString());
+                        inputField.Value.Value = decimal.Parse(member.GetValue(comp).ToString());
+                        inputField.Value.ValueChanged += (s, e) =>
+                        {
+                            try
+                            {
+                                member.SetValue(comp, int.Parse(inputField.Value.Value.ToString()));
                             }
                             catch (Exception ex)
                             {
@@ -1065,6 +1126,7 @@ namespace Wingine.Editor
             AddComponent.Action.ForeColor = Color.Beige;
             ACEH = (s, e) =>
             {
+                AddComponent.Action.Enabled = false;
                 try
                 {
                     ACM?.Dispose();
@@ -1075,9 +1137,28 @@ namespace Wingine.Editor
 
                 ACM.View.NodeMouseClick += (s1, e1) =>
                 {
-                    ((GameObject)SelectedObject).AddComponent(e1.Node.Tag as Type);
-                    ACM.Dispose();
-                    LoadGameObjectInspector((GameObject)SelectedObject);
+                    if (e1.Node.Tag != null)
+                    {
+                        e1.Node.Remove();
+                        ((GameObject)SelectedObject).AddComponent(e1.Node.Tag as Type);
+                        //ACM.Hide();
+                        AddComponent.Action.Enabled = true;
+                        ACM.Dispose();
+                        LoadGameObjectInspector((GameObject)SelectedObject);
+                    }
+                    else
+                    {
+                        e1.Node.Toggle();
+                    }
+                };
+
+                ACM.FormClosing += (s2, e2) =>
+                {
+                    try
+                    {
+                        AddComponent.Action.Enabled = true;
+                    }
+                    catch { }
                 };
 
                 ACM.ShowDialog(this);
@@ -1091,7 +1172,7 @@ namespace Wingine.Editor
             CoverPanel.SendToBack();
         }
 
-        ComponentMenu ACM;
+        ComponentMenu ACM = new ComponentMenu();
 
         #endregion
 
@@ -1300,6 +1381,8 @@ namespace Wingine.Editor
                         Console.AppendText(tmsg, Color.Beige);
                         break;
                 }
+
+                Console.Update();
                 Console.ScrollToCaret();
             };
 
@@ -1314,13 +1397,18 @@ namespace Wingine.Editor
             {
 
             };
+
+            Wingine.ResourceManager.ResourcesChanged += () =>
+            {
+                LoadResources();
+            };
         }
         #endregion
 
         #region Development
         void Development()
         {
-
+            
         }
 
         #endregion
@@ -2057,6 +2145,8 @@ namespace Wingine.Editor
                     ClearInspector();
 
                     Text = $"{(Runner.CurrentProject != null ? Runner.CurrentProject.Item1 + " - " : string.Empty)}Wingine";
+
+                    LoadResources();
                 }
                 catch
                 {
@@ -2084,6 +2174,12 @@ namespace Wingine.Editor
 
         public void Save()
         {
+            if (Runner.App.IsRunning)
+            {
+                Debug.Write("Cannot save during playmode!", Debug.DebugType.Warning);
+                return;
+            }
+
             if (File.Exists(currentFile))
             {
                 DataStore.WriteToBinaryFile(currentFile, Runner.CurrentProject);
@@ -2096,6 +2192,12 @@ namespace Wingine.Editor
 
         public void SaveAs(string file = "", bool changePointer = true)
         {
+            if (Runner.App.IsRunning)
+            {
+                Debug.Write("Cannot save during playmode!", Debug.DebugType.Warning);
+                return;
+            }
+
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = fileFilter;
             sfd.Title = "Save Wingine Project As";
@@ -2229,6 +2331,104 @@ namespace Wingine.Editor
             }
         }
 
+        #endregion
+
+        #region Resources
+        Dictionary<int, string> ResourceKeys = new Dictionary<int, string>();
+        void LoadResources()
+        {
+            ResourcesTable.RowStyles.Clear();
+            ResourcesTable.Controls.Clear();
+            ResourcesTable.RowCount = 0;
+
+            ResourcesTable.SuspendLayout();
+
+            ResourceKeys.Clear();
+            int index = 1;
+
+            var res = ResourceManager.GetAll();
+
+            foreach(var r in res)
+            {
+                #region Existing
+                ResourcesTable.RowCount++;
+                var item = new ResourceItem() { Dock = DockStyle.Fill };
+                item.Title.Text = $"Resource [{index}]";
+
+                item.ItemName.Text = r.Key;
+                item.ItemValue.Text = r.Value.ToString();
+
+                item.ItemName.Tag = index;
+                ResourceKeys[index] = r.Key;
+
+                bool valid = true;
+
+                item.ItemName.ReadOnly = true;
+
+                item.ItemValue.TextChanged += (s, e) =>
+                {
+                    ResourceManager.Set(item.ItemName.Text, item.ItemValue.Text, updateEvent: false);
+                };
+
+                item.Delete.Click += (s, e) =>
+                {
+                    ResourceManager.Remove(item.ItemName.Text);
+                };
+
+
+                ResourcesTable.Controls.Add(item, 0, ResourcesTable.RowCount - 1);
+
+                index++;
+                #endregion
+            }
+
+            #region Add New
+            ResourcesTable.RowCount++;
+            var nitem = new ResourceItem() { Dock = DockStyle.Fill };
+            nitem.Title.Text = $"New Resource";
+
+            nitem.ItemName.Text = "";
+            nitem.ItemValue.Text = "";
+            
+            nitem.Delete.Parent = null;
+
+            bool nvalid = true;
+
+            nitem.ItemName.TextChanged += (s, e) =>
+            {
+                if (ResourceManager.Get(nitem.ItemName.Text) != null)
+                {
+                    nitem.ItemName.ForeColor = Color.Red;
+                    nvalid = false;
+                }
+                else
+                {
+                    nvalid = true;
+                }
+            };
+
+            nitem.ItemName.LostFocus += (s, e) =>
+            {
+                if (nitem.ItemName.Text.Trim() != "" && nvalid)
+                {
+                    ResourceManager.Set(nitem.ItemName.Text, nitem.ItemValue.Text, updateEvent: false);
+                    LoadResources();
+                }
+            };
+
+            ResourcesTable.Controls.Add(nitem, 0, ResourcesTable.RowCount - 1);
+            #endregion
+
+            for (int i = 0; i < ResourcesTable.RowStyles.Count; i++)
+            {
+                ResourcesTable.RowStyles[i].SizeType = SizeType.AutoSize;
+            }
+
+            ResourcesTable.RowCount++;
+
+            ResourcesTable.ResumeLayout();
+            ResourcesTable.Update();
+        }
         #endregion
 
         #region Helper Funcs

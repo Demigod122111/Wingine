@@ -425,7 +425,7 @@ namespace Wingine
                 var b = CurrentScene.GameObjects[i];
 
                 if (!b.ActiveInHierarchy()) continue;
-                var comps = b.GetComponents();
+                var comps = b.GetScripts();
 
                 for (int j = 0; j < comps.Count; j++)
                 {
@@ -433,23 +433,13 @@ namespace Wingine
 
                     if (!comp.Enabled) continue;
 
-                    if (comp is Script)
+                    try
                     {
-                        var mb = ((Script)comp);
-
-                        mb.FixedUpdate();
+                        comp.FixedUpdate();
                     }
-                    else if (comp is MonoBehaviour)
+                    catch (Exception e)
                     {
-                        var mb = ((MonoBehaviour)comp);
-                        try
-                        {
-                            mb.FixedUpdate();
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
-                        }
+                        Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
                     }
                 }
             }

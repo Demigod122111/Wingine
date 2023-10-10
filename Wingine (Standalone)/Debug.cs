@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace Wingine
 {
@@ -35,6 +37,20 @@ namespace Wingine
         public static void Repeat()
         {
             Write(lastMsg, lastType);
+        }
+
+        /// <summary>
+        /// Displays a popup with the given message.
+        /// </summary>
+        /// <param name="msg">The message</param>
+        /// <param name="modal">The popup type</param>
+        /// <returns></returns>
+        public static void Popup(object msg, bool modal)
+        {
+            var tmsg = msg.ToString();
+
+            if (modal) System.Windows.Forms.MessageBox.Show(tmsg);
+            else System.Windows.MessageBox.Show(tmsg);
         }
 
         /// <summary>

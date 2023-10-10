@@ -53,14 +53,15 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Wingine.Engine.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>Wingine-Icon %281%29.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup />
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -310,6 +311,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="ResourceItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ResourceItem.Designer.cs">
+      <DependentUpon>ResourceItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="Solution.cs" />
     <Compile Include="VectorInputField.cs">
       <SubType>UserControl</SubType>
@@ -369,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ButtonInputField.resx">
       <DependentUpon>ButtonInputField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceItem.resx">
+      <DependentUpon>ResourceItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VectorInputField.resx">
       <DependentUpon>VectorInputField.cs</DependentUpon>

@@ -112,6 +112,8 @@ namespace Wingine
 
         public IComponent AddComponent(Type type)
         {
+            if (type == null) return null;
+
             if (type == typeof(Transform)) throw new Exception("Cannot add component of type 'Transform'.");
 
             var comp = Activator.CreateInstance(type);
@@ -123,6 +125,7 @@ namespace Wingine
                 if (comp is Script)
                 {
                     JSScripts.Add(comp as Script);
+                    Scripts.Add(comp as MonoBehaviour);
                 }
                 else if (comp is MonoBehaviour)
                 {
@@ -151,6 +154,7 @@ namespace Wingine
                 if (comp is Script)
                 {
                     JSScripts.Add(comp as Script);
+                    Scripts.Add(comp as MonoBehaviour);
                 }
                 else if (comp is MonoBehaviour)
                 {

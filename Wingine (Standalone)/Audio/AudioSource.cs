@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Wingine.Audio
         public Action GetAudioDataFromFile;
 
         [Header("Audio Settings")]
+        [Range(0f, 1f)]
+        public float Volume = 0.8f;
         public bool PlayOnAwake = false;
         public bool Loop = false;
 
@@ -28,28 +31,33 @@ namespace Wingine.Audio
         {
             GetAudioDataFromFile = () =>
             {
-                GetAudioData();
+                GetAudioData(fallback: true);
             };
         }
 
 
-        void GetAudioData()
+        void GetAudioData(string file = "", bool fallback = false)
         {
-
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Select Audio File: ";
-            ofd.Filter = "Audio Files|*.mp3;*.wav;*.ogg;*.flac;*.aac;*.wma|All Files|*.*";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            if (File.Exists(file))
             {
-                string audioFilePath = ofd.FileName; // Replace with your audio file path
-
-                // Read the audio file into a byte array
+                string audioFilePath = file;
                 byte[] audioBytes = File.ReadAllBytes(audioFilePath);
-
-                // Convert the byte array to a Base64-encoded string
                 string base64EncodedAudio = Convert.ToBase64String(audioBytes);
                 AudioData = base64EncodedAudio;
+            }
+            else if (fallback)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Select Audio File: ";
+                ofd.Filter = "Audio Files|*.mp3;*.wav;*.ogg;*.flac;*.aac;*.wma|All Files|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string audioFilePath = ofd.FileName; 
+                    byte[] audioBytes = File.ReadAllBytes(audioFilePath);
+                    string base64EncodedAudio = Convert.ToBase64String(audioBytes);
+                    AudioData = base64EncodedAudio;
+                }
             }
         }
 
@@ -100,6 +108,9 @@ namespace Wingine.Audio
 
         [NonSerialized]
         WaveOutEvent waveOut;
+
+        public WaveOutEvent GetOutput() => waveOut;
+
         internal void PlayAudioFromBase64String(string base64EncodedAudio)
         {
             if(waveOut != null)
@@ -122,11 +133,13 @@ namespace Wingine.Audio
                     {
                         // Initiate the playback
                         waveOut.Init(waveStream);
+                        waveOut.Volume = Volume;
                         waveOut.Play();
 
                         // Wait for the playback to complete
                         while (waveOut.PlaybackState == PlaybackState.Playing)
                         {
+                            waveOut.Volume = Volume;
                             if (!Runner.App.IsRunning)
                             {
                                 waveOut.Stop();
