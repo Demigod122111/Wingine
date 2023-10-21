@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Directories", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Files", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Script.cs", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Image.png", 0);
+            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Directories", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Files", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Script.cs", 0);
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Image.png", 0);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Hierarchy = new System.Windows.Forms.TreeView();
@@ -72,6 +72,8 @@
             this.AssetBack = new System.Windows.Forms.PictureBox();
             this.AssetHome = new System.Windows.Forms.PictureBox();
             this.ResourcesTabPage = new System.Windows.Forms.TabPage();
+            this.ResourcesTable = new System.Windows.Forms.TableLayoutPanel();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.Inspector = new System.Windows.Forms.Panel();
             this.ToolsBar = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -89,14 +91,16 @@
             this.PixelEditor_TSB = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.SceneMenuTSB = new System.Windows.Forms.ToolStripButton();
+            this.CurrentSceneNameTSTB = new System.Windows.Forms.ToolStripTextBox();
             this.Editor = new System.Windows.Forms.Timer(this.components);
             this.HierarchyUpdater = new System.Windows.Forms.Timer(this.components);
             this.InspectorUpdater = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.PlayStopTSB = new System.Windows.Forms.ToolStripButton();
             this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.ResourcesTable = new System.Windows.Forms.TableLayoutPanel();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.rtb_threads = new System.Windows.Forms.RichTextBox();
+            this.changeProjectNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -122,6 +126,7 @@
             this.ResourcesTabPage.SuspendLayout();
             this.ToolsBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -382,6 +387,7 @@
             this.TabControl.Controls.Add(this.ConsoleTabPage);
             this.TabControl.Controls.Add(this.Assets);
             this.TabControl.Controls.Add(this.ResourcesTabPage);
+            this.TabControl.Controls.Add(this.tabPage1);
             this.TabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TabControl.HotTrack = true;
             this.TabControl.Location = new System.Drawing.Point(0, 0);
@@ -485,19 +491,19 @@
             this.AssetListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AssetListView.ForeColor = System.Drawing.Color.Beige;
             this.AssetListView.GridLines = true;
-            listViewGroup1.Header = "Directories";
-            listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup1.Name = "DirectoryGroup";
-            listViewGroup2.Header = "Files";
-            listViewGroup2.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup2.Name = "FileGroup";
+            listViewGroup3.Header = "Directories";
+            listViewGroup3.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup3.Name = "DirectoryGroup";
+            listViewGroup4.Header = "Files";
+            listViewGroup4.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup4.Name = "FileGroup";
             this.AssetListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
             this.AssetListView.HideSelection = false;
             this.AssetListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.AssetListView.LargeImageList = this.AssetsImageList;
             this.AssetListView.Location = new System.Drawing.Point(3, 26);
             this.AssetListView.Name = "AssetListView";
@@ -601,6 +607,29 @@
             this.ResourcesTabPage.TabIndex = 2;
             this.ResourcesTabPage.Text = "Resources";
             // 
+            // ResourcesTable
+            // 
+            this.ResourcesTable.AutoScroll = true;
+            this.ResourcesTable.ColumnCount = 1;
+            this.ResourcesTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ResourcesTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ResourcesTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ResourcesTable.Location = new System.Drawing.Point(3, 24);
+            this.ResourcesTable.Name = "ResourcesTable";
+            this.ResourcesTable.RowCount = 2;
+            this.ResourcesTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.ResourcesTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ResourcesTable.Size = new System.Drawing.Size(519, 123);
+            this.ResourcesTable.TabIndex = 1;
+            // 
+            // panel2
+            // 
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(519, 21);
+            this.panel2.TabIndex = 0;
+            // 
             // Inspector
             // 
             this.Inspector.AutoScroll = true;
@@ -627,7 +656,8 @@
             this.BuildGameTSB,
             this.PixelEditor_TSB,
             this.toolStripSeparator4,
-            this.SceneMenuTSB});
+            this.SceneMenuTSB,
+            this.CurrentSceneNameTSTB});
             this.ToolsBar.Location = new System.Drawing.Point(5, 40);
             this.ToolsBar.Name = "ToolsBar";
             this.ToolsBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -712,7 +742,8 @@
             this.toolStripButton1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showFPSToolStripMenuItem});
+            this.showFPSToolStripMenuItem,
+            this.changeProjectNameToolStripMenuItem});
             this.toolStripButton1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -725,7 +756,7 @@
             // 
             this.showFPSToolStripMenuItem.CheckOnClick = true;
             this.showFPSToolStripMenuItem.Name = "showFPSToolStripMenuItem";
-            this.showFPSToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
+            this.showFPSToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
             this.showFPSToolStripMenuItem.Text = "Show FPS";
             // 
             // toolStripSeparator3
@@ -777,6 +808,17 @@
             this.SceneMenuTSB.Size = new System.Drawing.Size(23, 26);
             this.SceneMenuTSB.Text = "Scene Menu";
             this.SceneMenuTSB.Click += new System.EventHandler(this.SceneMenuTSB_Click);
+            // 
+            // CurrentSceneNameTSTB
+            // 
+            this.CurrentSceneNameTSTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.CurrentSceneNameTSTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CurrentSceneNameTSTB.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.CurrentSceneNameTSTB.ForeColor = System.Drawing.Color.Beige;
+            this.CurrentSceneNameTSTB.Name = "CurrentSceneNameTSTB";
+            this.CurrentSceneNameTSTB.Size = new System.Drawing.Size(100, 29);
+            this.CurrentSceneNameTSTB.ToolTipText = "Current Scene Name";
+            this.CurrentSceneNameTSTB.TextChanged += new System.EventHandler(this.CurrentSceneNameTSTB_TextChanged);
             // 
             // Editor
             // 
@@ -833,28 +875,36 @@
             this.StatusBar.Size = new System.Drawing.Size(904, 28);
             this.StatusBar.TabIndex = 3;
             // 
-            // panel2
+            // tabPage1
             // 
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(3, 3);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(519, 21);
-            this.panel2.TabIndex = 0;
+            this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.tabPage1.Controls.Add(this.rtb_threads);
+            this.tabPage1.Location = new System.Drawing.Point(4, 4);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(525, 150);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "Diagnostics";
             // 
-            // ResourcesTable
+            // rtb_threads
             // 
-            this.ResourcesTable.AutoScroll = true;
-            this.ResourcesTable.ColumnCount = 1;
-            this.ResourcesTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ResourcesTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ResourcesTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ResourcesTable.Location = new System.Drawing.Point(3, 24);
-            this.ResourcesTable.Name = "ResourcesTable";
-            this.ResourcesTable.RowCount = 2;
-            this.ResourcesTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.ResourcesTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.ResourcesTable.Size = new System.Drawing.Size(519, 123);
-            this.ResourcesTable.TabIndex = 1;
+            this.rtb_threads.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.rtb_threads.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtb_threads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb_threads.ForeColor = System.Drawing.Color.Beige;
+            this.rtb_threads.Location = new System.Drawing.Point(3, 3);
+            this.rtb_threads.Name = "rtb_threads";
+            this.rtb_threads.ReadOnly = true;
+            this.rtb_threads.Size = new System.Drawing.Size(519, 144);
+            this.rtb_threads.TabIndex = 0;
+            this.rtb_threads.Text = "";
+            // 
+            // changeProjectNameToolStripMenuItem
+            // 
+            this.changeProjectNameToolStripMenuItem.Name = "changeProjectNameToolStripMenuItem";
+            this.changeProjectNameToolStripMenuItem.Size = new System.Drawing.Size(224, 24);
+            this.changeProjectNameToolStripMenuItem.Text = "Change Project Name";
+            this.changeProjectNameToolStripMenuItem.Click += new System.EventHandler(this.changeProjectNameToolStripMenuItem_Click);
             // 
             // Window
             // 
@@ -903,6 +953,7 @@
             this.ToolsBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -978,6 +1029,10 @@
         private System.Windows.Forms.ToolStripMenuItem clearOnPlayToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel ResourcesTable;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ToolStripTextBox CurrentSceneNameTSTB;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.RichTextBox rtb_threads;
+        private System.Windows.Forms.ToolStripMenuItem changeProjectNameToolStripMenuItem;
     }
 }
 

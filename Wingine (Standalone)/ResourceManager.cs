@@ -35,6 +35,13 @@ namespace Wingine
             if (updateEvent) ResourcesChanged?.Invoke();
         }
 
+        public static void RemoveAll(bool updateEvent = true)
+        {
+            Runner.CurrentProject.Item4.Clear();
+
+            if (updateEvent) ResourcesChanged?.Invoke();
+        }
+
         public static Dictionary<string, object> GetAll() => Runner.CurrentProject.Item4;
     }
 }

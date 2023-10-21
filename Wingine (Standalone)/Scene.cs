@@ -27,6 +27,8 @@ namespace Wingine
             return null;
         }
 
+
+        public string Name = "Wingine Scene";
         public int SceneIndex => Runner.CurrentProject.Item3.IndexOf(this);
 
 

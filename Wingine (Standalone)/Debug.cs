@@ -11,7 +11,9 @@ namespace Wingine
 
 
         static DebugType lastType;
-        public static object lastMsg;
+        public static object lastMsg { private set; get; }
+
+        public static void NullLMSG() => lastMsg = null;
 
         public static event EventHandler CanRepeatChanged;
         public static bool CanRepeat
@@ -61,7 +63,11 @@ namespace Wingine
         /// <returns></returns>
         public static bool Repeated(object msg, DebugType debugType)
         {
-            return lastType == debugType && lastMsg == msg;
+            if (lastMsg == null && msg != null) return false;
+            if (msg == null && lastMsg != null) return false;
+            if (msg == null && lastMsg == null && lastType == debugType) return true;
+
+            return lastType == debugType && (lastMsg.Equals(msg) || lastMsg == msg);
         }
         public static void Write(object msg) => Write(msg, DebugType.Log);
         public static void Write(object msg, DebugType debugType = DebugType.Log)

@@ -60,11 +60,7 @@ namespace Wingine
 
         public static float Distance(Vector2 point1, Vector2 point2)
         {
-            float distance = (float)Math.Sqrt
-                (
-                    (point1.X - point2.X) * (point1.X - point2.X) +
-                    (point1.Y - point2.Y) * (point1.Y - point2.Y)
-                );
+            float distance = (float)Math.Sqrt(DistanceSquared(point1, point2));
             return distance;
         }
 

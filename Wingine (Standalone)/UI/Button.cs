@@ -23,7 +23,7 @@ namespace Wingine.UI
 
         bool IsOnCooldown = false;
 
-        public static int ClickTime = 10;
+        public int ClickTime = 10;
 
         RectangleF rectangle = RectangleF.Empty;
         RectangleF mouse_rectangle = RectangleF.Empty;

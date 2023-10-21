@@ -216,6 +216,17 @@ namespace Wingine
             return false;
         }
 
+        public bool ComponentExists(Type t)
+        {
+            foreach (var component in Components)
+            {
+                if (component.GetType() == t) return true;
+            }
+
+            return false;
+        }
+
+
         public void RemoveComponent(IComponent component)
         {
             try
@@ -267,6 +278,24 @@ namespace Wingine
             }
 
             return null;
+        }
+
+        public static List<GameObject> FindAllByTag(string tag)
+        {
+            if (Runner.App.CurrentScene == null)
+            {
+                Debug.Write("Current Scene is null", Debug.DebugType.Error);
+                return null;
+            }
+
+            List<GameObject> found = new List<GameObject>();
+
+            foreach (var go in Runner.App.CurrentScene.GameObjects)
+            {
+                if (go.Tag == tag) found.Add(go);
+            }
+
+            return found.Count > 0 ? found : null;
         }
 
         public GameObject Duplicate()

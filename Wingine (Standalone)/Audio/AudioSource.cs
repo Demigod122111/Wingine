@@ -76,14 +76,33 @@ namespace Wingine.Audio
             {
                 Debug.Write($"Unable to play audio: {e.Message}\nat Audio Source\non GameObject '{GameObject.Name}'");
             }
+
+            paused = false;
         }
+
+        bool paused = false;
 
         public void Pause()
         {
             if (waveOut != null)
             {
                 waveOut.Pause();
+                paused = true;
             }
+        }
+
+        public void Resume()
+        {
+            if (waveOut != null && paused)
+            {
+                waveOut.Play();
+            }
+            else
+            {
+                Play();
+            }
+
+            paused = false;
         }
 
         bool fStop = false;
@@ -94,6 +113,8 @@ namespace Wingine.Audio
                 waveOut.Stop();
                 fStop = true;
             }
+
+            paused = false;
         }
 
         public override void Awake()

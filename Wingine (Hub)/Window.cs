@@ -38,11 +38,18 @@ namespace Wingine.Hub
 
             var selectedTemplate = cb_proj_type.Text.ToLower();
 
+            Scene ds;
+
             switch (selectedTemplate)
             {
+                case "empty":
+                    scenes = new List<Scene>();
+                    ds = new Scene();
+                    scenes.Add(ds);
+                    break;
                 case "default":
                     scenes = new List<Scene>();
-                    Scene ds = new Scene();
+                    ds = new Scene();
                     scenes.Add(ds);
 
                     GameObject mainCam = new GameObject(name: "Main Camera");

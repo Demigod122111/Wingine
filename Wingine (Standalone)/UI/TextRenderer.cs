@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace Wingine.UI
 {
@@ -17,6 +18,14 @@ namespace Wingine.UI
         public bool Underline = false;
         public bool Strikeout = false;
         public bool Italic = false;
+
+        [Header("Line Settings")]
+        public float LineHeight = 4f;
+
+        [Header("Wrapping Settings")]
+        public bool WrapText = false;
+        public float WrapAfter = 500f;
+        public bool ShowWrap = false;
 
 
         public float TrueSize()
@@ -46,13 +55,62 @@ namespace Wingine.UI
             var ox = textSize.Width / 2;
             var oy = textSize.Height / 2;
 
-            g.TranslateTransform(pos.X + ox, pos.Y + oy);
+            var ro = g.RenderingOrigin;
+            if (Surface.RenderSpace == RenderSpace.Screen)
+            {
+                g.TranslateTransform(0, 0);
+            }
+            else
+            {
+                g.TranslateTransform(pos.X, pos.Y);
+            }
 
             g.RotateTransform(GameObject.Transform.Rotation);
 
-            g.DrawString(Text, Font, new SolidBrush(Color), pos.X - ox, pos.Y - oy);
+            List<string> textParts = new List<string>();
+            float py = pos.Y;
 
-            g.TranslateTransform(-(pos.X + ox), -(pos.Y + oy));
+            var textSep = Text;
+
+            if (WrapText)
+            {
+                while (!string.IsNullOrEmpty(textSep))
+                {
+                    var res = textSep.GetStringForMaxLength(WrapAfter, g, Font, out textSep);
+                    textParts.Add(res);
+
+                    if (Text == textSep)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                textParts.Add(textSep);
+            }
+
+            if (ShowWrap)
+            {
+                g.DrawLine(Pens.Black, new PointF(pos.X, pos.Y), new PointF(pos.X + ((float)Font.Unit / 2) * WrapAfter, pos.Y));
+                g.DrawLine(Pens.White, new PointF(pos.X, pos.Y + 3), new PointF(pos.X + ((float)Font.Unit / 2) * WrapAfter, pos.Y + 3));
+            }
+
+            foreach (var text in textParts)
+            {
+                g.DrawString(text, Font, new SolidBrush(Color), pos.X, py);
+
+                py += g.MeasureString(text, Font).Height + LineHeight;
+            }
+
+            if (Surface.RenderSpace == RenderSpace.Screen)
+            {
+                g.TranslateTransform(ro.X, ro.Y);
+            }
+            else
+            {
+                g.TranslateTransform(-(pos.X), -(pos.Y));
+            }
 
 
             g.EndContainer(container);

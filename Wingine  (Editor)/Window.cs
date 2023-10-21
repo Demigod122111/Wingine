@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -104,6 +105,8 @@ namespace Wingine.Editor
                     }
 
                     Loaded.Add(go);
+
+                    ProcessWinEvents();
                 }
 
             }
@@ -240,6 +243,7 @@ namespace Wingine.Editor
 
             for (int i = 0; i < comps.Count; i++)
             {
+                ProcessWinEvents();
                 LoadComponent(comps[i], i == comps.Count - 1);
             }
 
@@ -1141,7 +1145,6 @@ namespace Wingine.Editor
                     {
                         e1.Node.Remove();
                         ((GameObject)SelectedObject).AddComponent(e1.Node.Tag as Type);
-                        //ACM.Hide();
                         AddComponent.Action.Enabled = true;
                         ACM.Dispose();
                         LoadGameObjectInspector((GameObject)SelectedObject);
@@ -1384,6 +1387,8 @@ namespace Wingine.Editor
 
                 Console.Update();
                 Console.ScrollToCaret();
+
+                ProcessWinEvents();
             };
 
             Wingine.SceneManagement.SceneManager.SceneLoaded += (s) =>
@@ -1427,6 +1432,7 @@ namespace Wingine.Editor
         private void Editor_Tick(object sender, EventArgs e)
         {
             UpdateEditor();
+            LoadThreads();
         }
 
         void UpdateEditor()
@@ -1480,6 +1486,20 @@ namespace Wingine.Editor
 
             debugRepeatToolStripMenuItem.Text = $"Debug Repeat ({(debugRepeatToolStripMenuItem.Checked ? "On" : "Off")})";
             clearOnPlayToolStripMenuItem.Text = $"Clear On Play ({(clearOnPlayToolStripMenuItem.Checked ? "On" : "Off")})";
+
+            if (loadRes)
+            {
+                LoadResources();
+                loadRes = false;
+            }
+
+            CurrentSceneNameTSTB.ReadOnly = Runner.App.CurrentScene == null;
+            if(!CurrentSceneNameTSTB.ReadOnly && !CurrentSceneNameTSTB.Focused && !(CurrentSceneNameTSTB.Text == Runner.App.CurrentScene.Name))
+            {
+                CurrentSceneNameTSTB.Text = Runner.App.CurrentScene.Name;
+            }
+
+            ProcessWinEvents();
         }
 
         private void Window_Load(object sender, EventArgs e)
@@ -1490,7 +1510,7 @@ namespace Wingine.Editor
         void ClearConsole()
         {
             Console.Text = "";
-            Debug.lastMsg = null;
+            Debug.NullLMSG();
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1983,7 +2003,7 @@ namespace Wingine.Editor
                 lsm.View.SelectedNode = lsm.View.Nodes[Runner.App.CurrentScene.SceneIndex];
             }
 
-            lsm.View.NodeMouseClick += (s, ex) =>
+            lsm.View.NodeMouseDoubleClick += (s, ex) =>
             {
                 var scene = ((Scene)ex.Node.Tag);
                 if (scene != Runner.App.CurrentScene)
@@ -2092,6 +2112,33 @@ namespace Wingine.Editor
                 exitToolStripMenuItem?.PerformClick();
             }
         }
+
+        private void CurrentSceneNameTSTB_TextChanged(object sender, EventArgs e)
+        {
+            if (Runner.App.CurrentScene != null)
+            {
+                Runner.App.CurrentScene.Name = CurrentSceneNameTSTB.Text;
+            }
+        }
+
+        private void changeProjectNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runner.CurrentProject != null)
+            {
+                var nm = Interaction.InputBox("Project Name: ", DefaultResponse: Runner.CurrentProject.Item1);
+                var pn = Runner.CurrentProject.Item1;
+
+                if (!string.IsNullOrWhiteSpace(nm))
+                {
+                    Runner.CurrentProject =
+                        new Tuple<string, string, List<Scene>, Dictionary<string, object>>(
+                            nm,
+                            Runner.CurrentProject.Item2,
+                            Runner.CurrentProject.Item3,
+                            Runner.CurrentProject.Item4);
+                }
+            }
+        }
         #endregion
 
         #region Saving and Loading
@@ -2146,7 +2193,7 @@ namespace Wingine.Editor
 
                     Text = $"{(Runner.CurrentProject != null ? Runner.CurrentProject.Item1 + " - " : string.Empty)}Wingine";
 
-                    LoadResources();
+                    loadRes = true;
                 }
                 catch
                 {
@@ -2157,6 +2204,8 @@ namespace Wingine.Editor
             {
                 if (urgent) Open();
             }
+
+            ProcessWinEvents();
         }
 
         public void Open()
@@ -2265,6 +2314,8 @@ namespace Wingine.Editor
             {
                 LoadGameObjectInspector(SceneManager.CurrentScene.Get(((GameObject)SelectedObject)?.ID));
             }
+
+            ProcessWinEvents();
         }
 
 
@@ -2334,6 +2385,8 @@ namespace Wingine.Editor
         #endregion
 
         #region Resources
+        bool loadRes = false;
+
         Dictionary<int, string> ResourceKeys = new Dictionary<int, string>();
         void LoadResources()
         {
@@ -2448,6 +2501,53 @@ namespace Wingine.Editor
             int nodeIndex = node.Index;
 
             return parentIndex + nodeIndex;
+        }
+
+        public void ProcessWinEvents()
+        {
+            Task.Run(System.Windows.Forms.Application.DoEvents);
+        }
+        #endregion
+
+        #region Diagnostics
+        void LoadThreads()
+        {
+            var cp = Process.GetCurrentProcess();
+
+            if (!rtb_threads.Focused)
+            {
+
+                var threads = cp.Threads;
+
+                string r = "";
+
+                r += "Virtual Memory (Size64): " + cp.VirtualMemorySize64.ToString() + "\n\n---\n\n";
+
+                for (int i = 0; i < threads.Count; i++)
+                {
+                    var thd = threads[i];
+
+
+                    if (thd.TotalProcessorTime.TotalSeconds == 0)
+                    {
+                        thd.Dispose();
+                        continue;
+                    }
+
+                    if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && thd.WaitReason == ThreadWaitReason.Unknown)
+                        || thd.ThreadState == System.Diagnostics.ThreadState.Unknown
+                        || thd.ThreadState == System.Diagnostics.ThreadState.Terminated)
+                    {
+                        thd.Dispose();
+                        continue;
+                    }
+
+                    r += $"{thd.Id} - {thd.TotalProcessorTime.TotalSeconds}s\n\n";
+                }
+
+                rtb_threads.Text = r;
+                rtb_threads.Update();
+            }
         }
         #endregion
 

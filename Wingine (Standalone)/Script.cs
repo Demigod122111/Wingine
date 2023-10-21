@@ -43,6 +43,7 @@ function update(){
                 "Wingine",
                 "Wingine.SceneManagement",
                 "Wingine.UI",
+                "Wingine.Audio",
 
                 "System",
                 "System.Drawing",

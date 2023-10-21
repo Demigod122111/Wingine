@@ -30,9 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lb_projects = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_open_dir = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tb_proj_dir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -40,10 +42,8 @@
             this.btn_create = new System.Windows.Forms.Button();
             this.cb_proj_type = new System.Windows.Forms.ComboBox();
             this.tb_proj_name = new System.Windows.Forms.TextBox();
-            this.btn_open_dir = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tb_engine = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -57,6 +57,18 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(800, 48);
             this.panel1.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label5.Font = new System.Drawing.Font("Impact", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.Crimson;
+            this.label5.Location = new System.Drawing.Point(0, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(800, 48);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Wingine Hub";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // groupBox1
             // 
@@ -112,6 +124,22 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Create Project";
+            // 
+            // btn_open_dir
+            // 
+            this.btn_open_dir.FlatAppearance.BorderColor = System.Drawing.SystemColors.MenuHighlight;
+            this.btn_open_dir.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Highlight;
+            this.btn_open_dir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_open_dir.Font = new System.Drawing.Font("Leelawadee UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btn_open_dir.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.btn_open_dir.Location = new System.Drawing.Point(6, 236);
+            this.btn_open_dir.Name = "btn_open_dir";
+            this.btn_open_dir.Size = new System.Drawing.Size(240, 25);
+            this.btn_open_dir.TabIndex = 8;
+            this.btn_open_dir.Text = "Open In Explorer";
+            this.btn_open_dir.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btn_open_dir.UseVisualStyleBackColor = true;
+            this.btn_open_dir.Click += new System.EventHandler(this.btn_open_dir_Click);
             // 
             // label3
             // 
@@ -179,7 +207,8 @@
             this.cb_proj_type.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.cb_proj_type.FormattingEnabled = true;
             this.cb_proj_type.Items.AddRange(new object[] {
-            "Default"});
+            "Default",
+            "Empty"});
             this.cb_proj_type.Location = new System.Drawing.Point(6, 138);
             this.cb_proj_type.Name = "cb_proj_type";
             this.cb_proj_type.Size = new System.Drawing.Size(240, 28);
@@ -197,22 +226,6 @@
             this.tb_proj_name.Size = new System.Drawing.Size(240, 20);
             this.tb_proj_name.TabIndex = 0;
             this.tb_proj_name.Text = "New Project";
-            // 
-            // btn_open_dir
-            // 
-            this.btn_open_dir.FlatAppearance.BorderColor = System.Drawing.SystemColors.MenuHighlight;
-            this.btn_open_dir.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.Highlight;
-            this.btn_open_dir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_open_dir.Font = new System.Drawing.Font("Leelawadee UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btn_open_dir.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.btn_open_dir.Location = new System.Drawing.Point(6, 236);
-            this.btn_open_dir.Name = "btn_open_dir";
-            this.btn_open_dir.Size = new System.Drawing.Size(240, 25);
-            this.btn_open_dir.TabIndex = 8;
-            this.btn_open_dir.Text = "Open In Explorer";
-            this.btn_open_dir.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btn_open_dir.UseVisualStyleBackColor = true;
-            this.btn_open_dir.Click += new System.EventHandler(this.btn_open_dir_Click);
             // 
             // label4
             // 
@@ -240,18 +253,6 @@
             this.tb_engine.Text = "C:\\Wingine Projects";
             this.tb_engine.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.tb_engine.Click += new System.EventHandler(this.tb_engine_Click);
-            // 
-            // label5
-            // 
-            this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Font = new System.Drawing.Font("Impact", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.Crimson;
-            this.label5.Location = new System.Drawing.Point(0, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(800, 48);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Wingine Hub";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Window
             // 

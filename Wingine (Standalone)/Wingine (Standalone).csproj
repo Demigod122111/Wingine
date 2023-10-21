@@ -42,6 +42,24 @@
   <PropertyGroup>
     <ApplicationIcon>Wingine-Icon %281%29.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.5.7.0\lib\netstandard1.0\Costura.dll</HintPath>
@@ -288,6 +306,7 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="Audio\AudioSource.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="ClassExtensions.cs" />
     <Compile Include="Collider.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="Debug.cs" />
@@ -295,6 +314,7 @@
     <Compile Include="GameObject.cs" />
     <Compile Include="IComponent.cs" />
     <Compile Include="PhysicsEngine.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SpriteRenderer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="IRenderer.cs" />
