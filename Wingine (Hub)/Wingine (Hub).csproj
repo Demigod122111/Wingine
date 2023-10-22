@@ -254,6 +254,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Costura.dll" />
     <Content Include="Wingine-Icon %281%29.ico" />
     <EmbeddedResource Include="Wingine.exe" />
   </ItemGroup>

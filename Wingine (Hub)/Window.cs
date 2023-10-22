@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Wingine;
@@ -160,6 +154,8 @@ namespace Wingine.Hub
             engineFile = Path.GetFullPath("./Wingine.Hub.Wingine.exe");
             ResourceReader.CreateFileFromResource("Wingine.Hub.Wingine.exe", engineFile);
             tb_engine.Text = engineFile;
+
+            ResourceReader.CreateFileFromResource("Wingine.Hub.Costura.dll", Path.GetFullPath("./Costura.dll"));
         }
 
         public static class ResourceReader

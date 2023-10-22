@@ -11,14 +11,50 @@ using Wingine.UI;
 
 namespace Wingine
 {
+
     [Serializable]
     public partial class Application : Form
     {
-        public List<PictureBox> RenderPlanes = new List<PictureBox>();
+        public struct RenderSource
+        {
+            public readonly PictureBox RenderPlane;
+            public Bitmap CurrentBuffer { get; private set; }
+            public Bitmap BackBuffer { get; private set; }
+            public Bitmap FrontBuffer { get; private set; }
 
-        static Bitmap CurrentBuffer;
-        static Bitmap BackBuffer;
-        static Bitmap FrontBuffer;
+            public bool UseCustomCamera;
+            public Camera CustomCamera;
+
+            public RenderSource(PictureBox renderPlane, int resolution_width, int resoultion_height)
+            {
+                RenderPlane = renderPlane;
+                BackBuffer = new Bitmap(resolution_width, resoultion_height);
+                FrontBuffer = new Bitmap(BackBuffer);
+                CurrentBuffer = FrontBuffer;
+
+                UseCustomCamera = false;
+                CustomCamera = null;
+            }
+
+            public Graphics GetWritableBuffer() => CurrentBuffer == BackBuffer ? Graphics.FromImage(FrontBuffer) : Graphics.FromImage(BackBuffer);
+
+            public void SwapBuffers()
+            {
+                CurrentBuffer = CurrentBuffer == BackBuffer ? FrontBuffer : BackBuffer;
+
+                RenderPlane.Image = CurrentBuffer;
+            }
+
+            public void InitBuffers(int resolution_width, int resoultion_height)
+            {
+                BackBuffer = new Bitmap(resolution_width, resoultion_height);
+                FrontBuffer = new Bitmap(BackBuffer);
+                CurrentBuffer = FrontBuffer;
+            }
+        }
+
+        public RenderSource renderSource;
+        
 
         public static int RESOLUTION = 100; // 1440000 Unit Pixels
         public static int RESOLUTION_WIDTH => 16 * RESOLUTION;
@@ -30,13 +66,12 @@ namespace Wingine
 
         static Application()
         {
-            InitBuffers();
+            
         }
 
         public Application()
         {
             InitializeComponent();
-            RenderPlanes.Add(Display);
 
             Display.MouseDown += (s, e) =>
             {
@@ -95,7 +130,7 @@ namespace Wingine
 
 
         bool doneRender = true;
-        public void Render()
+        public void Render(RenderSource source)
         {
             if (!doneRender) return;
             doneRender = false;
@@ -103,11 +138,20 @@ namespace Wingine
             var rmp = PointToVector(Display.PointToClient(MousePosition));
             Input.MousePosition = new Vector2(rmp.X * Math.Abs((RESOLUTION_WIDTH / (float)Display.Width)), rmp.Y * Math.Abs((RESOLUTION_HEIGHT / (float)Display.Height)));
 
-            Graphics g = GetWritableBuffer();
+            Graphics g = source.GetWritableBuffer();
 
-            Camera mainCamera = Camera.Main;
+            Camera mainCamera = null;
 
-            if (mainCamera == null || !mainCamera.GameObject.ActiveInHierarchy() || !mainCamera.Enabled)
+            if (source.UseCustomCamera)
+            {
+                mainCamera = source.CustomCamera;
+            }
+            else
+            {
+                mainCamera = Camera.Main;
+            }
+
+            if (mainCamera == null || (!source.UseCustomCamera && (!mainCamera.GameObject.ActiveInHierarchy() || !mainCamera.Enabled)))
             {
                 g.Clear(Color.Black);
                 g.DrawString(
@@ -115,7 +159,7 @@ namespace Wingine
                     new Font("Arial", 24, FontStyle.Bold),
                     Brushes.White,
                     new Point((int)(RESOLUTION_WIDTH / 2 - 17.5f * (19 / 2)), RESOLUTION_HEIGHT / 2 - 20));
-                SwapBuffers();
+                source.SwapBuffers();
                 doneRender = true;
                 return;
             }
@@ -268,7 +312,7 @@ namespace Wingine
             {
                 var canvas = all_canvas[i];
                 
-                var ui_g = canvas.RenderSpace == RenderSpace.Screen ? GetWritableBuffer() : g;
+                var ui_g = canvas.RenderSpace == RenderSpace.Screen ? source.GetWritableBuffer() : g;
 
                 var ui_comps = canvas.GetUIComponents();
 
@@ -284,28 +328,10 @@ namespace Wingine
                 }
             }
 
-            SwapBuffers();
+            source.SwapBuffers();
             doneRender = true;
         }
 
-        internal Graphics GetWritableBuffer() => CurrentBuffer == BackBuffer ? Graphics.FromImage(FrontBuffer) : Graphics.FromImage(BackBuffer);
-
-        internal void SwapBuffers()
-        {
-            CurrentBuffer = CurrentBuffer == BackBuffer ? FrontBuffer : BackBuffer;
-
-            for (int i = 0; i < RenderPlanes.Count; i++)
-            {
-                RenderPlanes[i].Image = CurrentBuffer;
-            }
-        }
-
-        public static void InitBuffers()
-        {
-            BackBuffer = new Bitmap(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            FrontBuffer = new Bitmap(BackBuffer);
-            CurrentBuffer = FrontBuffer;
-        }
 
         void Development()
         {
@@ -504,6 +530,7 @@ namespace Wingine
             running = true;
 
             #region Physics Loop
+            PhysicsEngine = new PhysicsEngine();
             async void PhysicsLoop()
             {
                 while (running)
@@ -540,11 +567,13 @@ namespace Wingine
         internal int renderStep = (int) (1000f / (TARGET_FPS * 1.2f));
         private async void DoRenderLoop()
         {
+            renderSource = new RenderSource(Display, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+
             while (ShouldDoRendering)
             {
                 try
                 {
-                    Render();
+                    Render(renderSource);
                 }
                 catch (Exception ex)
                 {

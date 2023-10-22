@@ -27,6 +27,16 @@ namespace Wingine.Editor
 
         RichTextBox EditorLogs = new RichTextBox();
 
+        public Application.RenderSource SceneRenderSource;
+        public static int Scene_RESOLUTION = 100; // 1440000 Unit Pixels
+        public static int Scene_RESOLUTION_WIDTH => 16 * Scene_RESOLUTION;
+        public static int Scene_RESOLUTION_HEIGHT => 9 * Scene_RESOLUTION;
+
+        public GameObject SceneCameraObject;
+        public Camera SceneCamera;
+        public float SceneCameraSpeed = 5;
+
+
         #region Hierarchy
 
         Dictionary<string, TreeNode> HierarchyItems = new Dictionary<string, TreeNode>();
@@ -546,14 +556,14 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(float))
                     {
-                        decimal min = decimal.Parse(float.MinValue.ToString());
-                        decimal max = decimal.Parse(float.MaxValue.ToString());
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
 
                         if (Attribute.IsDefined(member, typeof(Wingine.Range)))
                         {
                             Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
-                            min = decimal.Parse(((float)ab.Min).ToString());
-                            max = decimal.Parse(((float)ab.Max).ToString());
+                            min = (decimal)ab.Min;
+                            max = (decimal)ab.Max;
                         }
 
                         var inputField = new NumberInputField();
@@ -583,14 +593,14 @@ namespace Wingine.Editor
                     }
                     else if (t == typeof(double))
                     {
-                        decimal min = decimal.Parse(double.MinValue.ToString());
-                        decimal max = decimal.Parse(double.MaxValue.ToString());
+                        decimal min = decimal.Parse(int.MinValue.ToString());
+                        decimal max = decimal.Parse(int.MaxValue.ToString());
 
                         if (Attribute.IsDefined(member, typeof(Wingine.Range)))
                         {
                             Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
-                            min = decimal.Parse(((double)ab.Min).ToString());
-                            max = decimal.Parse(((double)ab.Max).ToString());
+                            min = (decimal)ab.Min;
+                            max = (decimal)ab.Max;
                         }
 
                         var inputField = new NumberInputField();
@@ -961,8 +971,8 @@ namespace Wingine.Editor
                         if (Attribute.IsDefined(member, typeof(Wingine.Range)))
                         {
                             Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
-                            min = decimal.Parse(((float)ab.Min).ToString());
-                            max = decimal.Parse(((float)ab.Max).ToString());
+                            min = (decimal)ab.Min;
+                            max = (decimal)ab.Max;
                         }
 
                         var inputField = new NumberInputField();
@@ -998,8 +1008,8 @@ namespace Wingine.Editor
                         if (Attribute.IsDefined(member, typeof(Wingine.Range)))
                         {
                             Wingine.Range ab = ((Wingine.Range[])member.GetCustomAttributes(typeof(Wingine.Range), false))[0];
-                            min = decimal.Parse(((double)ab.Min).ToString());
-                            max = decimal.Parse(((double)ab.Max).ToString());
+                            min = (decimal)ab.Min;
+                            max = (decimal)ab.Max;
                         }
 
                         var inputField = new NumberInputField();
@@ -1284,8 +1294,6 @@ namespace Wingine.Editor
             HIERARCHY_FPS_STATUS.Parent = StatusBar;
             HierarchyUpdater.Interval = 1000 / TARGET_FPS;
 
-            Runner.App.RenderPlanes.Add(Scene);
-
             EventManagement();
 
             Open(proj, urgent: false);
@@ -1455,10 +1463,9 @@ namespace Wingine.Editor
             HIERARCHY_FPS_STATUS.Visible = showFPSToolStripMenuItem.Checked;
             INSPECTOR_FPS_STATUS.Visible = showFPSToolStripMenuItem.Checked;
 
-            if (Runner.App.CurrentScene != null && !Runner.App.IsRunning)
+            if (Runner.App.CurrentScene != null)
             {
-                Runner.App.Render();
-
+                Runner.App.Render(SceneRenderSource);
             }
 
             if (Runner.App.CurrentScene == null)
@@ -1497,6 +1504,44 @@ namespace Wingine.Editor
             if(!CurrentSceneNameTSTB.ReadOnly && !CurrentSceneNameTSTB.Focused && !(CurrentSceneNameTSTB.Text == Runner.App.CurrentScene.Name))
             {
                 CurrentSceneNameTSTB.Text = Runner.App.CurrentScene.Name;
+            }
+
+            var SCC = Color.DarkGray;
+
+            if (Runner.App.CurrentScene != null)
+            {
+                var GameMainCamera = Camera.Main;
+                if (GameMainCamera != null)
+                {
+                    SCC = GameMainCamera.BackgroundColor;
+                }
+            }
+
+            SceneCamera.BackgroundColor = SCC;
+
+            if (sceneMouseDown)
+            {
+                if (Input.GetKeyDown(System.Windows.Input.Key.A))
+                {
+                    SceneCamera.Transform.Position += Vector2.Left * SceneCameraSpeed;
+                }
+                if (Input.GetKeyDown(System.Windows.Input.Key.D))
+                {
+                    SceneCamera.Transform.Position += Vector2.Right * SceneCameraSpeed;
+                }
+                if (Input.GetKeyDown(System.Windows.Input.Key.W))
+                {
+                    SceneCamera.Transform.Position += Vector2.Up * SceneCameraSpeed;
+                }
+                if (Input.GetKeyDown(System.Windows.Input.Key.S))
+                {
+                    SceneCamera.Transform.Position += Vector2.Down * SceneCameraSpeed;
+                }
+            }
+
+            if(sceneMouseDown && !Scene.Focused)
+            {
+                sceneMouseDown = false;
             }
 
             ProcessWinEvents();
@@ -2170,6 +2215,13 @@ namespace Wingine.Editor
 
         public void Open(string proj, bool urgent = false, bool changePointer = true)
         {
+            SceneCameraObject = GameObject.CreateInternal("Scene Camera");
+            SceneCamera = SceneCameraObject.AddComponent<Camera>();
+
+            SceneRenderSource = new Application.RenderSource(Scene, Scene_RESOLUTION_WIDTH, Scene_RESOLUTION_HEIGHT);
+            SceneRenderSource.CustomCamera = SceneCamera;
+            SceneRenderSource.UseCustomCamera = true;
+
             if (File.Exists(proj) && proj.EndsWith(".wingine"))
             {
                 try
@@ -2527,22 +2579,28 @@ namespace Wingine.Editor
                 {
                     var thd = threads[i];
 
-
-                    if (thd.TotalProcessorTime.TotalSeconds == 0)
+                    try
                     {
-                        thd.Dispose();
+                        if (thd.TotalProcessorTime.TotalSeconds == 0)
+                        {
+                            thd.Dispose();
+                            continue;
+                        }
+
+                        if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && thd.WaitReason == ThreadWaitReason.Unknown)
+                            || thd.ThreadState == System.Diagnostics.ThreadState.Unknown
+                            || thd.ThreadState == System.Diagnostics.ThreadState.Terminated)
+                        {
+                            thd.Dispose();
+                            continue;
+                        }
+
+                        r += $"{thd.Id} - {thd.TotalProcessorTime.TotalSeconds}s\n\n";
+                    }
+                    catch
+                    {
                         continue;
                     }
-
-                    if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && thd.WaitReason == ThreadWaitReason.Unknown)
-                        || thd.ThreadState == System.Diagnostics.ThreadState.Unknown
-                        || thd.ThreadState == System.Diagnostics.ThreadState.Terminated)
-                    {
-                        thd.Dispose();
-                        continue;
-                    }
-
-                    r += $"{thd.Id} - {thd.TotalProcessorTime.TotalSeconds}s\n\n";
                 }
 
                 rtb_threads.Text = r;
@@ -2551,5 +2609,16 @@ namespace Wingine.Editor
         }
         #endregion
 
+
+        bool sceneMouseDown = false;
+        private void Scene_MouseDown(object sender, MouseEventArgs e)
+        {
+            sceneMouseDown = true;
+        }
+
+        private void Scene_MouseUp(object sender, MouseEventArgs e)
+        {
+            sceneMouseDown = false;
+        }
     }
 }

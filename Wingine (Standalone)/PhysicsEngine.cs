@@ -29,6 +29,22 @@ namespace Wingine
         {
             // Broad-phase collision detection (simple example)
             List<Tuple<PhysicsBody, PhysicsBody>> potentialCollisions = new List<Tuple<PhysicsBody, PhysicsBody>>();
+
+            bool HasPair(PhysicsBody pb1, PhysicsBody pb2)
+            {
+                for (int i = 0; i < potentialCollisions.Count; i++)
+                {
+                    var pair = potentialCollisions[i];
+
+                    if((pair.Item1 == pb1 && pair.Item2 == pb2) || (pair.Item1 == pb2 && pair.Item2 == pb1))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
             for (int i = 0; i < physicsBodies.Count; i++)
             {
                 for (int j = i + 1; j < physicsBodies.Count; j++)
@@ -38,18 +54,21 @@ namespace Wingine
 
                     if (CollisionHandler.CheckCollision(body1, body2))
                     {
-                        potentialCollisions.Add(new Tuple<PhysicsBody, PhysicsBody>(body1, body2));
-
-                        var b1s = body1.GameObject.GetScripts();
-                        for (int ii = 0; ii < b1s.Count; ii++)
+                        if (!HasPair(body1, body2) && (body1.DetectCollisions && body2.DetectCollisions))
                         {
-                            if (b1s[ii].Enabled) b1s[ii].OnCollision(body2);
-                        }
+                            potentialCollisions.Add(new Tuple<PhysicsBody, PhysicsBody>(body1, body2));
 
-                        var b2s = body2.GameObject.GetScripts();
-                        for (int ii = 0; ii < b2s.Count; ii++)
-                        {
-                            if (b2s[ii].Enabled) b2s[ii].OnCollision(body1);
+                            var b1s = body1.GameObject.GetScripts();
+                            for (int ii = 0; ii < b1s.Count; ii++)
+                            {
+                                if (b1s[ii].Enabled) b1s[ii].OnCollision(body2);
+                            }
+
+                            var b2s = body2.GameObject.GetScripts();
+                            for (int ii = 0; ii < b2s.Count; ii++)
+                            {
+                                if (b2s[ii].Enabled) b2s[ii].OnCollision(body1);
+                            }
                         }
                     }
                 }
@@ -61,7 +80,7 @@ namespace Wingine
                 PhysicsBody body1 = collisionPair.Item1;
                 PhysicsBody body2 = collisionPair.Item2;
 
-                CollisionHandler.ResolveCollision(body1, body2);
+                CollisionHandler.ResolveCollision(body1, body2, Gravity);
             }
 
             foreach (var body in physicsBodies)
@@ -76,57 +95,53 @@ namespace Wingine
         public static bool CheckCollision(PhysicsBody body1, PhysicsBody body2)
         {
             // Check for collision between two rectangles using bounding boxes
-            if (body1.BoundingBox.IntersectsWith(body2.BoundingBox))
+            var b1bx = body1.BoundingBox;
+            var b2bx = body2.BoundingBox;
+
+            b1bx.Width /= 2;
+            b1bx.Height /= 2;
+
+            b2bx.Width /= 2;
+            b2bx.Height /= 2;
+
+            if (b1bx.IntersectsWith(b2bx))
             {
                 return true;
             }
             return false;
         }
 
-        public static void ResolveCollision(PhysicsBody body1, PhysicsBody body2)
+        public static void ResolveCollision(PhysicsBody body1, PhysicsBody body2, float gravity)
         {
-            // Calculate relative velocity
-            PointF relativeVelocity = new PointF(
-                body2.Velocity.X - body1.Velocity.X,
-                body2.Velocity.Y - body1.Velocity.Y
-            );
+            float v2fx = 0f;
+            float v2fy = 0f;
 
-            // Calculate relative velocity in terms of the normal direction
-            PointF normal = new PointF(
-                body2.Transform.Position.X - body1.Transform.Position.X,
-                body2.Transform.Position.Y - body1.Transform.Position.Y
-            );
+            float v1fx = 0f;
+            float v1fy = 0f;
 
-            float relativeSpeedAlongNormal = relativeVelocity.X * normal.X + relativeVelocity.Y * normal.Y;
+            /// Body 2 Final Velocity
+            /// v2f=2⋅m1(m2+m1)v1i+(m2−m1)(m2+m1)v2i
+            v2fx = (body2.Mass / body1.Mass) * body1.Mass * (body2.Mass + body1.Mass) * body1.Velocity.X + (body2.Mass - body1.Mass) * (body2.Mass + body1.Mass) * body2.Velocity.X;
+            v2fy = (body2.Mass / body1.Mass) * body1.Mass * (body2.Mass + body1.Mass) * body1.Velocity.Y + (body2.Mass - body1.Mass) * (body2.Mass + body1.Mass) * body2.Velocity.Y;
 
-            // Do not resolve if objects are moving apart
-            if (relativeSpeedAlongNormal > 0)
+            /// Body 1 Final Velocity
+            /// v1f=(m1−m2)(m2+m1)v1i+2⋅m2(m2+m1)v2i
+            v1fx = (body1.Mass - body2.Mass) * (body2.Mass + body1.Mass) * body1.Velocity.X + (body2.Mass / body1.Mass) * body2.Mass * (body2.Mass + body1.Mass) * body2.Velocity.X;
+            v1fy = (body1.Mass - body2.Mass) * (body2.Mass + body1.Mass) * body1.Velocity.Y + (body2.Mass / body1.Mass) * body2.Mass * (body2.Mass + body1.Mass) * body2.Velocity.Y;
+
+            
+
+            if (body1.PhysicsType == PhysicsType.Dynamic)
             {
-                return;
+                var gravityUp = body1.UseGravity ? (gravity * body1.GravityCoefficient) * Math.Sqrt(Time.DeltaTime) : 0;
+                body1.Velocity = new Vector2(v1fx, v1fy + gravityUp);
             }
 
-            // Calculate the impulse (change in velocity) based on the coefficient of restitution
-            float e = 0f; // Adjust as needed (1 is perfectly elastic, 0 is perfectly inelastic)
-            float j = -(1 + e) * relativeSpeedAlongNormal / (
-                1 / body1.Mass + 1 / body2.Mass
-            );
-
-            // Apply the impulse to both objects with consideration for their masses
-            PointF impulse = new PointF(
-                (j) * normal.X,
-                (j) * normal.Y
-            );
-
-            body1.Velocity = new Vector2(
-                body1.Velocity.X - (1 / body1.Mass) * impulse.X,
-                body1.Velocity.Y - (1 / body1.Mass) * impulse.Y
-            );
-
-            body2.Velocity = new Vector2(
-                body2.Velocity.X + (1 / body2.Mass) * impulse.X,
-                body2.Velocity.Y + (1 / body2.Mass) * impulse.Y
-            );
+            if (body2.PhysicsType == PhysicsType.Dynamic)
+            {
+                var gravityUp = body2.UseGravity ? (gravity * body2.GravityCoefficient) * Math.Sqrt(Time.DeltaTime) : 0;
+                body2.Velocity = new Vector2(v2fx, v2fy + gravityUp);
+            }
         }
-
     }
 }

@@ -100,7 +100,7 @@ namespace Wingine
         readonly double min;
         readonly double max;
 
-        public Range(double min = double.MinValue, double max = double.MaxValue)
+        public Range(double min = int.MinValue, double max = int.MaxValue)
         {
             this.min = min;
             this.max = max;

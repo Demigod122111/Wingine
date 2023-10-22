@@ -10,12 +10,22 @@ namespace Wingine
     [Serializable]
     public class PhysicsBody : MonoBehaviour
     {
+        public PhysicsType PhysicsType = PhysicsType.Dynamic;
         public Vector2 Velocity { get; set; }
         public Vector2 Acceleration { get; set; }
-        public float Mass { get; set; } = 1;
-        public Vector2 Radii { get; set; } = new Vector2(10, 10);
 
+        [Range(min: 0.01, max: 2147483647)]
+        public float Mass { get; set; } = 1;
+
+        [Header("Collider")]
+        public Vector2 Radii { get; set; } = new Vector2(10, 10);
+        public Vector2 Offset { get; set; } = Vector2.Zero;
+        public bool DetectCollisions = true;
+
+
+        [Header("Gravity")]
         public bool UseGravity = true;
+        public float GravityCoefficient = 1f;
 
 
         [Header("Debugging")]
@@ -28,8 +38,8 @@ namespace Wingine
             var pos = Transform.Position;
             var size = Radii;
 
-            var x = pos.X - Radii.X / 2;
-            var y = pos.Y - Radii.Y / 2;
+            var x = pos.X - Radii.X / 2 + Offset.X;
+            var y = pos.Y - Radii.Y / 2 + Offset.Y;
 
             var width = Radii.X * 2;
             var height = Radii.Y * 2;
@@ -59,21 +69,22 @@ namespace Wingine
 
         public void Update(double deltaTime)
         {
-            AddForce(UseGravity ? new Vector2(0, -Runner.App.PhysicsEngine.Gravity) : Vector2.Zero);
+            AddForce((UseGravity && PhysicsType == PhysicsType.Dynamic) ? new Vector2(0, -Runner.App.PhysicsEngine.Gravity * GravityCoefficient) : Vector2.Zero);
 
-            Acceleration = CalculateAcceleration(forces);
+            if (PhysicsType == PhysicsType.Dynamic)
+            {
+                Acceleration = CalculateAcceleration(forces);
 
 
-            // Update physics parameters based on acceleration, velocity, and time (deltaTime)
-            Velocity = new Vector2(
-                Velocity.X + Acceleration.X * deltaTime,
-                Velocity.Y + Acceleration.Y * deltaTime
-            );
+                // Update physics parameters based on acceleration, velocity, and time (deltaTime)
+                Velocity = new Vector2(
+                    Velocity.X + Acceleration.X * deltaTime,
+                    Velocity.Y + Acceleration.Y * deltaTime
+                );
 
-            Transform.LocalPosition = new Vector2(
-                Transform.LocalPosition.X + Velocity.X * deltaTime,
-                Transform.LocalPosition.Y + Velocity.Y * deltaTime
-            );
+                
+                Transform.Position += new Vector2(Velocity.X * deltaTime, Velocity.Y * deltaTime);
+            }
 
             forces.Clear();
         }
@@ -96,5 +107,8 @@ namespace Wingine
 
             return new Vector2(accelerationX, accelerationY);
         }
+
     }
+
+    public enum PhysicsType { Static, Dynamic }
 }

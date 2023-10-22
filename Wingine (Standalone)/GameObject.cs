@@ -100,6 +100,16 @@ namespace Wingine
             CheckID();
         }
 
+        GameObject(bool finternal, string name = "Internal GameObject")
+        {
+            Transform = new Transform(this);
+            Components.Add(Transform);
+            this.name = name;
+            CheckID();
+        }
+
+        public static GameObject CreateInternal(string name = "Internal GameObject") => new GameObject(true, name);
+
         public bool Exists()
         {
             return Runner.App?.CurrentScene?.GameObjects.Contains(this) ?? false;
