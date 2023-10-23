@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -25,6 +26,8 @@ namespace Wingine
             public bool UseCustomCamera;
             public Camera CustomCamera;
 
+            public bool doneRender;
+
             public RenderSource(PictureBox renderPlane, int resolution_width, int resoultion_height)
             {
                 RenderPlane = renderPlane;
@@ -34,6 +37,8 @@ namespace Wingine
 
                 UseCustomCamera = false;
                 CustomCamera = null;
+
+                doneRender = true;
             }
 
             public Graphics GetWritableBuffer() => CurrentBuffer == BackBuffer ? Graphics.FromImage(FrontBuffer) : Graphics.FromImage(BackBuffer);
@@ -129,29 +134,24 @@ namespace Wingine
         }
 
 
-        bool doneRender = true;
         public void Render(RenderSource source)
         {
-            if (!doneRender) return;
-            doneRender = false;
+            if (!source.doneRender) return;
+            source.doneRender = false;
 
             var rmp = PointToVector(Display.PointToClient(MousePosition));
             Input.MousePosition = new Vector2(rmp.X * Math.Abs((RESOLUTION_WIDTH / (float)Display.Width)), rmp.Y * Math.Abs((RESOLUTION_HEIGHT / (float)Display.Height)));
 
             Graphics g = source.GetWritableBuffer();
 
-            Camera mainCamera = null;
+            Camera mainCamera = Camera.Main;
 
             if (source.UseCustomCamera)
             {
                 mainCamera = source.CustomCamera;
             }
-            else
-            {
-                mainCamera = Camera.Main;
-            }
 
-            if (mainCamera == null || (!source.UseCustomCamera && (!mainCamera.GameObject.ActiveInHierarchy() || !mainCamera.Enabled)))
+            void DrawNoRender()
             {
                 g.Clear(Color.Black);
                 g.DrawString(
@@ -160,8 +160,24 @@ namespace Wingine
                     Brushes.White,
                     new Point((int)(RESOLUTION_WIDTH / 2 - 17.5f * (19 / 2)), RESOLUTION_HEIGHT / 2 - 20));
                 source.SwapBuffers();
-                doneRender = true;
-                return;
+                source.doneRender = true;
+            }
+
+            if (!source.UseCustomCamera)
+            {
+                if (mainCamera == null || !mainCamera.GameObject.ActiveInHierarchy() || !mainCamera.Enabled)
+                {
+                    DrawNoRender();
+                    return;
+                }
+            }
+            else
+            {
+                if (mainCamera == null)
+                {
+                    DrawNoRender();
+                    return;
+                }
             }
 
             g.Clear(mainCamera.BackgroundColor);
@@ -181,6 +197,15 @@ namespace Wingine
                 var go = gameObjects[i];
 
                 if (!go.ActiveInHierarchy()) continue;
+
+                #region UI - Canvas
+                if (go.ComponentExists<Canvas>())
+                {
+                    var canvas = go.GetComponentOfType<Canvas>();
+                    all_canvas.Add(canvas);
+                }
+                #endregion
+
                 if (!mainCamera.WithinBounds(go.Transform.GetPosition())) continue;
 
                 var origin = g.RenderingOrigin;
@@ -295,15 +320,7 @@ namespace Wingine
                 #endregion
 
                 g.EndContainer(container);
-                g.TranslateTransform(-cameraPosition.X, cameraPosition.Y);
-
-                #region UI - Canvas
-                if (go.ComponentExists<Canvas>())
-                {
-                    var canvas = go.GetComponentOfType<Canvas>();
-                    all_canvas.Add(canvas);
-                }
-                #endregion
+                //g.TranslateTransform(-cameraPosition.X, cameraPosition.Y);
 
                 //g.RenderingOrigin = origin;
             }
@@ -313,6 +330,11 @@ namespace Wingine
                 var canvas = all_canvas[i];
                 
                 var ui_g = canvas.RenderSpace == RenderSpace.Screen ? source.GetWritableBuffer() : g;
+
+                if (ui_g == g)
+                {
+                    if (!mainCamera.WithinBounds(canvas.Transform.GetPosition())) continue;
+                }
 
                 var ui_comps = canvas.GetUIComponents();
 
@@ -329,7 +351,7 @@ namespace Wingine
             }
 
             source.SwapBuffers();
-            doneRender = true;
+            source.doneRender = true;
         }
 
 
@@ -538,7 +560,7 @@ namespace Wingine
                     await Task.Delay((int)(1000 * Time.FixedDeltaTime));
 
                     PhysicsEngine.UpdatePhysics(Time.FixedDeltaTime);
-                    //Runner.App.FixedUpdate();
+                    Runner.App.FixedUpdate();
                 }
             }
 
@@ -547,7 +569,54 @@ namespace Wingine
             #endregion
 
             #region Ticking Loop
-            DoTicks();
+            new Thread(new ThreadStart(() => { DoTicks(); })).Start();
+            #endregion
+
+            #region Diagnostics
+            void RegulateThreads()
+            {
+                var cp = Process.GetCurrentProcess();
+
+                if (true)
+                {
+
+                    var threads = cp.Threads;
+
+                    string r = "";
+
+                    r += "Virtual Memory (Size64): " + cp.VirtualMemorySize64.ToString() + "\n\n---\n\n";
+
+                    for (int i = 0; i < threads.Count; i++)
+                    {
+                        var thd = threads[i];
+
+                        try
+                        {
+                            if (thd.TotalProcessorTime.TotalSeconds == 0)
+                            {
+                                thd.Dispose();
+                                continue;
+                            }
+
+                            if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && thd.WaitReason == ThreadWaitReason.Unknown)
+                                || thd.ThreadState == System.Diagnostics.ThreadState.Unknown
+                                || thd.ThreadState == System.Diagnostics.ThreadState.Terminated)
+                            {
+                                thd.Dispose();
+                                continue;
+                            }
+
+                            r += $"{thd.Id} - {thd.TotalProcessorTime.TotalSeconds}s\n\n";
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            new Thread(new ThreadStart(() => { RegulateThreads(); })).Start();
             #endregion
 
             while (running)

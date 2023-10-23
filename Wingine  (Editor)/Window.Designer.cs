@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Directories", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Files", System.Windows.Forms.HorizontalAlignment.Center);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Script.cs", 0);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Image.png", 0);
+            System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Directories", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Files", System.Windows.Forms.HorizontalAlignment.Center);
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Script.cs", 0);
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Image.png", 0);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Hierarchy = new System.Windows.Forms.TreeView();
@@ -54,7 +54,6 @@
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.Scene = new System.Windows.Forms.PictureBox();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.ConsoleTabPage = new System.Windows.Forms.TabPage();
             this.Console = new System.Windows.Forms.RichTextBox();
@@ -69,8 +68,6 @@
             this.AssetLocation = new System.Windows.Forms.RichTextBox();
             this.AssetLocationCMS = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.showInFileExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AssetBack = new System.Windows.Forms.PictureBox();
-            this.AssetHome = new System.Windows.Forms.PictureBox();
             this.ResourcesTabPage = new System.Windows.Forms.TabPage();
             this.ResourcesTable = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -78,6 +75,17 @@
             this.rtb_threads = new System.Windows.Forms.RichTextBox();
             this.Inspector = new System.Windows.Forms.Panel();
             this.ToolsBar = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.CurrentSceneNameTSTB = new System.Windows.Forms.ToolStripTextBox();
+            this.Editor = new System.Windows.Forms.Timer(this.components);
+            this.HierarchyUpdater = new System.Windows.Forms.Timer(this.components);
+            this.InspectorUpdater = new System.Windows.Forms.Timer(this.components);
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.SceneCameraSpeedTSCB = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,18 +97,14 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.showFPSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeProjectNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.BuildGameTSB = new System.Windows.Forms.ToolStripButton();
             this.PixelEditor_TSB = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.SceneMenuTSB = new System.Windows.Forms.ToolStripButton();
-            this.CurrentSceneNameTSTB = new System.Windows.Forms.ToolStripTextBox();
-            this.Editor = new System.Windows.Forms.Timer(this.components);
-            this.HierarchyUpdater = new System.Windows.Forms.Timer(this.components);
-            this.InspectorUpdater = new System.Windows.Forms.Timer(this.components);
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.PlayStopTSB = new System.Windows.Forms.ToolStripButton();
-            this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
+            this.Scene = new System.Windows.Forms.PictureBox();
+            this.SCPTSB = new System.Windows.Forms.ToolStripButton();
+            this.AssetBack = new System.Windows.Forms.PictureBox();
+            this.AssetHome = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -114,19 +118,21 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Scene)).BeginInit();
             this.TabControl.SuspendLayout();
             this.ConsoleTabPage.SuspendLayout();
             this.ConsoleCMS.SuspendLayout();
             this.Assets.SuspendLayout();
             this.panel1.SuspendLayout();
             this.AssetLocationCMS.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).BeginInit();
             this.ResourcesTabPage.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.ToolsBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Scene)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -363,6 +369,7 @@
             // splitContainer3.Panel1
             // 
             this.splitContainer3.Panel1.Controls.Add(this.Scene);
+            this.splitContainer3.Panel1.Controls.Add(this.panel3);
             // 
             // splitContainer3.Panel2
             // 
@@ -370,18 +377,6 @@
             this.splitContainer3.Size = new System.Drawing.Size(533, 509);
             this.splitContainer3.SplitterDistance = 329;
             this.splitContainer3.TabIndex = 0;
-            // 
-            // Scene
-            // 
-            this.Scene.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Scene.Location = new System.Drawing.Point(0, 0);
-            this.Scene.Name = "Scene";
-            this.Scene.Size = new System.Drawing.Size(533, 329);
-            this.Scene.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.Scene.TabIndex = 0;
-            this.Scene.TabStop = false;
-            this.Scene.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseDown);
-            this.Scene.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseUp);
             // 
             // TabControl
             // 
@@ -493,19 +488,19 @@
             this.AssetListView.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AssetListView.ForeColor = System.Drawing.Color.Beige;
             this.AssetListView.GridLines = true;
-            listViewGroup3.Header = "Directories";
-            listViewGroup3.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup3.Name = "DirectoryGroup";
-            listViewGroup4.Header = "Files";
-            listViewGroup4.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
-            listViewGroup4.Name = "FileGroup";
+            listViewGroup1.Header = "Directories";
+            listViewGroup1.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup1.Name = "DirectoryGroup";
+            listViewGroup2.Header = "Files";
+            listViewGroup2.HeaderAlignment = System.Windows.Forms.HorizontalAlignment.Center;
+            listViewGroup2.Name = "FileGroup";
             this.AssetListView.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup3,
-            listViewGroup4});
+            listViewGroup1,
+            listViewGroup2});
             this.AssetListView.HideSelection = false;
             this.AssetListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem1,
+            listViewItem2});
             this.AssetListView.LargeImageList = this.AssetsImageList;
             this.AssetListView.Location = new System.Drawing.Point(3, 26);
             this.AssetListView.Name = "AssetListView";
@@ -571,31 +566,6 @@
             this.showInFileExplorerToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.showInFileExplorerToolStripMenuItem.Text = "Show in File Explorer";
             this.showInFileExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInFileExplorerToolStripMenuItem_Click);
-            // 
-            // AssetBack
-            // 
-            this.AssetBack.Dock = System.Windows.Forms.DockStyle.Left;
-            this.AssetBack.Image = global::Wingine.Editor.Properties.Resources.back;
-            this.AssetBack.Location = new System.Drawing.Point(25, 0);
-            this.AssetBack.Margin = new System.Windows.Forms.Padding(16, 3, 3, 3);
-            this.AssetBack.Name = "AssetBack";
-            this.AssetBack.Size = new System.Drawing.Size(25, 23);
-            this.AssetBack.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.AssetBack.TabIndex = 1;
-            this.AssetBack.TabStop = false;
-            this.AssetBack.Click += new System.EventHandler(this.AssetBack_Click);
-            // 
-            // AssetHome
-            // 
-            this.AssetHome.Dock = System.Windows.Forms.DockStyle.Left;
-            this.AssetHome.Image = global::Wingine.Editor.Properties.Resources.home;
-            this.AssetHome.Location = new System.Drawing.Point(0, 0);
-            this.AssetHome.Name = "AssetHome";
-            this.AssetHome.Size = new System.Drawing.Size(25, 23);
-            this.AssetHome.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.AssetHome.TabIndex = 0;
-            this.AssetHome.TabStop = false;
-            this.AssetHome.Click += new System.EventHandler(this.AssetHome_Click);
             // 
             // ResourcesTabPage
             // 
@@ -690,6 +660,122 @@
             this.ToolsBar.Size = new System.Drawing.Size(907, 29);
             this.ToolsBar.Stretch = true;
             this.ToolsBar.TabIndex = 0;
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 29);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 29);
+            // 
+            // CurrentSceneNameTSTB
+            // 
+            this.CurrentSceneNameTSTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.CurrentSceneNameTSTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CurrentSceneNameTSTB.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.CurrentSceneNameTSTB.ForeColor = System.Drawing.Color.Beige;
+            this.CurrentSceneNameTSTB.Name = "CurrentSceneNameTSTB";
+            this.CurrentSceneNameTSTB.Size = new System.Drawing.Size(100, 29);
+            this.CurrentSceneNameTSTB.ToolTipText = "Current Scene Name";
+            this.CurrentSceneNameTSTB.TextChanged += new System.EventHandler(this.CurrentSceneNameTSTB_TextChanged);
+            // 
+            // Editor
+            // 
+            this.Editor.Enabled = true;
+            this.Editor.Interval = 1;
+            this.Editor.Tick += new System.EventHandler(this.Editor_Tick);
+            // 
+            // HierarchyUpdater
+            // 
+            this.HierarchyUpdater.Enabled = true;
+            this.HierarchyUpdater.Tick += new System.EventHandler(this.HierarchyUpdater_Tick);
+            // 
+            // InspectorUpdater
+            // 
+            this.InspectorUpdater.Enabled = true;
+            this.InspectorUpdater.Tick += new System.EventHandler(this.InspectorUpdater_Tick);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.toolStrip1.CanOverflow = false;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayStopTSB});
+            this.toolStrip1.Location = new System.Drawing.Point(8, 69);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.toolStrip1.Size = new System.Drawing.Size(901, 23);
+            this.toolStrip1.Stretch = true;
+            this.toolStrip1.TabIndex = 2;
+            // 
+            // StatusBar
+            // 
+            this.StatusBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.StatusBar.BackColor = System.Drawing.Color.Transparent;
+            this.StatusBar.ForeColor = System.Drawing.Color.Beige;
+            this.StatusBar.Location = new System.Drawing.Point(8, 610);
+            this.StatusBar.Name = "StatusBar";
+            this.StatusBar.Size = new System.Drawing.Size(904, 28);
+            this.StatusBar.TabIndex = 3;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.panel3.Controls.Add(this.toolStrip2);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(533, 25);
+            this.panel3.TabIndex = 2;
+            // 
+            // toolStrip2
+            // 
+            this.toolStrip2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolStrip2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SceneCameraSpeedTSCB,
+            this.SCPTSB});
+            this.toolStrip2.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.toolStrip2.Size = new System.Drawing.Size(533, 25);
+            this.toolStrip2.TabIndex = 0;
+            // 
+            // SceneCameraSpeedTSCB
+            // 
+            this.SceneCameraSpeedTSCB.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SceneCameraSpeedTSCB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.SceneCameraSpeedTSCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.SceneCameraSpeedTSCB.DropDownWidth = 121;
+            this.SceneCameraSpeedTSCB.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SceneCameraSpeedTSCB.ForeColor = System.Drawing.Color.Beige;
+            this.SceneCameraSpeedTSCB.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "5",
+            "10",
+            "20",
+            "50",
+            "100",
+            "120",
+            "150",
+            "500",
+            "1000"});
+            this.SceneCameraSpeedTSCB.Name = "SceneCameraSpeedTSCB";
+            this.SceneCameraSpeedTSCB.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.SceneCameraSpeedTSCB.Size = new System.Drawing.Size(121, 25);
+            this.SceneCameraSpeedTSCB.ToolTipText = "Controls the Speed of the Scene Camera";
             // 
             // toolStripDropDownButton1
             // 
@@ -792,12 +878,6 @@
             this.changeProjectNameToolStripMenuItem.Text = "Change Project Name";
             this.changeProjectNameToolStripMenuItem.Click += new System.EventHandler(this.changeProjectNameToolStripMenuItem_Click);
             // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 29);
-            // 
             // BuildGameTSB
             // 
             this.BuildGameTSB.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -824,11 +904,6 @@
             this.PixelEditor_TSB.Text = "Pixel Editor";
             this.PixelEditor_TSB.Click += new System.EventHandler(this.PixelEditor_TSB_Click);
             // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 29);
-            // 
             // SceneMenuTSB
             // 
             this.SceneMenuTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -842,51 +917,6 @@
             this.SceneMenuTSB.Text = "Scene Menu";
             this.SceneMenuTSB.Click += new System.EventHandler(this.SceneMenuTSB_Click);
             // 
-            // CurrentSceneNameTSTB
-            // 
-            this.CurrentSceneNameTSTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
-            this.CurrentSceneNameTSTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.CurrentSceneNameTSTB.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.CurrentSceneNameTSTB.ForeColor = System.Drawing.Color.Beige;
-            this.CurrentSceneNameTSTB.Name = "CurrentSceneNameTSTB";
-            this.CurrentSceneNameTSTB.Size = new System.Drawing.Size(100, 29);
-            this.CurrentSceneNameTSTB.ToolTipText = "Current Scene Name";
-            this.CurrentSceneNameTSTB.TextChanged += new System.EventHandler(this.CurrentSceneNameTSTB_TextChanged);
-            // 
-            // Editor
-            // 
-            this.Editor.Enabled = true;
-            this.Editor.Interval = 1;
-            this.Editor.Tick += new System.EventHandler(this.Editor_Tick);
-            // 
-            // HierarchyUpdater
-            // 
-            this.HierarchyUpdater.Enabled = true;
-            this.HierarchyUpdater.Tick += new System.EventHandler(this.HierarchyUpdater_Tick);
-            // 
-            // InspectorUpdater
-            // 
-            this.InspectorUpdater.Enabled = true;
-            this.InspectorUpdater.Tick += new System.EventHandler(this.InspectorUpdater_Tick);
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.toolStrip1.AutoSize = false;
-            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.toolStrip1.CanOverflow = false;
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayStopTSB});
-            this.toolStrip1.Location = new System.Drawing.Point(8, 69);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.toolStrip1.Size = new System.Drawing.Size(901, 23);
-            this.toolStrip1.Stretch = true;
-            this.toolStrip1.TabIndex = 2;
-            // 
             // PlayStopTSB
             // 
             this.PlayStopTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -897,16 +927,55 @@
             this.PlayStopTSB.Text = "Play/Stop";
             this.PlayStopTSB.Click += new System.EventHandler(this.PlayStopTSB_Click);
             // 
-            // StatusBar
+            // Scene
             // 
-            this.StatusBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.StatusBar.BackColor = System.Drawing.Color.Transparent;
-            this.StatusBar.ForeColor = System.Drawing.Color.Beige;
-            this.StatusBar.Location = new System.Drawing.Point(8, 610);
-            this.StatusBar.Name = "StatusBar";
-            this.StatusBar.Size = new System.Drawing.Size(904, 28);
-            this.StatusBar.TabIndex = 3;
+            this.Scene.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Scene.Location = new System.Drawing.Point(0, 25);
+            this.Scene.Name = "Scene";
+            this.Scene.Size = new System.Drawing.Size(533, 304);
+            this.Scene.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.Scene.TabIndex = 0;
+            this.Scene.TabStop = false;
+            this.Scene.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseDown);
+            this.Scene.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseUp);
+            // 
+            // SCPTSB
+            // 
+            this.SCPTSB.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SCPTSB.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.SCPTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.SCPTSB.Image = ((System.Drawing.Image)(resources.GetObject("SCPTSB.Image")));
+            this.SCPTSB.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SCPTSB.Name = "SCPTSB";
+            this.SCPTSB.Size = new System.Drawing.Size(32, 22);
+            this.SCPTSB.Text = "SCP";
+            this.SCPTSB.ToolTipText = "Scene Camera Position";
+            this.SCPTSB.Click += new System.EventHandler(this.SCPTSB_Click);
+            // 
+            // AssetBack
+            // 
+            this.AssetBack.Dock = System.Windows.Forms.DockStyle.Left;
+            this.AssetBack.Image = global::Wingine.Editor.Properties.Resources.back;
+            this.AssetBack.Location = new System.Drawing.Point(25, 0);
+            this.AssetBack.Margin = new System.Windows.Forms.Padding(16, 3, 3, 3);
+            this.AssetBack.Name = "AssetBack";
+            this.AssetBack.Size = new System.Drawing.Size(25, 23);
+            this.AssetBack.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.AssetBack.TabIndex = 1;
+            this.AssetBack.TabStop = false;
+            this.AssetBack.Click += new System.EventHandler(this.AssetBack_Click);
+            // 
+            // AssetHome
+            // 
+            this.AssetHome.Dock = System.Windows.Forms.DockStyle.Left;
+            this.AssetHome.Image = global::Wingine.Editor.Properties.Resources.home;
+            this.AssetHome.Location = new System.Drawing.Point(0, 0);
+            this.AssetHome.Name = "AssetHome";
+            this.AssetHome.Size = new System.Drawing.Size(25, 23);
+            this.AssetHome.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.AssetHome.TabIndex = 0;
+            this.AssetHome.TabStop = false;
+            this.AssetHome.Click += new System.EventHandler(this.AssetHome_Click);
             // 
             // Window
             // 
@@ -941,21 +1010,25 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Scene)).EndInit();
             this.TabControl.ResumeLayout(false);
             this.ConsoleTabPage.ResumeLayout(false);
             this.ConsoleCMS.ResumeLayout(false);
             this.Assets.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.AssetLocationCMS.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).EndInit();
             this.ResourcesTabPage.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.ToolsBar.ResumeLayout(false);
             this.ToolsBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Scene)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1035,6 +1108,10 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.RichTextBox rtb_threads;
         private System.Windows.Forms.ToolStripMenuItem changeProjectNameToolStripMenuItem;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ToolStrip toolStrip2;
+        private System.Windows.Forms.ToolStripComboBox SceneCameraSpeedTSCB;
+        private System.Windows.Forms.ToolStripButton SCPTSB;
     }
 }
 

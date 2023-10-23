@@ -34,7 +34,7 @@ namespace Wingine.Editor
 
         public GameObject SceneCameraObject;
         public Camera SceneCamera;
-        public float SceneCameraSpeed = 5;
+        public float SceneCameraSpeed => float.Parse(SceneCameraSpeedTSCB.Text);
 
 
         #region Hierarchy
@@ -115,8 +115,6 @@ namespace Wingine.Editor
                     }
 
                     Loaded.Add(go);
-
-                    ProcessWinEvents();
                 }
 
             }
@@ -253,7 +251,6 @@ namespace Wingine.Editor
 
             for (int i = 0; i < comps.Count; i++)
             {
-                ProcessWinEvents();
                 LoadComponent(comps[i], i == comps.Count - 1);
             }
 
@@ -1320,6 +1317,8 @@ namespace Wingine.Editor
             homeAssetDirectory = Directory.Exists(homeAssetDir) ? homeAssetDir : Environment.CurrentDirectory;
 
             debugRepeatToolStripMenuItem.Checked = Debug.CanRepeat;
+
+            SceneCameraSpeedTSCB.SelectedIndex = 0;
         }
         #endregion
 
@@ -1440,7 +1439,7 @@ namespace Wingine.Editor
         private void Editor_Tick(object sender, EventArgs e)
         {
             UpdateEditor();
-            LoadThreads();
+            RegulateThreads();
         }
 
         void UpdateEditor()
@@ -1539,12 +1538,23 @@ namespace Wingine.Editor
                 }
             }
 
-            if(sceneMouseDown && !Scene.Focused)
+            if(sceneMouseDown && (Control.MouseButtons & MouseButtons.Right) == 0)
             {
                 sceneMouseDown = false;
             }
 
             ProcessWinEvents();
+        }
+
+        bool sceneMouseDown = false;
+        private void Scene_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right) sceneMouseDown = true;
+        }
+
+        private void Scene_MouseUp(object sender, MouseEventArgs e)
+        {
+            //if (e.Button == MouseButtons.Right) sceneMouseDown = false;
         }
 
         private void Window_Load(object sender, EventArgs e)
@@ -1934,23 +1944,11 @@ namespace Wingine.Editor
 
             go.AddComponent<Wingine.UI.Button>();
 
+            
             GameObject got = new GameObject(name: "Text");
-            var tnt = HierarchyItems[go.GetInspectorID()];
-
-            if (tnt != null)
-            {
-                got.SetParent((GameObject)tnt.Tag);
-                //HierarchyItems[got.GetInspectorID()].EnsureVisible();
-
-                TreeNode node = HierarchyItems[got.GetInspectorID()];
-                while (node != null)
-                {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
-                }
-            }
-
             got.AddComponent<Wingine.UI.TextRenderer>().Text = "New Button";
+            got.SetParent(go);
+
         }
 
         private void emptyToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -2184,6 +2182,27 @@ namespace Wingine.Editor
                 }
             }
         }
+
+        private void SCPTSB_Click(object sender, EventArgs e)
+        {
+            var chr = new SceneCameraPositionChanger();
+
+            chr.Value.Value1.Minimum = (decimal)int.MinValue;
+            chr.Value.Value1.Maximum = (decimal)int.MaxValue;
+            chr.Value.Value1.Value = (decimal)SceneCamera.Transform.Position.X;
+
+
+            chr.Value.Value2.Minimum = (decimal)int.MinValue;
+            chr.Value.Value2.Maximum = (decimal)int.MaxValue;
+            chr.Value.Value2.Value = (decimal)SceneCamera.Transform.Position.Y;
+            
+
+            if (chr.ShowDialog(this) == DialogResult.OK)
+            {
+                SceneCamera.Transform.Position = new Vector2(((double)chr.Value.Value1.Value), ((double)chr.Value.Value2.Value));
+                chr.Dispose();
+            }
+        }
         #endregion
 
         #region Saving and Loading
@@ -2257,6 +2276,10 @@ namespace Wingine.Editor
                 if (urgent) Open();
             }
 
+            var scpX = PlayerPrefs.GetFloat($"{Runner.CurrentProject.Item2}_scp_x", 0);
+            var scpY = PlayerPrefs.GetFloat($"{Runner.CurrentProject.Item2}_scp_y", 0);
+            SceneCamera.Transform.Position = new Vector2(scpX, scpY);
+
             ProcessWinEvents();
         }
 
@@ -2283,6 +2306,8 @@ namespace Wingine.Editor
 
             if (File.Exists(currentFile))
             {
+                PlayerPrefs.SetFloat($"{Runner.CurrentProject.Item2}_scp_x", SceneCamera.Transform.Position.X);
+                PlayerPrefs.SetFloat($"{Runner.CurrentProject.Item2}_scp_y", SceneCamera.Transform.Position.Y);
                 DataStore.WriteToBinaryFile(currentFile, Runner.CurrentProject);
             }
             else
@@ -2308,6 +2333,8 @@ namespace Wingine.Editor
             if (string.IsNullOrWhiteSpace(file) && sfd.ShowDialog() == DialogResult.OK)
             {
                 fname = sfd.FileName;
+                PlayerPrefs.SetFloat($"{Runner.CurrentProject.Item2}_scp_x", SceneCamera.Transform.Position.X);
+                PlayerPrefs.SetFloat($"{Runner.CurrentProject.Item2}_scp_y", SceneCamera.Transform.Position.Y);
                 DataStore.WriteToBinaryFile(fname, Runner.CurrentProject);
             }
 
@@ -2367,7 +2394,7 @@ namespace Wingine.Editor
                 LoadGameObjectInspector(SceneManager.CurrentScene.Get(((GameObject)SelectedObject)?.ID));
             }
 
-            ProcessWinEvents();
+            //ProcessWinEvents();
         }
 
 
@@ -2562,7 +2589,7 @@ namespace Wingine.Editor
         #endregion
 
         #region Diagnostics
-        void LoadThreads()
+        void RegulateThreads()
         {
             var cp = Process.GetCurrentProcess();
 
@@ -2609,16 +2636,5 @@ namespace Wingine.Editor
         }
         #endregion
 
-
-        bool sceneMouseDown = false;
-        private void Scene_MouseDown(object sender, MouseEventArgs e)
-        {
-            sceneMouseDown = true;
-        }
-
-        private void Scene_MouseUp(object sender, MouseEventArgs e)
-        {
-            sceneMouseDown = false;
-        }
     }
 }

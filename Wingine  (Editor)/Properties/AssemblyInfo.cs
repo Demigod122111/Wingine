@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Wingine Editor")]
+[assembly: AssemblyTitle("Wingine (Editor)")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Wingine")]
+[assembly: AssemblyCompany("Demigod122111")]
 [assembly: AssemblyProduct("Wingine (Editor)")]
 [assembly: AssemblyCopyright("Copyright © Wingine 2023")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Wingine")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

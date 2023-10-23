@@ -357,6 +357,12 @@
     <Compile Include="ResourceItem.Designer.cs">
       <DependentUpon>ResourceItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="SceneCameraPositionChanger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SceneCameraPositionChanger.Designer.cs">
+      <DependentUpon>SceneCameraPositionChanger.cs</DependentUpon>
+    </Compile>
     <Compile Include="Solution.cs" />
     <Compile Include="VectorInputField.cs">
       <SubType>UserControl</SubType>
@@ -419,6 +425,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceItem.resx">
       <DependentUpon>ResourceItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SceneCameraPositionChanger.resx">
+      <DependentUpon>SceneCameraPositionChanger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VectorInputField.resx">
       <DependentUpon>VectorInputField.cs</DependentUpon>
