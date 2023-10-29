@@ -97,74 +97,77 @@ namespace Wingine
 
         public static void Build(string app_file)
         {
-            //string buildCode = $"using Wingine;class BuildRunner{{public static void Main(){{new BuildRunner();}}BuildRunner(){{Runner.BuildMain(@\"{app_file}\");}}}}";
-            string buildCode = $"using Wingine;class BuildRunner{{public static void Main(){{new BuildRunner();}}BuildRunner(){{Runner.BuildMain();}}}}";
-
-            Debug.Write($"Building '{Runner.CurrentProject.Item1}'...", Debug.DebugType.Editor);
-            var st = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-
-            var asm = Assembly.GetExecutingAssembly();
-
-            CSharpCodeProvider codeProvider = new CSharpCodeProvider();
-            ICodeCompiler icc = codeProvider.CreateCompiler();
-
-            Directory.CreateDirectory($"./{Runner.CurrentProject.Item1}_BUILD/");
-            string Output = $"./{Runner.CurrentProject.Item1}_BUILD/{Runner.CurrentProject.Item1}.exe";
-
-            string appFile = $"./{Runner.CurrentProject.Item1}_BUILD/{Runner.CurrentProject.Item1}.wingine_app";
-            string dllFile = $"./{Runner.CurrentProject.Item1}_BUILD/Wingine (Standalone).dll";
-
-            try
+            Task.Run(() =>
             {
-                if (File.Exists(appFile)) File.Delete(appFile);
-                if (File.Exists(dllFile)) File.Delete(dllFile);
+                //string buildCode = $"using Wingine;class BuildRunner{{public static void Main(){{new BuildRunner();}}BuildRunner(){{Runner.BuildMain(@\"{app_file}\");}}}}";
+                string buildCode = $"using Wingine;class BuildRunner{{public static void Main(){{new BuildRunner();}}BuildRunner(){{Runner.BuildMain();}}}}";
 
-                File.Move(app_file, appFile);
-                File.Copy("./Wingine (Standalone).dll", dllFile);
-            }
-            catch (Exception ex)
-            {
-                var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                Debug.Write($"Building Failed in {et - st}ms!\nReason: {ex.Message}", Debug.DebugType.Editor);
-            }
+                Debug.Write($"Building '{Runner.CurrentProject.Item1}'...", Debug.DebugType.Editor);
+                var st = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
-            CompilerParameters parameters = new CompilerParameters();
-            parameters.GenerateExecutable = true;
-            parameters.CompilerOptions = "/target:winexe /optimize";
-            //parameters.CompilerOptions = @"";
+                var asm = Assembly.GetExecutingAssembly();
 
-            parameters.ReferencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
-            parameters.ReferencedAssemblies.Add(Assembly.LoadFrom("Costura.dll").Location);
+                CSharpCodeProvider codeProvider = new CSharpCodeProvider();
+                ICodeCompiler icc = codeProvider.CreateCompiler();
 
-            List<string> asms = new List<string>();
-            for (int i = 0; i < parameters.ReferencedAssemblies.Count; i++)
-            {
-                asms.Add(parameters.ReferencedAssemblies[i]);
-            }
-            //MessageBox.Show(string.Join("\n", asms));
-            parameters.OutputAssembly = Output;
-            parameters.MainClass = "BuildRunner";
-            CompilerResults results = icc.CompileAssemblyFromSource(parameters, buildCode);
+                Directory.CreateDirectory($"./{Runner.CurrentProject.Item1}_BUILD/");
+                string Output = $"./{Runner.CurrentProject.Item1}_BUILD/{Runner.CurrentProject.Item1}.exe";
 
-            if (results.Errors.Count > 0)
-            {
-                foreach (CompilerError CompErr in results.Errors)
+                string appFile = $"./{Runner.CurrentProject.Item1}_BUILD/{Runner.CurrentProject.Item1}.wingine_app";
+                string dllFile = $"./{Runner.CurrentProject.Item1}_BUILD/Wingine (Standalone).dll";
+
+                try
                 {
-                    Debug.Write(
-                                "Line number " + CompErr.Line +
-                                ", Error Number: " + CompErr.ErrorNumber +
-                                ", '" + CompErr.ErrorText + ";" +
-                                Environment.NewLine + Environment.NewLine, Debug.DebugType.Error);
+                    if (File.Exists(appFile)) File.Delete(appFile);
+                    if (File.Exists(dllFile)) File.Delete(dllFile);
+
+                    File.Move(app_file, appFile);
+                    File.Copy("./Wingine (Standalone).dll", dllFile);
+                }
+                catch (Exception ex)
+                {
+                    var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                    Debug.Write($"Building Failed in {et - st}ms!\nReason: {ex.Message}", Debug.DebugType.Editor);
                 }
 
-                var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                Debug.Write($"Building Failed in {et - st}ms!", Debug.DebugType.Editor);
-            }
-            else
-            {
-                var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                Debug.Write($"Building Completed in {et - st}ms!\n{Path.GetFullPath(Output)}", Debug.DebugType.Editor);
-            }
+                CompilerParameters parameters = new CompilerParameters();
+                parameters.GenerateExecutable = true;
+                parameters.CompilerOptions = "/target:winexe /optimize";
+                //parameters.CompilerOptions = @"";
+
+                parameters.ReferencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+                parameters.ReferencedAssemblies.Add(typeof(Runner).Assembly.Location);
+
+                List<string> asms = new List<string>();
+                for (int i = 0; i < parameters.ReferencedAssemblies.Count; i++)
+                {
+                    asms.Add(parameters.ReferencedAssemblies[i]);
+                }
+                //MessageBox.Show(string.Join("\n", asms));
+                parameters.OutputAssembly = Output;
+                parameters.MainClass = "BuildRunner";
+                CompilerResults results = icc.CompileAssemblyFromSource(parameters, buildCode);
+
+                if (results.Errors.Count > 0)
+                {
+                    foreach (CompilerError CompErr in results.Errors)
+                    {
+                        Debug.Write(
+                                    "Line number " + CompErr.Line +
+                                    ", Error Number: " + CompErr.ErrorNumber +
+                                    ", '" + CompErr.ErrorText + ";" +
+                                    Environment.NewLine + Environment.NewLine, Debug.DebugType.Error);
+                    }
+
+                    var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                    Debug.Write($"Building Failed in {et - st}ms!", Debug.DebugType.Editor);
+                }
+                else
+                {
+                    var et = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                    Debug.Write($"Building Completed in {et - st}ms!\n{Path.GetFullPath(Output)}", Debug.DebugType.Editor);
+                }
+            });
         }
     }
 

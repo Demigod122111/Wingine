@@ -534,9 +534,11 @@ namespace Wingine
             {
                 if (CurrentScene == null) return;
 
-                for (int i = 0; i < CurrentScene.GameObjects.Count; i++)
+                var gos = CurrentScene.GameObjects;
+
+                for (int i = 0; i < gos.Count; i++)
                 {
-                    var b = CurrentScene.GameObjects[i];
+                    var b = gos[i];
 
                     if (!b.ActiveInHierarchy()) continue;
 

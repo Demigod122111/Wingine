@@ -22,7 +22,6 @@ namespace Wingine.Editor
 
 
             Add("Physics", typeof(Wingine.PhysicsBody));
-            Add("Physics", typeof(Wingine.Collider));
 
 
             Add("UI", typeof(Wingine.UI.Canvas));

@@ -45,6 +45,29 @@ namespace Wingine
             return (float)Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2));
         }
 
+        public void Normalize()
+        {
+            float magnitude = Magnitude;
+            if (magnitude > 0)
+            {
+                X /= magnitude;
+                Y /= magnitude;
+            }
+        }
+
+        public static Vector2 Normalized(Vector2 vector)
+        {
+            float magnitude = vector.Magnitude;
+            if (magnitude > 0)
+            {
+                return new Vector2(vector.X / magnitude, vector.Y / magnitude);
+            }
+            else
+            {
+                return vector; // Avoid division by zero
+            }
+        }
+
         public override string ToString()
         {
             return $"X: {X} | Y: {Y}";

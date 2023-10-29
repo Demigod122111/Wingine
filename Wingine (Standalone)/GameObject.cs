@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Wingine
 {
@@ -310,12 +311,47 @@ namespace Wingine
 
         public GameObject Duplicate()
         {
-            DataStore.WriteToBinaryFile<GameObject>("./DGTEMP.cache", this);
-            var dupe = DataStore.ReadFromBinaryFile<GameObject>("./DGTEMP.cache");
-            File.Delete("./DGTEMP.cache");
+            var did = DateTime.UtcNow.Ticks.ToString();
+
+            DataStore.WriteToBinaryFile<GameObject>($"./DGTEMP_{did}.cache", this);
+            var dupe = DataStore.ReadFromBinaryFile<GameObject>($"./DGTEMP_{did}.cache");
+            File.Delete($"./DGTEMP_{did}.cache");
             dupe.Parent = Parent;
             if (!Runner.App.CurrentScene.GameObjects.Contains(dupe)) Runner.App.CurrentScene.AddGameObject(dupe);
             dupe.Name = $"{Name} (Copy)";
+            dupe.Children = new List<GameObject>();
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].SubDuplicate(dupe);
+            }
+
+            return dupe;
+        }
+
+
+        GameObject SubDuplicate(GameObject parent)
+        {
+            GameObject dupe = null;
+            var did = DateTime.UtcNow.Ticks.ToString();
+
+            if (Parent != parent)
+            {
+                DataStore.WriteToBinaryFile<GameObject>($"./DGTEMP_SD_{did}.cache", this);
+                dupe = DataStore.ReadFromBinaryFile<GameObject>($"./DGTEMP_SD_{did}.cache");
+                File.Delete($"./DGTEMP_SD_{did}.cache");
+                if (!Runner.App.CurrentScene.GameObjects.Contains(dupe)) Runner.App.CurrentScene.AddGameObject(dupe);
+                dupe.Name = $"{Name}";
+                dupe.Children = new List<GameObject>();
+
+                dupe.SetParent(parent);
+            }
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].SubDuplicate(dupe);
+            }
+
             return dupe;
         }
 

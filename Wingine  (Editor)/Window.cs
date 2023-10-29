@@ -36,19 +36,19 @@ namespace Wingine.Editor
         public Camera SceneCamera;
         public float SceneCameraSpeed => float.Parse(SceneCameraSpeedTSCB.Text);
 
+        public List<Tuple<string, object, Debug.DebugType>> ConsoleStream = new List<Tuple<string, object, Debug.DebugType>>();
+
 
         #region Hierarchy
 
         Dictionary<string, TreeNode> HierarchyItems = new Dictionary<string, TreeNode>();
         Dictionary<TreeNode, bool> HierarchyItemsExpansion = new Dictionary<TreeNode, bool>();
 
-        // Missing XML comment for publicly visible type or member 'Window.ReloadHierarchyObject(GameObject)'
         public void ReloadHierarchyObject(GameObject go)
         {
             LoadHierarchy(true);
         }
 
-        // Missing XML comment for publicly visible type or member 'Window.LoadHierarchy(bool, List<GameObject>)'
         public void LoadHierarchy(bool fully = true, List<GameObject> partials = null)
         {
             if (fully)
@@ -67,8 +67,11 @@ namespace Wingine.Editor
 
                 if (HierarchyItems.ContainsKey(id))
                 {
-                    HierarchyItems[id].Remove();
-                    parent?.Nodes.Add(HierarchyItems[id]);
+                    if (HierarchyItems[id] != parent)
+                    {
+                        HierarchyItems[id].Remove();
+                        parent?.Nodes.Add(HierarchyItems[id]);
+                    }
                 }
                 else
                 {
@@ -117,11 +120,23 @@ namespace Wingine.Editor
                     Loaded.Add(go);
                 }
 
+                for (int i = 0; i < gos.Count; i++)
+                {
+                    var go = gos[i];
+                    if (Loaded.Contains(go)) continue;
+                    LoadGameObjects(new List<GameObject>() { go });
+                }
+
             }
 
             if (Runner.App.CurrentScene != null)
             {
                 LoadGameObjects(fully == true ? Runner.App.CurrentScene.GameObjects : partials);
+
+                if (Hierarchy.GetNodeCount(true) < Runner.App.CurrentScene.GameObjects.Count)
+                {
+                    LoadHierarchy();
+                }
             }
         }
         #endregion
@@ -1347,7 +1362,7 @@ namespace Wingine.Editor
             {
                 GameObject go = (GameObject)s;
 
-                ReloadHierarchyObject(go);
+                LoadHierarchy();
             };
 
             Wingine.GameObject.ActiveChanged += (s, e) =>
@@ -1373,29 +1388,7 @@ namespace Wingine.Editor
 
                 if (Wingine.Debug.Repeated(msg, type) && !Wingine.Debug.CanRepeat) return;
 
-                switch (type)
-                {
-                    case Debug.DebugType.Log:
-                        Console.AppendText(tmsg, Color.Beige);
-                        break;
-                    case Debug.DebugType.Warning:
-                        Console.AppendText(tmsg, Color.LightGoldenrodYellow);
-                        break;
-                    case Debug.DebugType.Error:
-                        Console.AppendText(tmsg, Color.Crimson);
-                        break;
-                    case Debug.DebugType.Editor:
-                        Console.AppendText(tmsg, Color.MediumPurple);
-                        break;
-                    default:
-                        Console.AppendText(tmsg, Color.Beige);
-                        break;
-                }
-
-                Console.Update();
-                Console.ScrollToCaret();
-
-                ProcessWinEvents();
+                ConsoleStream.Add(new Tuple<string, object, Debug.DebugType>(tmsg, msg, type));
             };
 
             Wingine.SceneManagement.SceneManager.SceneLoaded += (s) =>
@@ -1542,6 +1535,41 @@ namespace Wingine.Editor
             {
                 sceneMouseDown = false;
             }
+
+
+            var consoleStream = ConsoleStream;
+            
+            foreach (var data in consoleStream)
+            {
+                var tmsg = data.Item1;
+                var type = data.Item3;
+
+                switch (type)
+                {
+                    case Debug.DebugType.Log:
+                        Console.AppendText(tmsg, Color.Beige);
+                        break;
+                    case Debug.DebugType.Warning:
+                        Console.AppendText(tmsg, Color.LightGoldenrodYellow);
+                        break;
+                    case Debug.DebugType.Error:
+                        Console.AppendText(tmsg, Color.Crimson);
+                        break;
+                    case Debug.DebugType.Editor:
+                        Console.AppendText(tmsg, Color.MediumPurple);
+                        break;
+                    default:
+                        Console.AppendText(tmsg, Color.Beige);
+                        break;
+                }
+
+                Console.Update();
+                Console.ScrollToCaret();
+
+                ProcessWinEvents();
+            }
+
+            ConsoleStream.Clear();
 
             ProcessWinEvents();
         }
@@ -1755,122 +1783,6 @@ namespace Wingine.Editor
             else
             {
                 ifps++;
-            }
-
-            var k = new List<Control>();
-            try
-            {
-                //k.AddRange(Inspector.Controls as IEnumerable<Control>);
-            }
-            catch { }
-
-            for (int i = 0; i < k.Count; i++)
-            {
-                var c = k[i];
-                Type t = c.GetType();
-                bool fi = c.Tag is FieldInfo;
-
-
-                #region Types
-                if (t == typeof(BaseInputField))
-                {
-                    var ipf = (BaseInputField)c;
-
-                    if (!ipf.Value.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                        ipf.Value.Text = val == null ? "" : val.ToString();
-                    }
-                }
-                else if (t == typeof(ColorInputField))
-                {
-                    var ipf = (ColorInputField)c;
-
-                    object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                    if (!ipf.Value.Focused)
-                    {
-                        ipf.Value.Color = (Color)val;
-                    }
-
-                    if (!ipf.Value2.Focused)
-                    {
-                        ipf.Value2.Color = (Color)val;
-                    }
-                }
-                else if (t == typeof(ExtendedColorInputField))
-                {
-                    var ipf = (ExtendedColorInputField)c;
-
-                    object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                    if (!ipf.Value.Focused)
-                    {
-                        ipf.Value.Color = (Color)val;
-                    }
-
-                    if (!ipf.Value2.Focused)
-                    {
-                        ipf.Value2.Color = (Color)val;
-                    }
-                }
-                else if (t == typeof(ButtonInputField))
-                {
-                    var ipf = (ButtonInputField)c;
-
-                    object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                    //ipf.Action.Text = val.ToString();
-                }
-                else if (t == typeof(BoolInputField))
-                {
-                    var ipf = (BoolInputField)c;
-                    if (!ipf.Value.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-                        ipf.Value.Checked = bool.Parse(val.ToString());
-                    }
-                }
-                else if (t == typeof(NumberInputField))
-                {
-                    var ipf = (NumberInputField)c;
-                    if (!ipf.Value.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                        ipf.Value.Value = decimal.Parse(val.ToString());
-                    }
-                }
-                else if (t == typeof(VectorInputField))
-                {
-                    var ipf = (VectorInputField)c;
-                    if (!ipf.Value1.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                        ipf.Value1.Value = decimal.Parse(((Vector2)val).X.ToString());
-                    }
-
-                    if (!ipf.Value2.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                        ipf.Value2.Value = decimal.Parse(((Vector2)val).Y.ToString());
-                    }
-                }
-                else if (t == typeof(EnumInputField))
-                {
-                    var ipf = (EnumInputField)c;
-
-                    if (!ipf.Value.Focused)
-                    {
-                        object val = fi ? ((FieldInfo)ipf.Tag).GetValue(ipf.ValueObject) : ((PropertyInfo)ipf.Tag).GetValue(ipf.ValueObject);
-
-                        ipf.Value.SelectedItem = val;
-                    }
-                }
-                #endregion
             }
         }
 
@@ -2408,7 +2320,6 @@ namespace Wingine.Editor
             Runner.App.CurrentScene = null;
             RollBack();
 
-            //Runner.App?.RenderPlanes.Add(Scene);
 
             PlayStopTSB.Image = Properties.Resources.play2;
         }
@@ -2425,8 +2336,6 @@ namespace Wingine.Editor
                 e.Cancel = true;
                 StopApp();
             };
-
-            //Runner.App?.RenderPlanes.Remove(Scene);
 
             Runner.App?.Start();
             Runner.App?.Show();

@@ -156,6 +156,7 @@ namespace Wingine.Hub
             tb_engine.Text = engineFile;
 
             ResourceReader.CreateFileFromResource("Wingine.Hub.Costura.dll", Path.GetFullPath("./Costura.dll"));
+            ResourceReader.CreateFileFromResource("Wingine.Hub.Wingine (Standalone).dll", Path.GetFullPath("./Wingine (Standalone).dll"));
         }
 
         public static class ResourceReader
