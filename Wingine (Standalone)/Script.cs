@@ -139,7 +139,7 @@ function update(){
 
         public override void Awake()
         {
-            InvokeFunction("awake", forceInit: true);
+            InvokeFunction("awake", forceInit: false);
         }
 
         public override void Start()
@@ -150,6 +150,11 @@ function update(){
         public override void Update()
         {
             InvokeFunction("update");
+        }
+
+        public void Input()
+        {
+            InvokeFunction("receiveInput");
         }
 
         public override void FixedUpdate()

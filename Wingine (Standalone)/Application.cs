@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -361,7 +362,7 @@ namespace Wingine
         }
 
         public static event EventHandler OnGameUpdate;
-
+        
         bool firstFrame = true;
         internal void UpdateGame()
         {
@@ -415,6 +416,10 @@ namespace Wingine
                             mb.Awake();
                         }
 
+                        var inputThread = new Thread(new ThreadStart(mb.Input));
+                        inputThread.SetApartmentState(ApartmentState.STA);
+                        inputThread.Start();
+
                         mb.Update();
 
                     }
@@ -456,7 +461,6 @@ namespace Wingine
                         {
                             Debug.Write($"{e.Message} |[{e.Source}]|", Debug.DebugType.Error);
                         }
-
                     }
                 }
             }
@@ -619,6 +623,17 @@ namespace Wingine
             }
 
             new Thread(new ThreadStart(() => { RegulateThreads(); })).Start();
+
+            void ManageMemory()
+            {
+                GC.AddMemoryPressure(Process.GetCurrentProcess().WorkingSet64);
+                // Perform garbage collection
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
+
+            new Thread(new ThreadStart(() => { ManageMemory(); })).Start();
             #endregion
 
             while (running)
@@ -628,6 +643,7 @@ namespace Wingine
                 previousTime = currentTime;
                 dt = deltaTime.TotalSeconds;
 
+                Input.InApp = ((IsRunning) && (Focused));
                 UpdateGame();
 
                 await Task.Delay(1000 / TARGET_FPS);

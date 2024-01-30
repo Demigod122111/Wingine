@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Title = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Value = new Cyotek.Windows.Forms.ColorWheel();
             this.Value2 = new Cyotek.Windows.Forms.ColorEditor();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -88,7 +90,11 @@
             this.Value2.TabIndex = 2;
             this.Value2.ColorChanged += new System.EventHandler(this.Value2_ColorChanged);
             // 
-            // ColorInputField
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // ExtendedColorInputField
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -97,7 +103,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.Title);
             this.DoubleBuffered = true;
-            this.Name = "ColorInputField";
+            this.Name = "ExtendedColorInputField";
             this.Size = new System.Drawing.Size(481, 140);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -118,6 +124,7 @@
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value'
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value2'
         public Cyotek.Windows.Forms.ColorEditor Value2;
+        private System.Windows.Forms.Timer timer1;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'ExtendedColorInputField.Value2'
     }
 }

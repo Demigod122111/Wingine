@@ -10,13 +10,13 @@ namespace Wingine.Editor
 
             if (Runner.CurrentProject != null)
             {
-                if (Runner.CurrentProject?.Item3 == null)
+                if (Runner.CurrentProject?.Item4 == null)
                 {
                     Debug.Write("Error Probing Scenes!", Debug.DebugType.Error);
                 }
                 else
                 {
-                    foreach (var scene in Runner.CurrentProject?.Item3)
+                    foreach (var scene in Runner.CurrentProject?.Item4)
                     {
                         View.Nodes.Add($"[{scene.SceneIndex}] {scene.Name}").Tag = scene;
                     }
@@ -74,9 +74,9 @@ namespace Wingine.Editor
             View.Nodes.Insert(index - 1, node);
 
             var scene = (Scene)node.Tag;
-            var sindex = Runner.CurrentProject.Item3.IndexOf(scene);
-            Runner.CurrentProject.Item3.Remove(scene);
-            Runner.CurrentProject.Item3.Insert(sindex - 1, scene);
+            var sindex = Runner.CurrentProject.Item4.IndexOf(scene);
+            Runner.CurrentProject.Item4.Remove(scene);
+            Runner.CurrentProject.Item4.Insert(sindex - 1, scene);
 
             NameSceneNodes();
         }
@@ -89,9 +89,9 @@ namespace Wingine.Editor
             View.Nodes.Insert(index + 1, node);
 
             var scene = (Scene)node.Tag;
-            var sindex = Runner.CurrentProject.Item3.IndexOf(scene);
-            Runner.CurrentProject.Item3.Remove(scene);
-            Runner.CurrentProject.Item3.Insert(sindex + 1, scene);
+            var sindex = Runner.CurrentProject.Item4.IndexOf(scene);
+            Runner.CurrentProject.Item4.Remove(scene);
+            Runner.CurrentProject.Item4.Insert(sindex + 1, scene);
 
             NameSceneNodes();
         }

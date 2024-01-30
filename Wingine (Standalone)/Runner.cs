@@ -20,13 +20,36 @@ namespace Wingine
         public static Tuple<
             string, // Project Name
             string, // Project ID
+            string, // Application Title
             List<Scene>, // Project Scenes
             Dictionary<string, object> // PlayerPrefs
-            > CurrentProject = new Tuple<string, string, List<Scene>, Dictionary<string, object>>("", DateTime.UtcNow.Ticks.ToString(), null, null);
+            > CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>("", DateTime.UtcNow.Ticks.ToString(), "Wingine Application",null, null);
 
 
+        public static void SetCurrentProjectName(string name)
+        {
+            CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(name, CurrentProject.Item2, CurrentProject.Item3, CurrentProject.Item4, CurrentProject.Item5);
+        }
 
+        public static void SetCurrentProjectID(string id)
+        {
+            CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(CurrentProject.Item1, id, CurrentProject.Item3, CurrentProject.Item4, CurrentProject.Item5);
+        }
 
+        public static void SetCurrentApplicationTitle(string title)
+        {
+            CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(CurrentProject.Item1, CurrentProject.Item2, title, CurrentProject.Item4, CurrentProject.Item5);
+        }
+
+        public static void SetCurrentProjectScenes(List<Scene> scenes)
+        {
+            CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(CurrentProject.Item1, CurrentProject.Item2, CurrentProject.Item3, scenes, CurrentProject.Item5);
+        }
+
+        public static void SetCurrentPlayerPrefs(Dictionary<string, object> playerPrefs)
+        {
+            CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(CurrentProject.Item1, CurrentProject.Item2, CurrentProject.Item3, CurrentProject.Item4, playerPrefs);
+        }
 
         public static bool InEditor = false;
         public static bool UnderlyingDebug = false;
@@ -45,6 +68,7 @@ namespace Wingine
 
         public void Show()
         {
+            App.Text = CurrentProject.Item3;
             App.Show();
         }
 
@@ -52,8 +76,6 @@ namespace Wingine
         public static async void Run()
         {
             await Task.Run(() => { System.Windows.Forms.Application.Run(App); });
-
-
         }
 
         public static void BuildMain()
@@ -66,8 +88,8 @@ namespace Wingine
             }
             else MessageBox.Show($"Specified File '{file}' was not found!");
 
-            App.CurrentScene = CurrentProject.Item3[0];
-            App.Text = CurrentProject.Item1;
+            App.CurrentScene = CurrentProject.Item4[0];
+            App.Text = CurrentProject.Item3;
 
 
             App.Start();
@@ -79,7 +101,7 @@ namespace Wingine
         {
             if (Environment.GetCommandLineArgs()[1].EndsWith(".wingine"))
             {
-                CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, List<Scene>, Dictionary<string, object>>>(Environment.GetCommandLineArgs()[1]);
+                CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, string, List<Scene>, Dictionary<string, object>>>(Environment.GetCommandLineArgs()[1]);
             }
             else if (Environment.GetCommandLineArgs()[1].EndsWith(".wingine_app"))
             {
@@ -87,9 +109,8 @@ namespace Wingine
                 CurrentProject = dfba.Game;
             }
 
-            App.CurrentScene = CurrentProject.Item3[0];
-            App.Text = CurrentProject.Item1;
-
+            App.CurrentScene = CurrentProject.Item4[0];
+            App.Text = CurrentProject.Item3;
 
             App.Start();
             System.Windows.Forms.Application.Run(App);
@@ -175,6 +196,7 @@ namespace Wingine
     public class CartageSave
     {
         public Tuple<
+            string,
             string,
             string,
             List<Scene>,

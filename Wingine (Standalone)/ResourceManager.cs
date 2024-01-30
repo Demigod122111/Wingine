@@ -10,9 +10,9 @@ namespace Wingine
 
         public static object Get(string name)
         {
-            if (Runner.CurrentProject?.Item4?.ContainsKey(name.Trim()) ?? false)
+            if (Runner.CurrentProject?.Item5?.ContainsKey(name.Trim()) ?? false)
             {
-                return Runner.CurrentProject.Item4[name.Trim()];
+                return Runner.CurrentProject.Item5[name.Trim()];
             }
 
             return null;
@@ -21,16 +21,16 @@ namespace Wingine
         
         public static void Set(string name, object value, bool updateEvent = true)
         {
-            Runner.CurrentProject.Item4[name.Trim()] = value;
+            Runner.CurrentProject.Item5[name.Trim()] = value;
 
-            Runner.CurrentProject.Item4.Remove("");
+            Runner.CurrentProject.Item5.Remove("");
 
             if (updateEvent) ResourcesChanged?.Invoke();
         }
 
         public static void Remove(string name, bool updateEvent = true)
         {
-            Runner.CurrentProject.Item4.Remove(name);
+            Runner.CurrentProject.Item5.Remove(name);
 
             if (updateEvent) ResourcesChanged?.Invoke();
         }
@@ -42,6 +42,6 @@ namespace Wingine
             if (updateEvent) ResourcesChanged?.Invoke();
         }
 
-        public static Dictionary<string, object> GetAll() => Runner.CurrentProject.Item4;
+        public static Dictionary<string, object> GetAll() => Runner.CurrentProject.Item5;
     }
 }

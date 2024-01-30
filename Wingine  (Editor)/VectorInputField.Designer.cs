@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Title = new System.Windows.Forms.Label();
             this.Value1 = new Wingine.Editor.CustomNumericUpDown();
             this.Value2 = new Wingine.Editor.CustomNumericUpDown();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.Value1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Value2)).BeginInit();
             this.SuspendLayout();
@@ -73,6 +75,10 @@
             this.Value2.Size = new System.Drawing.Size(131, 20);
             this.Value2.TabIndex = 2;
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // VectorInputField
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -101,6 +107,7 @@
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value1'
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value2'
         public CustomNumericUpDown Value2;
+        private System.Windows.Forms.Timer timer1;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'VectorInputField.Value2'
     }
 }

@@ -29,14 +29,14 @@ namespace Wingine
 
 
         public string Name = "Wingine Scene";
-        public int SceneIndex => Runner.CurrentProject.Item3.IndexOf(this);
+        public int SceneIndex => Runner.CurrentProject.Item4.IndexOf(this);
 
 
         public Scene(List<GameObject> gameObjects = null)
         {
             if (Runner.CurrentProject != null)
             {
-                Runner.CurrentProject?.Item3?.Add(this);
+                Runner.CurrentProject?.Item4?.Add(this);
             }
 
             GameObjects = gameObjects != null ? gameObjects : new List<GameObject>();

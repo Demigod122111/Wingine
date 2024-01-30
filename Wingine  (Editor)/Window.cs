@@ -1462,7 +1462,7 @@ namespace Wingine.Editor
 
             if (Runner.App.CurrentScene == null)
             {
-                if (Runner.CurrentProject?.Item3?.Count != 0)
+                if (Runner.CurrentProject?.Item4?.Count != 0)
                 {
                     SceneManager.LoadFirstScene();
                 }
@@ -1470,8 +1470,8 @@ namespace Wingine.Editor
 
             if (Runner.App.CurrentScene == null ||
                 Runner.CurrentProject == null ||
-                Runner.CurrentProject.Item3 == null ||
-                Runner.CurrentProject.Item3.Count == 0)
+                Runner.CurrentProject.Item4 == null ||
+                Runner.CurrentProject.Item4.Count == 0)
             {
                 HierarchyUpdater.Enabled = false;
                 InspectorUpdater.Enabled = false;
@@ -1949,6 +1949,16 @@ namespace Wingine.Editor
             SceneManager.LoadLastScene();
         }
 
+        private void defaultSceneToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            GameObject MainCamera = new GameObject(name: "Main Camera");
+            MainCamera.Tag = "MainCamera";
+            MainCamera.AddComponent<Camera>().BackgroundColor = Color.FromArgb(0, 162, 255);
+
+            new Scene(gameObjects: new List<GameObject>() { MainCamera });
+            SceneManager.LoadLastScene();
+        }
+
         private void SceneMenuTSB_Click(object sender, EventArgs e)
         {
             var lsm = new LoadSceneMenu();
@@ -1979,7 +1989,7 @@ namespace Wingine.Editor
         {
             if (Runner.CurrentProject != null && Runner.App.CurrentScene != null)
             {
-                Runner.CurrentProject?.Item3.Remove(Runner.App?.CurrentScene);
+                Runner.CurrentProject?.Item4.Remove(Runner.App?.CurrentScene);
                 SceneManager.LoadFirstScene();
             }
         }
@@ -2080,19 +2090,25 @@ namespace Wingine.Editor
         {
             if (Runner.CurrentProject != null)
             {
-                var nm = Interaction.InputBox("Project Name: ", DefaultResponse: Runner.CurrentProject.Item1);
-                var pn = Runner.CurrentProject.Item1;
+                var nm = Interaction.InputBox("Project Name: ", Title: "Change Project Name", DefaultResponse: Runner.CurrentProject.Item1);
 
                 if (!string.IsNullOrWhiteSpace(nm))
                 {
-                    Runner.CurrentProject =
-                        new Tuple<string, string, List<Scene>, Dictionary<string, object>>(
-                            nm,
-                            Runner.CurrentProject.Item2,
-                            Runner.CurrentProject.Item3,
-                            Runner.CurrentProject.Item4);
+                    Runner.SetCurrentProjectName(nm);
                 }
             }
+            else Debug.Write("No Open Projects Found!", Debug.DebugType.Editor);
+        }
+
+        private void changeApplicationTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Runner.CurrentProject != null)
+            {
+                var nm = Interaction.InputBox("Application Title: ", Title: "Change Application Title", DefaultResponse: Runner.App.Text);
+
+                Runner.SetCurrentApplicationTitle(nm);
+            }
+            else Debug.Write("No Open Projects Found!", Debug.DebugType.Editor);
         }
 
         private void SCPTSB_Click(object sender, EventArgs e)
@@ -2138,7 +2154,7 @@ namespace Wingine.Editor
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             currentFile = "";
-            Runner.CurrentProject = new Tuple<string, string, List<Scene>, Dictionary<string, object>>("Unnamed Project", DateTime.UtcNow.Ticks.ToString(), new List<Scene>(), new Dictionary<string, object>());
+            Runner.CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>("Unnamed Project", DateTime.UtcNow.Ticks.ToString(), "Wingine Application", new List<Scene>(), new Dictionary<string, object>());
             LoadHierarchy(fully: true);
             ClearInspector();
 
@@ -2157,20 +2173,20 @@ namespace Wingine.Editor
             {
                 try
                 {
-                    Runner.CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, List<Scene>, Dictionary<string, object>>>(proj);
+                    Runner.CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, string, List<Scene>, Dictionary<string, object>>>(proj);
 
                     if (changePointer) currentFile = proj;
                     string nme = DateTime.Now.Ticks.ToString();
 
                     if (Runner.CurrentProject != null) nme = Runner.CurrentProject.Item1;
 
-                    if (Runner.CurrentProject.Item3 == null || Runner.CurrentProject.Item3.Count == 0)
+                    if (Runner.CurrentProject.Item4 == null || Runner.CurrentProject.Item4.Count == 0)
                     {
-                        Runner.CurrentProject = new Tuple<string, string, List<Scene>, Dictionary<string, object>>(nme, DateTime.UtcNow.Ticks.ToString(), new List<Scene>(), new Dictionary<string, object>());
-                        Runner.CurrentProject.Item3.Add(new Wingine.Scene());
+                        Runner.CurrentProject = new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(nme, DateTime.UtcNow.Ticks.ToString(), "Wingine Application", new List<Scene>(), new Dictionary<string, object>());
+                        Runner.CurrentProject.Item4.Add(new Wingine.Scene());
                     }
 
-                    Runner.App.CurrentScene = Runner.CurrentProject.Item3[0];
+                    Runner.App.CurrentScene = Runner.CurrentProject.Item4[0];
                     LoadHierarchy(fully: true);
                     ClearInspector();
 
@@ -2337,6 +2353,7 @@ namespace Wingine.Editor
                 StopApp();
             };
 
+            Runner.App.Text = Runner.CurrentProject.Item3;
             Runner.App?.Start();
             Runner.App?.Show();
             RunningApp = true;
@@ -2498,9 +2515,20 @@ namespace Wingine.Editor
         #endregion
 
         #region Diagnostics
+        void ManageMemory()
+        {
+            GC.AddMemoryPressure(Process.GetCurrentProcess().WorkingSet64);
+            // Perform garbage collection
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+        }
+
         void RegulateThreads()
         {
             var cp = Process.GetCurrentProcess();
+
+            ManageMemory();
 
             if (!rtb_threads.Focused)
             {
@@ -2509,7 +2537,16 @@ namespace Wingine.Editor
 
                 string r = "";
 
-                r += "Virtual Memory (Size64): " + cp.VirtualMemorySize64.ToString() + "\n\n---\n\n";
+                r += "Working Set (Allocated): " + (cp.WorkingSet64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Peak Working Set (Allocated): " + (cp.PeakWorkingSet64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Virtual Memory (Allocated): " + (cp.VirtualMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Peak Virtual Memory (Allocated): " + (cp.PeakVirtualMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Private Memory (Allocated): " + (cp.PrivateMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Nonpaged System Memory (Allocated): " + (cp.NonpagedSystemMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Paged System Memory (Allocated): " + (cp.PagedSystemMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Paged Memory (Allocated): " + (cp.PagedMemorySize64 / (1024 * 1024)).ToString() + " MB\n";
+                r += "Peak Paged Memory (Allocated): " + (cp.PeakPagedMemorySize64 / (1024 * 1024)).ToString() + " MB\n\n";
+                r += $"\n\n---Threads ({threads.Count})---\n\n";
 
                 for (int i = 0; i < threads.Count; i++)
                 {
@@ -2517,21 +2554,24 @@ namespace Wingine.Editor
 
                     try
                     {
+                        r += $"{thd.Id}:\n\tTotal Processor Time - {thd.TotalProcessorTime.TotalSeconds}s\n\tPriority Level - {thd.PriorityLevel}\n\tState - {thd.ThreadState}\n\tWait Reason - {thd.WaitReason} \n\n";
+
                         if (thd.TotalProcessorTime.TotalSeconds == 0)
                         {
                             thd.Dispose();
+                            ManageMemory();
                             continue;
                         }
 
-                        if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && thd.WaitReason == ThreadWaitReason.Unknown)
+                        if ((thd.ThreadState == System.Diagnostics.ThreadState.Wait && (thd.WaitReason == ThreadWaitReason.Unknown || thd.WaitReason == ThreadWaitReason.UserRequest || thd.WaitReason == ThreadWaitReason.EventPairLow))
                             || thd.ThreadState == System.Diagnostics.ThreadState.Unknown
                             || thd.ThreadState == System.Diagnostics.ThreadState.Terminated)
                         {
                             thd.Dispose();
+                            ManageMemory();
                             continue;
                         }
 
-                        r += $"{thd.Id} - {thd.TotalProcessorTime.TotalSeconds}s\n\n";
                     }
                     catch
                     {
@@ -2543,6 +2583,7 @@ namespace Wingine.Editor
                 rtb_threads.Update();
             }
         }
+
         #endregion
 
     }

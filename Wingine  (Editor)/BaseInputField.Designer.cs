@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Title = new System.Windows.Forms.Label();
             this.Value = new System.Windows.Forms.RichTextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // Title
@@ -62,6 +64,10 @@
             this.Value.Text = "";
             this.Value.TextChanged += new System.EventHandler(this.Value_TextChanged);
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // BaseInputField
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -84,6 +90,7 @@
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Title'
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Value'
         public System.Windows.Forms.RichTextBox Value;
+        private System.Windows.Forms.Timer timer1;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'BaseInputField.Value'
     }
 }

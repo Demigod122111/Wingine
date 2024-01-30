@@ -15,7 +15,7 @@ namespace Wingine.SceneManagement
         {
             try
             {
-                Runner.App.CurrentScene = Runner.CurrentProject?.Item3?[index];
+                Runner.App.CurrentScene = Runner.CurrentProject?.Item4?[index];
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch
@@ -23,14 +23,14 @@ namespace Wingine.SceneManagement
                 Debug.Write($"Unable to load scene at index `{index}`.");
             }
 
-            if (Runner.CurrentProject?.Item3?.Count == 0) Runner.App.CurrentScene = null;
+            if (Runner.CurrentProject?.Item4?.Count == 0) Runner.App.CurrentScene = null;
         }
 
         public static void LoadLastScene()
         {
             try
             {
-                Runner.App.CurrentScene = Runner.CurrentProject?.Item3?.Last();
+                Runner.App.CurrentScene = Runner.CurrentProject?.Item4?.Last();
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch
@@ -38,14 +38,14 @@ namespace Wingine.SceneManagement
                 Debug.Write($"Unable to load scene.");
             }
 
-            if (Runner.CurrentProject?.Item3?.Count == 0) Runner.App.CurrentScene = null;
+            if (Runner.CurrentProject?.Item4?.Count == 0) Runner.App.CurrentScene = null;
         }
 
         public static void LoadFirstScene()
         {
             try
             {
-                Runner.App.CurrentScene = Runner.CurrentProject?.Item3?.First();
+                Runner.App.CurrentScene = Runner.CurrentProject?.Item4?.First();
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch
@@ -53,7 +53,7 @@ namespace Wingine.SceneManagement
                 Debug.Write($"Unable to load scene.");
             }
 
-            if (Runner.CurrentProject?.Item3?.Count == 0) Runner.App.CurrentScene = null;
+            if (Runner.CurrentProject?.Item4?.Count == 0) Runner.App.CurrentScene = null;
         }
     }
 }

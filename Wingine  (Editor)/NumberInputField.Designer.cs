@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Title = new System.Windows.Forms.Label();
             this.Value = new Wingine.Editor.CustomNumericUpDown();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.Value)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,6 +59,10 @@
             this.Value.Size = new System.Drawing.Size(325, 20);
             this.Value.TabIndex = 1;
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // NumberInputField
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -80,6 +86,7 @@
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Title'
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Value'
         public CustomNumericUpDown Value;
+        private System.Windows.Forms.Timer timer1;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member 'NumberInputField.Value'
     }
 }
