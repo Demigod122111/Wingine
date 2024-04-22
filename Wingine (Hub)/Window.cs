@@ -60,10 +60,11 @@ namespace Wingine.Hub
             Tuple<
             string, // Project Name
             string, // Project ID
+            string, // Application Title
             List<Scene>, // Project Scenes
             Dictionary<string, object> // PlayerPrefs
             > CreationProject = 
-            new Tuple<string, string, List<Scene>, Dictionary<string, object>>(projName, DateTime.UtcNow.Ticks.ToString(), scenes, new Dictionary<string, object>());
+            new Tuple<string, string, string, List<Scene>, Dictionary<string, object>>(projName, DateTime.UtcNow.Ticks.ToString(), "Wingine Application", scenes, new Dictionary<string, object>());
 
             var projFile = $"{projNameFS}.wingine";
             projFile = $"{projDir}\\{projFile}";
@@ -180,7 +181,11 @@ namespace Wingine.Hub
                         using (Stream output = File.Create(path))
                         {
                             input.CopyTo(output);
+                            output.Close();
+                            output.Dispose();
                         }
+                        input.Close();
+                        input.Dispose();
                     }
                 }
             }
@@ -188,6 +193,8 @@ namespace Wingine.Hub
 
         void LoadProjects()
         {
+            lb_projects.Items.Clear();
+
             if (!File.Exists(projects)) File.WriteAllText(projects, "");
 
             List<string> items = new List<string>();

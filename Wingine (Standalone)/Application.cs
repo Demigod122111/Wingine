@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Wingine.Helpers;
 using Wingine.UI;
+using Wingine.Video;
 
 namespace Wingine
 {
@@ -135,7 +137,7 @@ namespace Wingine
         }
 
 
-        public void Render(RenderSource source)
+        public unsafe void Render(RenderSource source)
         {
             if (!source.doneRender) return;
             source.doneRender = false;
@@ -191,7 +193,7 @@ namespace Wingine
             var gameObjects = CurrentScene.GameObjects;
             var goCount = gameObjects.Count;
 
-            List<Canvas> all_canvas = new List<Canvas>();
+            List<IntPtr> all_canvas = new List<IntPtr>();
 
             for (int i = 0; i < goCount; i++)
             {
@@ -203,7 +205,7 @@ namespace Wingine
                 if (go.ComponentExists<Canvas>())
                 {
                     var canvas = go.GetComponentOfType<Canvas>();
-                    all_canvas.Add(canvas);
+                    all_canvas.Add((IntPtr)(&canvas));
                 }
                 #endregion
 
@@ -217,95 +219,150 @@ namespace Wingine
                 #region Pixel Renderer
                 if (go.ComponentExists<PixelRenderer>())
                 {
-                    PixelRenderer r = go.GetComponentOfType<PixelRenderer>();
+                    List<PixelRenderer> rs = go.GetComponentsOfType<PixelRenderer>().Cast<PixelRenderer>().ToList();
 
-                    try
+                    foreach (var r in rs)
                     {
-                        g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
-
-                        var scale = go.Transform.GetScale();
-                        g.ScaleTransform(scale.X, scale.Y);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Write(ex.Message);
-                    }
-
-                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
-                    var pixels = r.Pixels;
-                    var pixelsCount = pixels.Count;
-
-                    for (int j = 0; j < pixelsCount; j++)
-                    {
-                        var pixel = pixels[j];
-
-                        Vector2 pos = go.Transform.GetPosition();
-                        Point point = new Point((int)(pos.X + pixel.Item1.X), (int)(-pos.Y + pixel.Item1.Y));
-                        PointF pointf = new PointF((pos.X + pixel.Item1.X), (-pos.Y + pixel.Item1.Y));
-
-                        switch (pixel.Item3)
+                        try
                         {
-                            case PixelType.Rectangle:
-                                if (pixel.Item4 == FillType.Fill)
-                                    g.FillRectangle(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
-                                else if (pixel.Item4 == FillType.Empty)
-                                    g.DrawRectangle(new Pen(new SolidBrush(pixel.Item2)), new Rectangle(point, new Size((int)r.PixelSize.X, (int)r.PixelSize.Y)));
-                                break;
-                            case PixelType.Circle:
-                                if (pixel.Item4 == FillType.Fill)
-                                    g.FillEllipse(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
-                                else if (pixel.Item4 == FillType.Empty)
-                                    g.DrawEllipse(new Pen(new SolidBrush(pixel.Item2)), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
-                                break;
-                            default:
-                                break;
+                            g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
+
+                            var scale = go.Transform.GetScale();
+                            g.ScaleTransform(scale.X, scale.Y);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Write(ex.Message);
+                        }
+
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                        var pixels = r.Pixels;
+                        var pixelsCount = pixels.Count;
+
+                        for (int j = 0; j < pixelsCount; j++)
+                        {
+                            var pixel = pixels[j];
+
+                            Vector2 pos = go.Transform.GetPosition();
+                            Point point = new Point((int)(pos.X + pixel.Item1.X), (int)(-pos.Y + pixel.Item1.Y));
+                            PointF pointf = new PointF((pos.X + pixel.Item1.X), (-pos.Y + pixel.Item1.Y));
+
+                            switch (pixel.Item3)
+                            {
+                                case PixelType.Rectangle:
+                                    if (pixel.Item4 == FillType.Fill)
+                                        g.FillRectangle(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    else if (pixel.Item4 == FillType.Empty)
+                                        g.DrawRectangle(new Pen(new SolidBrush(pixel.Item2)), new Rectangle(point, new Size((int)r.PixelSize.X, (int)r.PixelSize.Y)));
+                                    break;
+                                case PixelType.Circle:
+                                    if (pixel.Item4 == FillType.Fill)
+                                        g.FillEllipse(new SolidBrush(pixel.Item2), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    else if (pixel.Item4 == FillType.Empty)
+                                        g.DrawEllipse(new Pen(new SolidBrush(pixel.Item2)), new RectangleF(pointf, new SizeF(r.PixelSize.X, r.PixelSize.Y)));
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
+
                 }
                 #endregion
 
                 #region Sprite Renderer
                 if (go.ComponentExists<SpriteRenderer>())
                 {
-                    SpriteRenderer r = go.GetComponentOfType<SpriteRenderer>();
+                    List<SpriteRenderer> rs = go.GetComponentsOfType<SpriteRenderer>().Cast<SpriteRenderer>().ToList();
 
-                    try
+                    foreach (var r in rs)
                     {
-                        g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
+                        try
+                        {
+                            g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
 
-                        var scale = go.Transform.GetScale();
-                        g.ScaleTransform(scale.X, scale.Y);
+                            var scale = go.Transform.GetScale();
+                            g.ScaleTransform(scale.X, scale.Y);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Write(ex.Message);
+                        }
+
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                        Bitmap img = r.GetImage();
+
+                        var subContainer = g.BeginContainer();
+
+                        var ox = img.Width / 2;
+                        var oy = img.Height / 2;
+                        var pos = go.Transform.Position;
+
+                        g.TranslateTransform(pos.X + ox, pos.Y - oy);
+
+                        g.DrawImage(RotateImage(img, go.Transform.Rotation), VectorToPointF(pos - new Vector2(ox, oy) - new Vector2(img.Width / 2, -(img.Height / 2))));
+
+                        g.TranslateTransform(-(pos.X + ox), -(pos.Y - oy));
+
+                        g.EndContainer(subContainer);
                     }
-                    catch (Exception ex)
+                }
+                #endregion
+
+                #region Video Player
+                if (go.ComponentExists<VideoPlayer>())
+                {
+                    List<VideoPlayer> vps = go.GetComponentsOfType<VideoPlayer>().Cast<VideoPlayer>().ToList();
+
+                    foreach (var vp in vps)
                     {
-                        Debug.Write(ex.Message);
+                        try
+                        {
+                            g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
+
+                            var scale = go.Transform.GetScale();
+                            g.ScaleTransform(scale.X, scale.Y);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Write(ex.Message);
+                        }
+
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                        Bitmap img = vp.GetCurrentFrame();
+
+                        if (img == null)
+                        {
+                            img = new Bitmap(vp.ResolutionWidth, vp.ResolutionHeight);
+                            Graphics.FromImage(img).Clear(Color.Black);
+                            Graphics.FromImage(img).DrawRectangle(Pens.Gray, new Rectangle(0, 0, vp.ResolutionWidth, vp.ResolutionHeight));
+                        }
+
+                        var subContainer = g.BeginContainer();
+
+                        var ox = img.Width / 2;
+                        var oy = img.Height / 2;
+                        var pos = go.Transform.Position;
+
+                        g.TranslateTransform(pos.X + ox, pos.Y - oy);
+
+                        g.DrawImage(RotateImage(img, go.Transform.Rotation), VectorToPointF(pos - new Vector2(ox, oy) - new Vector2(img.Width / 2, -(img.Height / 2))));
+
+                        g.TranslateTransform(-(pos.X + ox), -(pos.Y - oy));
+
+                        g.EndContainer(subContainer);
                     }
-
-                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
-                    Bitmap img = r.GetImage();
-
-                    var subContainer = g.BeginContainer();
-
-                    var ox = img.Width / 2;
-                    var oy = img.Height / 2;
-                    var pos = go.Transform.Position;
-
-                    g.TranslateTransform(pos.X + ox, pos.Y - oy);
-
-                    g.DrawImage(RotateImage(img, go.Transform.Rotation), VectorToPointF(pos - new Vector2(ox, oy) - new Vector2(img.Width / 2, -(img.Height / 2))));
-
-                    g.TranslateTransform(-(pos.X + ox), -(pos.Y - oy));
-
-                    g.EndContainer(subContainer);
                 }
                 #endregion
 
                 #region PhysicsBody Debugger
-                    if (go.ComponentExists<PhysicsBody>())
+                if (go.ComponentExists<PhysicsBody>())
                 {
                     var cld = go.GetComponentOfType<PhysicsBody>();
                     var cldp = cld.BoundingBox;
@@ -328,7 +385,7 @@ namespace Wingine
 
             for (int i = 0; i < all_canvas.Count; i++)
             {
-                var canvas = all_canvas[i];
+                var canvas = *((Canvas*)all_canvas[i]);
                 
                 var ui_g = canvas.RenderSpace == RenderSpace.Screen ? source.GetWritableBuffer() : g;
 
@@ -504,6 +561,7 @@ namespace Wingine
             firstFrame = true;
 
             ShouldDoRendering = true;
+            
             DoRenderLoop();
 
             RunGameLoop();
@@ -628,7 +686,6 @@ namespace Wingine
             {
                 GC.AddMemoryPressure(Process.GetCurrentProcess().WorkingSet64);
                 // Perform garbage collection
-                GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
             }

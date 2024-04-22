@@ -28,7 +28,8 @@ namespace Wingine.Editor
             Add("UI", typeof(Wingine.UI.TextRenderer));
             Add("UI", typeof(Wingine.UI.Button));
             
-            Add("Sound", typeof(Wingine.Audio.AudioSource));
+            Add("Media", typeof(Wingine.Audio.AudioSource));
+            Add("Media", typeof(Wingine.Video.VideoPlayer));
         }
 
         Dictionary<string, TreeNode> Categories = new Dictionary<string, TreeNode>();

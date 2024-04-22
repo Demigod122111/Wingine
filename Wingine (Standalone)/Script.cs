@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Wingine.Scripting;
 
 namespace Wingine
@@ -11,6 +13,10 @@ namespace Wingine
 
         [Multiline(360)]
         public string Code;
+
+        [ActionButton(true)]
+        [ToolTip("Read JavaScript Code From File (Will Overwrite existing code!)")]
+        public Action ReadCodeFromFile;
 
         public Script()
         {
@@ -26,6 +32,31 @@ function update(){
 
 }
 ";
+            ReadCodeFromFile = () =>
+            {
+                GetCodeData(fallback: true);
+            };
+        }
+
+        void GetCodeData(string file = "", bool fallback = false)
+        {
+            if (File.Exists(file))
+            {
+                string codeFilePath = file;
+                Code = File.ReadAllText(codeFilePath);
+            }
+            else if (fallback)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Select Code File: ";
+                ofd.Filter = "JavaScript File|*.js|All Files|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string codeFilePath = ofd.FileName;
+                    Code = File.ReadAllText(codeFilePath);
+                }
+            }
         }
 
         [NonSerialized]

@@ -53,6 +53,7 @@
             this.Controls.Add(this.Display);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "Application";
             this.Text = "[Application]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);

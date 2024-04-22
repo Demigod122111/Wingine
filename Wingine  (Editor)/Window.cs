@@ -41,15 +41,15 @@ namespace Wingine.Editor
 
         #region Hierarchy
 
-        Dictionary<string, TreeNode> HierarchyItems = new Dictionary<string, TreeNode>();
-        Dictionary<TreeNode, bool> HierarchyItemsExpansion = new Dictionary<TreeNode, bool>();
+        Dictionary<string, IntPtr> HierarchyItems = new Dictionary<string, IntPtr>();
+        Dictionary<IntPtr, bool> HierarchyItemsExpansion = new Dictionary<IntPtr, bool>();
 
         public void ReloadHierarchyObject(GameObject go)
         {
             LoadHierarchy(true);
         }
 
-        public void LoadHierarchy(bool fully = true, List<GameObject> partials = null)
+        public unsafe void LoadHierarchy(bool fully = true, List<GameObject> partials = null)
         {
             if (fully)
             {
@@ -58,31 +58,36 @@ namespace Wingine.Editor
                 HierarchyItemsExpansion.Clear();
             }
 
-            void AddGameObject(GameObject go, TreeNode parent)
+            void AddGameObject(GameObject go, IntPtr parent)
             {
                 string id = DateTime.Now.Ticks.ToString();
                 go.SetInspectorID(id);
 
-                TreeNode node = null;
+                IntPtr node = IntPtr.Zero;
 
                 if (HierarchyItems.ContainsKey(id))
                 {
-                    if (HierarchyItems[id] != parent)
+                    var hiid = TreeNode.FromHandle(Hierarchy, HierarchyItems[id]);
+                    if (hiid != TreeNode.FromHandle(Hierarchy, parent))
                     {
-                        HierarchyItems[id].Remove();
-                        parent?.Nodes.Add(HierarchyItems[id]);
+                        hiid.Remove();
+                        TreeNode.FromHandle(Hierarchy, parent)?.Nodes.Add(hiid);
                     }
                 }
                 else
                 {
-                    node = parent != null ? parent.Nodes.Add(go.Name) : Hierarchy.Nodes.Add(go.Name);
-                    HierarchyItems.Add(id, node);
-                    HierarchyItemsExpansion.Add(node, node.IsExpanded);
+                    node = parent != IntPtr.Zero ? TreeNode.FromHandle(Hierarchy, parent).Nodes.Add(go.Name).Handle : Hierarchy.Nodes.Add(go.Name).Handle;
+
+                    if (node != IntPtr.Zero)
+                    {
+                        HierarchyItems.Add(id, node);
+                        HierarchyItemsExpansion.Add(node, TreeNode.FromHandle(Hierarchy, node).IsExpanded);
+                    }
                 }
 
-                if (node != null)
+                if (node != IntPtr.Zero)
                 {
-                    node.Tag = go;
+                    TreeNode.FromHandle(Hierarchy, node).Tag = go;
                     go.SetActive(go.ActiveSelf);
                 }
             }
@@ -114,7 +119,7 @@ namespace Wingine.Editor
                     }
                     else
                     {
-                        AddGameObject(go, null);
+                        AddGameObject(go, IntPtr.Zero);
                     }
 
                     Loaded.Add(go);
@@ -292,7 +297,7 @@ namespace Wingine.Editor
                     go.RemoveComponent(comp);
                     LoadGameObjectInspector(go);
                 };
-                AddItemToInspector(head);
+                AddItemToInspector(head, false);
 
 
                 var members = comp.GetType().GetMembers();
@@ -320,7 +325,18 @@ namespace Wingine.Editor
 
                     if (Attribute.IsDefined(member, typeof(Wingine.HideInInspector)))
                     {
-                        return;
+                        Wingine.HideInInspector hii = ((Wingine.HideInInspector[])member.GetCustomAttributes(typeof(Wingine.HideInInspector), false))[0];
+                        if(hii.ShouldHide()) return;
+                    }
+
+                    bool HasToolTip = false;
+                    string ToolTipText = "";
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.ToolTip)))
+                    {
+                        Wingine.ToolTip tt = ((Wingine.ToolTip[])member.GetCustomAttributes(typeof(Wingine.ToolTip), false))[0];
+                        HasToolTip = true;
+                        ToolTipText = tt.ToolTipText;
                     }
 
                     if (Attribute.IsDefined(member, typeof(Wingine.Header)))
@@ -328,7 +344,7 @@ namespace Wingine.Editor
                         Wingine.Header hdr = ((Wingine.Header[])member.GetCustomAttributes(typeof(Wingine.Header), false))[0];
                         var hdrd = new ComponentSubHeader();
                         hdrd.Title.Text = hdr.Text;
-                        AddItemToInspector(hdrd);
+                        AddItemToInspector(hdrd, false);
                     }
 
                     if (Attribute.IsDefined(member, typeof(Wingine.Space)))
@@ -369,7 +385,7 @@ namespace Wingine.Editor
                         };
                         inputField.Value.SelectedIndexChanged += col;
 
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(Action))
                     {
@@ -405,7 +421,7 @@ namespace Wingine.Editor
                             };
                             inputField.Action.Click += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                     }
                     else if (t == typeof(Color))
@@ -434,7 +450,7 @@ namespace Wingine.Editor
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                         else
                         {
@@ -460,7 +476,7 @@ namespace Wingine.Editor
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                     }
                     else if (t == typeof(bool))
@@ -484,7 +500,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(Vector2))
                     {
@@ -529,7 +545,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(long))
                     {
@@ -564,7 +580,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(float))
                     {
@@ -601,7 +617,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(double))
                     {
@@ -637,7 +653,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(int))
                     {
@@ -672,7 +688,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(string))
                     {
@@ -704,7 +720,7 @@ namespace Wingine.Editor
                             inputField.Height = inputField.Title.Height + mle.DefaultSize;
                             inputField.Value.Height = mle.DefaultSize;
                         }
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else
                     {
@@ -715,7 +731,7 @@ namespace Wingine.Editor
                         inputField.ValueObject = comp;
                         inputField.Value.Text = $"{member.GetValue(comp)}";
                         inputField.Value.ReadOnly = true;
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     #endregion
                 }
@@ -730,7 +746,18 @@ namespace Wingine.Editor
 
                     if (Attribute.IsDefined(member, typeof(Wingine.HideInInspector)))
                     {
-                        return;
+                        Wingine.HideInInspector hii = ((Wingine.HideInInspector[])member.GetCustomAttributes(typeof(Wingine.HideInInspector), false))[0];
+                        if (hii.ShouldHide()) return;
+                    }
+
+                    bool HasToolTip = false;
+                    string ToolTipText = "";
+
+                    if (Attribute.IsDefined(member, typeof(Wingine.ToolTip)))
+                    {
+                        Wingine.ToolTip tt = ((Wingine.ToolTip[])member.GetCustomAttributes(typeof(Wingine.ToolTip), false))[0];
+                        HasToolTip = true;
+                        ToolTipText = tt.ToolTipText;
                     }
 
                     if (Attribute.IsDefined(member, typeof(Wingine.Header)))
@@ -738,7 +765,7 @@ namespace Wingine.Editor
                         Wingine.Header hdr = ((Wingine.Header[])member.GetCustomAttributes(typeof(Wingine.Header), false))[0];
                         var hdrd = new ComponentSubHeader();
                         hdrd.Title.Text = hdr.Text;
-                        AddItemToInspector(hdrd);
+                        AddItemToInspector(hdrd, false);
                     }
 
                     if (Attribute.IsDefined(member, typeof(Wingine.Space)))
@@ -778,7 +805,7 @@ namespace Wingine.Editor
                         };
                         inputField.Value.SelectedIndexChanged += col;
 
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(Action))
                     {
@@ -814,7 +841,7 @@ namespace Wingine.Editor
                             };
                             inputField.Action.Click += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                     }
                     else if (t == typeof(Color))
@@ -843,7 +870,7 @@ namespace Wingine.Editor
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                         else
                         {
@@ -869,7 +896,7 @@ namespace Wingine.Editor
                             inputField.Value.ColorChanged += col;
                             inputField.Value2.ColorChanged += col;
 
-                            AddItemToInspector(inputField);
+                            AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                         }
                     }
                     else if (t == typeof(bool))
@@ -893,7 +920,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(Vector2))
                     {
@@ -938,7 +965,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(long))
                     {
@@ -973,7 +1000,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(float))
                     {
@@ -1010,7 +1037,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(double))
                     {
@@ -1046,7 +1073,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(int))
                     {
@@ -1081,7 +1108,7 @@ namespace Wingine.Editor
 
                             comp.Tick();
                         };
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else if (t == typeof(string))
                     {
@@ -1113,7 +1140,7 @@ namespace Wingine.Editor
                             inputField.Height = inputField.Title.Height + mle.DefaultSize;
                             inputField.Value.Height = mle.DefaultSize;
                         }
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     else
                     {
@@ -1124,7 +1151,7 @@ namespace Wingine.Editor
                         inputField.ValueObject = comp;
                         inputField.Value.Text = $"{member.GetValue(comp)}";
                         inputField.Value.ReadOnly = true;
-                        AddItemToInspector(inputField);
+                        AddItemToInspector(inputField, HasToolTip, toolTip: ToolTipText);
                     }
                     #endregion
 
@@ -1136,7 +1163,7 @@ namespace Wingine.Editor
                 }
             }
 
-            void AddItemToInspector(Control c)
+            void AddItemToInspector(Control c, bool hasToolTip, string toolTip="")
             {
                 c.Parent = Inspector;
                 c.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Left;
@@ -1144,6 +1171,21 @@ namespace Wingine.Editor
                 c.Width = Inspector.Width;
                 InspectorItemHeight = c.Height;
                 NewPos = new Point(0, c.Location.Y + InspectorItemHeight + InspectorItemPadding);
+
+                if (hasToolTip)
+                {
+                    // Create the ToolTip and associate with the Form container.
+                    var toolTip1 = new System.Windows.Forms.ToolTip();
+
+                    // Set up the delays for the ToolTip.
+                    toolTip1.AutoPopDelay = 5000;
+                    toolTip1.InitialDelay = 1000;
+                    toolTip1.ReshowDelay = 500;
+                    // Force the ToolTip text to be displayed whether or not the form is active.
+                    toolTip1.ShowAlways = true;
+
+                    toolTip1.SetToolTip(c, toolTip);
+                }
             }
 
 
@@ -1189,7 +1231,7 @@ namespace Wingine.Editor
                 ACM.ShowDialog(this);
             };
             AddComponent.Action.Click += ACEH;
-            AddItemToInspector(AddComponent.Action);
+            AddItemToInspector(AddComponent.Action, false);
 
             Inspector.Visible = true;
 
@@ -1338,7 +1380,7 @@ namespace Wingine.Editor
         #endregion
 
         #region Event Manager
-        void EventManagement()
+        unsafe void EventManagement()
         {
             Wingine.Scene.OnGameObjectAdded += (go) =>
             {
@@ -1347,7 +1389,7 @@ namespace Wingine.Editor
 
             Wingine.Scene.OnGameObjectRemoved += (go) =>
             {
-                HierarchyItems[go.GetInspectorID()].Remove();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).Remove();
                 HierarchyItemsExpansion.Remove(HierarchyItems[go.GetInspectorID()]);
                 HierarchyItems.Remove(go.GetInspectorID());
             };
@@ -1368,13 +1410,13 @@ namespace Wingine.Editor
             Wingine.GameObject.ActiveChanged += (s, e) =>
             {
                 GameObject go = (GameObject)s;
-                HierarchyItems[go.GetInspectorID()].ForeColor = go.ActiveInHierarchy() ? Color.Goldenrod : Color.DarkRed;
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).ForeColor = go.ActiveInHierarchy() ? Color.Goldenrod : Color.DarkRed;
             };
 
             Wingine.GameObject.NameChanged += (s, e) =>
             {
                 GameObject go = (GameObject)s;
-                HierarchyItems[go.GetInspectorID()].Text = go.Name;
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).Text = go.Name;
             };
 
             Wingine.Debug.CanRepeatChanged += (s, e) =>
@@ -1432,7 +1474,7 @@ namespace Wingine.Editor
         private void Editor_Tick(object sender, EventArgs e)
         {
             UpdateEditor();
-            RegulateThreads();
+            //RegulateThreads();
         }
 
         void UpdateEditor()
@@ -1601,17 +1643,17 @@ namespace Wingine.Editor
             ClearConsole();
         }
 
-        TreeNode dragNode = null;
+        IntPtr dragNode = IntPtr.Zero;
         bool draggingNode => dragNode != null;
         private void Hierarchy_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            dragNode = (TreeNode)e.Item;
+            dragNode = ((TreeNode)e.Item).Handle;
 
         }
 
         private void Hierarchy_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
         {
-            var hNode = e.Node;
+            var hNode = e.Node.Handle;
 
             if(hNode != dragNode && draggingNode)
             {
@@ -1637,12 +1679,12 @@ namespace Wingine.Editor
 
                     GameObject go = (GameObject)node.Tag;
                     Runner.App.CurrentScene.GameObjects.Remove(go);
-                    Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go), go);
+                    Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go, node), go);
                 }
             }
         }
 
-        private void Hierarchy_MouseUp(object sender, MouseEventArgs e)
+        private unsafe void Hierarchy_MouseUp(object sender, MouseEventArgs e)
         {
             var ht = Hierarchy.HitTest(e.Location);
 
@@ -1657,8 +1699,10 @@ namespace Wingine.Editor
 
             if (draggingNode)
             {
-                Hierarchy.Nodes.Remove(dragNode);
-                GameObject go = (GameObject)dragNode.Tag;
+                var dn = TreeNode.FromHandle(Hierarchy, dragNode);
+                if (dn == null) return;
+                GameObject go = (GameObject)dn.Tag;
+                Hierarchy.Nodes.Remove(dn);
 
                 if (ht.Node != null)
                 {
@@ -1666,21 +1710,21 @@ namespace Wingine.Editor
                     {
                         if (ht.Node.Parent != null) {
                             var count = ht.Node.Index;
-                            ht.Node.Parent.Nodes.Insert(count, dragNode);
+                            ht.Node.Parent.Nodes.Insert(count, dn);
                             ht.Node.Parent.Nodes[count].EnsureVisible();
                             go.SetParent((GameObject)ht.Node.Parent.Tag);
                         }
                         else
                         {
                             var count = ht.Node.Index;
-                            Hierarchy.Nodes.Insert(count, dragNode);
+                            Hierarchy.Nodes.Insert(count, dn);
                             Hierarchy.Nodes[count].EnsureVisible();
                             go.SetParent(null);
                         }
                     }
                     else
                     {
-                        ht.Node.Nodes.Insert(0, dragNode);
+                        ht.Node.Nodes.Insert(0, dn);
                         ht.Node.Nodes[0].EnsureVisible();
                         go.SetParent((GameObject)ht.Node.Tag);
                     }
@@ -1688,17 +1732,17 @@ namespace Wingine.Editor
                 else
                 {
                     var count = Hierarchy.Nodes.Count;
-                    Hierarchy.Nodes.Insert(count, dragNode);
+                    Hierarchy.Nodes.Insert(count, dn);
                     Hierarchy.Nodes[count].EnsureVisible();
                     go.SetParent(null);
                 }
 
                 HierarchyItems[go.GetInspectorID()] = dragNode;
 
-                dragNode = null;
+                dragNode = IntPtr.Zero;
 
                 Runner.App.CurrentScene.GameObjects.Remove(go);
-                Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go), go);
+                Runner.App.CurrentScene.GameObjects.Insert(GetObjectIndex(go, dn), go);
             }
         }
 
@@ -1706,7 +1750,7 @@ namespace Wingine.Editor
         {
             if (draggingNode)
             {
-                dragNode = null;
+                dragNode = IntPtr.Zero;
             }
         }
 
@@ -1746,9 +1790,9 @@ namespace Wingine.Editor
 
         private void Hierarchy_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (HierarchyItemsExpansion.ContainsKey(e.Node) && e.Node.IsExpanded != HierarchyItemsExpansion[e.Node])
+            if (HierarchyItemsExpansion.ContainsKey(e.Node.Handle) && e.Node.IsExpanded != HierarchyItemsExpansion[e.Node.Handle])
             {
-                HierarchyItemsExpansion[e.Node] = e.Node.IsExpanded;
+                HierarchyItemsExpansion[e.Node.Handle] = e.Node.IsExpanded;
                 return;
             }
 
@@ -1794,7 +1838,7 @@ namespace Wingine.Editor
             }
         }
 
-        private void canvasToolStripMenuItem_Click(object sender, EventArgs e)
+        private unsafe void canvasToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Create Canvas
             GameObject go = new GameObject(name: "New Canvas");
@@ -1802,20 +1846,20 @@ namespace Wingine.Editor
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
                 }
             }
 
             go.AddComponent<Canvas>();
         }
 
-        private void textToolStripMenuItem_Click(object sender, EventArgs e)
+        private unsafe void textToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Create Text
             GameObject go = new GameObject(name: "New Text");
@@ -1823,20 +1867,20 @@ namespace Wingine.Editor
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
                 }
             }
 
             go.AddComponent<Wingine.UI.TextRenderer>();
         }
 
-        private void buttonToolStripMenuItem_Click(object sender, EventArgs e)
+        private unsafe void buttonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Create Button
             GameObject go = new GameObject(name: "New Button");
@@ -1844,13 +1888,13 @@ namespace Wingine.Editor
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
                 }
             }
 
@@ -1863,7 +1907,7 @@ namespace Wingine.Editor
 
         }
 
-        private void emptyToolStripMenuItem1_Click(object sender, EventArgs e)
+        private unsafe void emptyToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             // Create Empty GameObject
             GameObject go = new GameObject();
@@ -1871,18 +1915,18 @@ namespace Wingine.Editor
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
                 }
             }
         }
 
-        private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
+        private unsafe void cameraToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Create Camera
             GameObject go = new GameObject(name: "New Camera");
@@ -1890,13 +1934,13 @@ namespace Wingine.Editor
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
                 }
             }
 
@@ -1921,19 +1965,20 @@ namespace Wingine.Editor
             LoadHierarchy();
         }
 
-        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        private unsafe void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GameObject go = (GameObject)Hierarchy.SelectedNode?.Tag;
             if (go != null)
             {
                 LoadHierarchy(fully: true, partials: new List<GameObject>() { go.Duplicate() }); // SUBJECTED TO CHANGE
-                HierarchyItems[go.GetInspectorID()].EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
 
-                TreeNode node = HierarchyItems[go.GetInspectorID()];
-                while (node != null)
+                IntPtr node = HierarchyItems[go.GetInspectorID()];
+                while (node != IntPtr.Zero)
                 {
-                    HierarchyItemsExpansion[node] = node.IsExpanded;
-                    node = node.Parent;
+                    HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
+                    var nd = TreeNode.FromHandle(Hierarchy, node).Parent;
+                    node = nd != null ? nd.Handle : IntPtr.Zero;
                 }
             }
         }
@@ -2162,6 +2207,8 @@ namespace Wingine.Editor
 
         public void Open(string proj, bool urgent = false, bool changePointer = true)
         {
+            if(RunningApp) StopApp();
+
             SceneCameraObject = GameObject.CreateInternal("Scene Camera");
             SceneCamera = SceneCameraObject.AddComponent<Camera>();
 
@@ -2171,6 +2218,11 @@ namespace Wingine.Editor
 
             if (File.Exists(proj) && proj.EndsWith(".wingine"))
             {
+                string assets = Path.GetFullPath(Directory.GetParent(proj).FullName + "/assets");
+                Directory.CreateDirectory(assets);
+                homeAssetDirectory = assets;
+                LoadAssetFolder(homeAssetDirectory);
+
                 try
                 {
                     Runner.CurrentProject = DataStore.ReadFromBinaryFile<Tuple<string, string, string, List<Scene>, Dictionary<string, object>>>(proj);
@@ -2204,8 +2256,8 @@ namespace Wingine.Editor
                 if (urgent) Open();
             }
 
-            var scpX = PlayerPrefs.GetFloat($"{Runner.CurrentProject.Item2}_scp_x", 0);
-            var scpY = PlayerPrefs.GetFloat($"{Runner.CurrentProject.Item2}_scp_y", 0);
+            var scpX = PlayerPrefs.GetFloat($"{Runner.CurrentProject?.Item2}_scp_x", 0);
+            var scpY = PlayerPrefs.GetFloat($"{Runner.CurrentProject?.Item2}_scp_y", 0);
             SceneCamera.Transform.Position = new Vector2(scpX, scpY);
 
             ProcessWinEvents();
@@ -2499,10 +2551,9 @@ namespace Wingine.Editor
          *    
          *   -> 0 + 0 = 0 | 1 + 1 = 2
          */
-        public int GetObjectIndex(GameObject go)
+        public unsafe int GetObjectIndex(GameObject go, TreeNode node)
         {
-            int parentIndex = go.Parent != null ? GetObjectIndex(go.Parent) : 0;
-            var node = HierarchyItems[go.GetInspectorID()];
+            int parentIndex = go.Parent != null ? GetObjectIndex(go.Parent, node.Parent) : 0;
             int nodeIndex = node.Index;
 
             return parentIndex + nodeIndex;

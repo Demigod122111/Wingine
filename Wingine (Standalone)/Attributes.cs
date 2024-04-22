@@ -56,9 +56,20 @@ namespace Wingine
     [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public sealed class HideInInspector : Attribute
     {
+        public Func<bool> ShouldHide;
+
         public HideInInspector()
         {
+            bool shouldHide()
+            {
+                return true;
+            }
+            ShouldHide = shouldHide;
+        }
 
+        public HideInInspector(Func<bool> shouldHide)
+        {
+            ShouldHide = shouldHide;
         }
     }
 
@@ -68,6 +79,22 @@ namespace Wingine
         public ExtendColor()
         {
 
+        }
+    }
+
+    [System.AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
+    public sealed class ToolTip : Attribute
+    {
+        readonly string toolTipText;
+
+        public ToolTip(string toolTipText)
+        {
+            this.toolTipText = toolTipText;
+        }
+
+        public string ToolTipText
+        {
+            get { return toolTipText; }
         }
     }
 
