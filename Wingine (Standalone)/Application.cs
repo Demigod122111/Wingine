@@ -223,6 +223,8 @@ namespace Wingine
 
                     foreach (var r in rs)
                     {
+                        if (!r.Enabled) continue;
+
                         try
                         {
                             g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
@@ -279,6 +281,8 @@ namespace Wingine
 
                     foreach (var r in rs)
                     {
+                        if (!r.Enabled) continue;
+
                         try
                         {
                             g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
@@ -320,6 +324,8 @@ namespace Wingine
 
                     foreach (var vp in vps)
                     {
+                        if (!vp.Enabled) continue;
+
                         try
                         {
                             g.TranslateTransform(go.Transform.GetPosition().X, -go.Transform.GetPosition().Y);
@@ -403,6 +409,8 @@ namespace Wingine
                 for (int ui_i = 0; ui_i < ui_comps.Count; ui_i++)
                 {
                     var ui_e = ui_comps[ui_i];
+
+                    if (!ui_e.Enabled) continue;
 
                     ui_e.Render(ui_g, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
                 }

@@ -76,7 +76,16 @@ namespace Wingine.Editor
                 }
                 else
                 {
-                    node = parent != IntPtr.Zero ? TreeNode.FromHandle(Hierarchy, parent).Nodes.Add(go.Name).Handle : Hierarchy.Nodes.Add(go.Name).Handle;
+                    IntPtr PIP(TreeNode pnode)
+                    {
+                        if (pnode != null)
+                        {
+                            return pnode.Nodes.Add(go.Name).Handle;
+                        }
+
+                        return Hierarchy.Nodes.Add(go.Name).Handle;
+                    }
+                    node = parent != IntPtr.Zero ? PIP(TreeNode.FromHandle(Hierarchy, parent)) : Hierarchy.Nodes.Add(go.Name).Handle;
 
                     if (node != IntPtr.Zero)
                     {
@@ -1474,7 +1483,8 @@ namespace Wingine.Editor
         private void Editor_Tick(object sender, EventArgs e)
         {
             UpdateEditor();
-            //RegulateThreads();
+            if (showDiagnosticsToolStripMenuItem.Checked) RegulateThreads();
+            else rtb_threads.Text = "Diagnostics are Disabled!";
         }
 
         void UpdateEditor()
@@ -1843,6 +1853,7 @@ namespace Wingine.Editor
             // Create Canvas
             GameObject go = new GameObject(name: "New Canvas");
             var tn = Hierarchy.SelectedNode;
+            go.Transform.LocalPosition += SceneCamera.Transform.LocalPosition;
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
@@ -1852,7 +1863,8 @@ namespace Wingine.Editor
                 while (node != IntPtr.Zero)
                 {
                     HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
-                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
+                    var tnfh = TreeNode.FromHandle(Hierarchy, node);
+                    node = tnfh.Parent != null ? tnfh.Parent.Handle : IntPtr.Zero;
                 }
             }
 
@@ -1864,16 +1876,18 @@ namespace Wingine.Editor
             // Create Text
             GameObject go = new GameObject(name: "New Text");
             var tn = Hierarchy.SelectedNode;
+            go.Transform.LocalPosition += SceneCamera.Transform.LocalPosition;
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()])?.EnsureVisible();
 
                 IntPtr node = HierarchyItems[go.GetInspectorID()];
                 while (node != IntPtr.Zero)
                 {
                     HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
-                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
+                    var tnfh = TreeNode.FromHandle(Hierarchy, node);
+                    node = tnfh.Parent != null ? tnfh.Parent.Handle : IntPtr.Zero;
                 }
             }
 
@@ -1885,16 +1899,18 @@ namespace Wingine.Editor
             // Create Button
             GameObject go = new GameObject(name: "New Button");
             var tn = Hierarchy.SelectedNode;
+            go.Transform.LocalPosition += SceneCamera.Transform.LocalPosition;
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()])?.EnsureVisible();
 
                 IntPtr node = HierarchyItems[go.GetInspectorID()];
                 while (node != IntPtr.Zero)
                 {
                     HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
-                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
+                    var tnfh = TreeNode.FromHandle(Hierarchy, node);
+                    node = tnfh.Parent != null ? tnfh.Parent.Handle : IntPtr.Zero;
                 }
             }
 
@@ -1912,16 +1928,18 @@ namespace Wingine.Editor
             // Create Empty GameObject
             GameObject go = new GameObject();
             var tn = Hierarchy.SelectedNode;
+            go.Transform.LocalPosition += SceneCamera.Transform.LocalPosition;
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()])?.EnsureVisible();
 
                 IntPtr node = HierarchyItems[go.GetInspectorID()];
                 while (node != IntPtr.Zero)
                 {
                     HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
-                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
+                    var tnfh = TreeNode.FromHandle(Hierarchy, node);
+                    node = tnfh.Parent != null ? tnfh.Parent.Handle : IntPtr.Zero;
                 }
             }
         }
@@ -1931,16 +1949,18 @@ namespace Wingine.Editor
             // Create Camera
             GameObject go = new GameObject(name: "New Camera");
             var tn = Hierarchy.SelectedNode;
+            go.Transform.LocalPosition += SceneCamera.Transform.LocalPosition;
             if (tn != null)
             {
                 go.SetParent((GameObject)tn.Tag);
-                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()]).EnsureVisible();
+                TreeNode.FromHandle(Hierarchy, HierarchyItems[go.GetInspectorID()])?.EnsureVisible();
 
                 IntPtr node = HierarchyItems[go.GetInspectorID()];
                 while (node != IntPtr.Zero)
                 {
                     HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
-                    node = TreeNode.FromHandle(Hierarchy, node).Parent.Handle;
+                    var tnfh = TreeNode.FromHandle(Hierarchy, node);
+                    node = tnfh.Parent != null ? tnfh.Parent.Handle : IntPtr.Zero;
                 }
             }
 
@@ -2568,7 +2588,6 @@ namespace Wingine.Editor
         #region Diagnostics
         void ManageMemory()
         {
-            GC.AddMemoryPressure(Process.GetCurrentProcess().WorkingSet64);
             // Perform garbage collection
             GC.Collect();
             GC.WaitForPendingFinalizers();
