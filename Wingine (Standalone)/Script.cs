@@ -141,7 +141,9 @@ function update(){
             base.Begin();
         }
 
-        void InvokeFunction(string name, bool forceInit = false, params object[] args)
+        public object CallMethod(string name, params object[] args) => InvokeFunction(name, args: args);
+
+        object InvokeFunction(string name, bool forceInit = false, params object[] args)
         {
             if (forceInit) InitEngine();
             else
@@ -149,13 +151,17 @@ function update(){
                 if (Core.engine == null) InitEngine();
             }
 
-            if (!doneInit) return;
+            if (!doneInit) return null;
 
             try
             {
                 var val = Core.engine.GetValue(name);
                 var v = val.IsObject() && val.AsObject().Class == "Function";
-                if (v) Core.engine.Invoke(name, args);
+                if (v)
+                {
+                    var result = Core.engine.Invoke(name, args);
+                    return !(result.IsNull() || result.IsUndefined()) ? result.ToObject() : null;
+                }
             }
             catch (Exception e)
             {
@@ -166,6 +172,8 @@ function update(){
                     Debug.Write($"\n\nRoot Cause:\n{e.InnerException.Message}", Debug.DebugType.Error);
                 }
             }
+
+            return null;
         }
 
         public override void Awake()

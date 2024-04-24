@@ -51,9 +51,11 @@
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.Scene = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.SceneCameraSpeedTSCB = new System.Windows.Forms.ToolStripComboBox();
+            this.SCPTSB = new System.Windows.Forms.ToolStripButton();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.ConsoleTabPage = new System.Windows.Forms.TabPage();
             this.Console = new System.Windows.Forms.RichTextBox();
@@ -68,6 +70,8 @@
             this.AssetLocation = new System.Windows.Forms.RichTextBox();
             this.AssetLocationCMS = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.showInFileExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AssetBack = new System.Windows.Forms.PictureBox();
+            this.AssetHome = new System.Windows.Forms.PictureBox();
             this.ResourcesTabPage = new System.Windows.Forms.TabPage();
             this.ResourcesTable = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -75,14 +79,6 @@
             this.rtb_threads = new System.Windows.Forms.RichTextBox();
             this.Inspector = new System.Windows.Forms.Panel();
             this.ToolsBar = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.CurrentSceneNameTSTB = new System.Windows.Forms.ToolStripTextBox();
-            this.Editor = new System.Windows.Forms.Timer(this.components);
-            this.HierarchyUpdater = new System.Windows.Forms.Timer(this.components);
-            this.InspectorUpdater = new System.Windows.Forms.Timer(this.components);
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.newProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,14 +92,18 @@
             this.showDiagnosticsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeProjectNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeApplicationTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.BuildGameTSB = new System.Windows.Forms.ToolStripButton();
             this.PixelEditor_TSB = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.SceneMenuTSB = new System.Windows.Forms.ToolStripButton();
+            this.CurrentSceneNameTSTB = new System.Windows.Forms.ToolStripTextBox();
+            this.Editor = new System.Windows.Forms.Timer(this.components);
+            this.HierarchyUpdater = new System.Windows.Forms.Timer(this.components);
+            this.InspectorUpdater = new System.Windows.Forms.Timer(this.components);
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.PlayStopTSB = new System.Windows.Forms.ToolStripButton();
-            this.Scene = new System.Windows.Forms.PictureBox();
-            this.SCPTSB = new System.Windows.Forms.ToolStripButton();
-            this.AssetBack = new System.Windows.Forms.PictureBox();
-            this.AssetHome = new System.Windows.Forms.PictureBox();
+            this.StatusBar = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -117,6 +117,7 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Scene)).BeginInit();
             this.panel3.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             this.TabControl.SuspendLayout();
@@ -125,13 +126,12 @@
             this.Assets.SuspendLayout();
             this.panel1.SuspendLayout();
             this.AssetLocationCMS.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).BeginInit();
             this.ResourcesTabPage.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.ToolsBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Scene)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -350,6 +350,14 @@
             resources.ApplyResources(this.splitContainer3.Panel2, "splitContainer3.Panel2");
             this.splitContainer3.Panel2.Controls.Add(this.TabControl);
             // 
+            // Scene
+            // 
+            resources.ApplyResources(this.Scene, "Scene");
+            this.Scene.Name = "Scene";
+            this.Scene.TabStop = false;
+            this.Scene.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseDown);
+            this.Scene.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseUp);
+            // 
             // panel3
             // 
             resources.ApplyResources(this.panel3, "panel3");
@@ -389,6 +397,14 @@
             resources.GetString("SceneCameraSpeedTSCB.Items9"),
             resources.GetString("SceneCameraSpeedTSCB.Items10")});
             this.SceneCameraSpeedTSCB.Name = "SceneCameraSpeedTSCB";
+            // 
+            // SCPTSB
+            // 
+            resources.ApplyResources(this.SCPTSB, "SCPTSB");
+            this.SCPTSB.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SCPTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.SCPTSB.Name = "SCPTSB";
+            this.SCPTSB.Click += new System.EventHandler(this.SCPTSB_Click);
             // 
             // TabControl
             // 
@@ -531,6 +547,22 @@
             this.showInFileExplorerToolStripMenuItem.Name = "showInFileExplorerToolStripMenuItem";
             this.showInFileExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInFileExplorerToolStripMenuItem_Click);
             // 
+            // AssetBack
+            // 
+            resources.ApplyResources(this.AssetBack, "AssetBack");
+            this.AssetBack.Image = global::Wingine.Editor.Properties.Resources.back;
+            this.AssetBack.Name = "AssetBack";
+            this.AssetBack.TabStop = false;
+            this.AssetBack.Click += new System.EventHandler(this.AssetBack_Click);
+            // 
+            // AssetHome
+            // 
+            resources.ApplyResources(this.AssetHome, "AssetHome");
+            this.AssetHome.Image = global::Wingine.Editor.Properties.Resources.home;
+            this.AssetHome.Name = "AssetHome";
+            this.AssetHome.TabStop = false;
+            this.AssetHome.Click += new System.EventHandler(this.AssetHome_Click);
+            // 
             // ResourcesTabPage
             // 
             resources.ApplyResources(this.ResourcesTabPage, "ResourcesTabPage");
@@ -589,61 +621,6 @@
             this.ToolsBar.Name = "ToolsBar";
             this.ToolsBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.ToolsBar.Stretch = true;
-            // 
-            // toolStripSeparator3
-            // 
-            resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
-            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            // 
-            // toolStripSeparator4
-            // 
-            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            // 
-            // CurrentSceneNameTSTB
-            // 
-            resources.ApplyResources(this.CurrentSceneNameTSTB, "CurrentSceneNameTSTB");
-            this.CurrentSceneNameTSTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
-            this.CurrentSceneNameTSTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.CurrentSceneNameTSTB.ForeColor = System.Drawing.Color.Beige;
-            this.CurrentSceneNameTSTB.Name = "CurrentSceneNameTSTB";
-            this.CurrentSceneNameTSTB.TextChanged += new System.EventHandler(this.CurrentSceneNameTSTB_TextChanged);
-            // 
-            // Editor
-            // 
-            this.Editor.Enabled = true;
-            this.Editor.Interval = 1;
-            this.Editor.Tick += new System.EventHandler(this.Editor_Tick);
-            // 
-            // HierarchyUpdater
-            // 
-            this.HierarchyUpdater.Enabled = true;
-            this.HierarchyUpdater.Tick += new System.EventHandler(this.HierarchyUpdater_Tick);
-            // 
-            // InspectorUpdater
-            // 
-            this.InspectorUpdater.Enabled = true;
-            this.InspectorUpdater.Tick += new System.EventHandler(this.InspectorUpdater_Tick);
-            // 
-            // toolStrip1
-            // 
-            resources.ApplyResources(this.toolStrip1, "toolStrip1");
-            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.toolStrip1.CanOverflow = false;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PlayStopTSB});
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.toolStrip1.Stretch = true;
-            // 
-            // StatusBar
-            // 
-            resources.ApplyResources(this.StatusBar, "StatusBar");
-            this.StatusBar.BackColor = System.Drawing.Color.Transparent;
-            this.StatusBar.ForeColor = System.Drawing.Color.Beige;
-            this.StatusBar.Name = "StatusBar";
             // 
             // toolStripDropDownButton1
             // 
@@ -738,6 +715,12 @@
             this.changeApplicationTitleToolStripMenuItem.Name = "changeApplicationTitleToolStripMenuItem";
             this.changeApplicationTitleToolStripMenuItem.Click += new System.EventHandler(this.changeApplicationTitleToolStripMenuItem_Click);
             // 
+            // toolStripSeparator3
+            // 
+            resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            // 
             // BuildGameTSB
             // 
             resources.ApplyResources(this.BuildGameTSB, "BuildGameTSB");
@@ -756,6 +739,11 @@
             this.PixelEditor_TSB.Name = "PixelEditor_TSB";
             this.PixelEditor_TSB.Click += new System.EventHandler(this.PixelEditor_TSB_Click);
             // 
+            // toolStripSeparator4
+            // 
+            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            // 
             // SceneMenuTSB
             // 
             resources.ApplyResources(this.SceneMenuTSB, "SceneMenuTSB");
@@ -765,6 +753,43 @@
             this.SceneMenuTSB.Name = "SceneMenuTSB";
             this.SceneMenuTSB.Click += new System.EventHandler(this.SceneMenuTSB_Click);
             // 
+            // CurrentSceneNameTSTB
+            // 
+            resources.ApplyResources(this.CurrentSceneNameTSTB, "CurrentSceneNameTSTB");
+            this.CurrentSceneNameTSTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.CurrentSceneNameTSTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CurrentSceneNameTSTB.ForeColor = System.Drawing.Color.Beige;
+            this.CurrentSceneNameTSTB.Name = "CurrentSceneNameTSTB";
+            this.CurrentSceneNameTSTB.TextChanged += new System.EventHandler(this.CurrentSceneNameTSTB_TextChanged);
+            // 
+            // Editor
+            // 
+            this.Editor.Enabled = true;
+            this.Editor.Interval = 1;
+            this.Editor.Tick += new System.EventHandler(this.Editor_Tick);
+            // 
+            // HierarchyUpdater
+            // 
+            this.HierarchyUpdater.Enabled = true;
+            this.HierarchyUpdater.Tick += new System.EventHandler(this.HierarchyUpdater_Tick);
+            // 
+            // InspectorUpdater
+            // 
+            this.InspectorUpdater.Enabled = true;
+            this.InspectorUpdater.Tick += new System.EventHandler(this.InspectorUpdater_Tick);
+            // 
+            // toolStrip1
+            // 
+            resources.ApplyResources(this.toolStrip1, "toolStrip1");
+            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.toolStrip1.CanOverflow = false;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PlayStopTSB});
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.toolStrip1.Stretch = true;
+            // 
             // PlayStopTSB
             // 
             resources.ApplyResources(this.PlayStopTSB, "PlayStopTSB");
@@ -773,37 +798,12 @@
             this.PlayStopTSB.Name = "PlayStopTSB";
             this.PlayStopTSB.Click += new System.EventHandler(this.PlayStopTSB_Click);
             // 
-            // Scene
+            // StatusBar
             // 
-            resources.ApplyResources(this.Scene, "Scene");
-            this.Scene.Name = "Scene";
-            this.Scene.TabStop = false;
-            this.Scene.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseDown);
-            this.Scene.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Scene_MouseUp);
-            // 
-            // SCPTSB
-            // 
-            resources.ApplyResources(this.SCPTSB, "SCPTSB");
-            this.SCPTSB.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.SCPTSB.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.SCPTSB.Name = "SCPTSB";
-            this.SCPTSB.Click += new System.EventHandler(this.SCPTSB_Click);
-            // 
-            // AssetBack
-            // 
-            resources.ApplyResources(this.AssetBack, "AssetBack");
-            this.AssetBack.Image = global::Wingine.Editor.Properties.Resources.back;
-            this.AssetBack.Name = "AssetBack";
-            this.AssetBack.TabStop = false;
-            this.AssetBack.Click += new System.EventHandler(this.AssetBack_Click);
-            // 
-            // AssetHome
-            // 
-            resources.ApplyResources(this.AssetHome, "AssetHome");
-            this.AssetHome.Image = global::Wingine.Editor.Properties.Resources.home;
-            this.AssetHome.Name = "AssetHome";
-            this.AssetHome.TabStop = false;
-            this.AssetHome.Click += new System.EventHandler(this.AssetHome_Click);
+            resources.ApplyResources(this.StatusBar, "StatusBar");
+            this.StatusBar.BackColor = System.Drawing.Color.Transparent;
+            this.StatusBar.ForeColor = System.Drawing.Color.Beige;
+            this.StatusBar.Name = "StatusBar";
             // 
             // Window
             // 
@@ -835,6 +835,7 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Scene)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.toolStrip2.ResumeLayout(false);
@@ -845,15 +846,14 @@
             this.Assets.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.AssetLocationCMS.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).EndInit();
             this.ResourcesTabPage.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.ToolsBar.ResumeLayout(false);
             this.ToolsBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Scene)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetBack)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.AssetHome)).EndInit();
             this.ResumeLayout(false);
 
         }

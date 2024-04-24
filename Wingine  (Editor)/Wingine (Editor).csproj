@@ -365,6 +365,7 @@
       <DependentUpon>SceneCameraPositionChanger.cs</DependentUpon>
     </Compile>
     <Compile Include="Solution.cs" />
+    <Compile Include="TSR.cs" />
     <Compile Include="VectorInputField.cs">
       <SubType>UserControl</SubType>
     </Compile>

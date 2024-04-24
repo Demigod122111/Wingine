@@ -18,6 +18,8 @@ namespace Wingine
 
         public List<GameObject> GameObjects;
 
+        public bool firstFrame = true;
+
         public GameObject Get(string ID)
         {
             foreach (GameObject gameObject in GameObjects)

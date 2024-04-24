@@ -68,7 +68,7 @@ namespace Wingine.Editor
                 if (HierarchyItems.ContainsKey(id))
                 {
                     var hiid = TreeNode.FromHandle(Hierarchy, HierarchyItems[id]);
-                    if (hiid != TreeNode.FromHandle(Hierarchy, parent))
+                    if (hiid != null && hiid != TreeNode.FromHandle(Hierarchy, parent))
                     {
                         hiid.Remove();
                         TreeNode.FromHandle(Hierarchy, parent)?.Nodes.Add(hiid);
@@ -90,7 +90,7 @@ namespace Wingine.Editor
                     if (node != IntPtr.Zero)
                     {
                         HierarchyItems.Add(id, node);
-                        HierarchyItemsExpansion.Add(node, TreeNode.FromHandle(Hierarchy, node).IsExpanded);
+                        HierarchyItemsExpansion[node] = TreeNode.FromHandle(Hierarchy, node).IsExpanded;
                     }
                 }
 
@@ -1341,6 +1341,10 @@ namespace Wingine.Editor
             this.TitleBar.TitleBarCaptionColor = Color.MintCream;
 
             this.TitleBar.TitleBarType = XTitleBar.XTitleBarType.Angular;
+
+            ToolsBar.Renderer = new TSR();
+            toolStrip1.Renderer = new TSR();
+            toolStrip2.Renderer = new TSR();
 
             EDITOR_FPS_STATUS.TextAlign = ContentAlignment.MiddleLeft;
             EDITOR_FPS_STATUS.Font = new Font("Algerian", 12);

@@ -204,8 +204,11 @@ namespace Wingine
                 #region UI - Canvas
                 if (go.ComponentExists<Canvas>())
                 {
-                    var canvas = go.GetComponentOfType<Canvas>();
-                    all_canvas.Add((IntPtr)(&canvas));
+                    var canvases = go.GetComponentsOfType<Canvas>();
+                    foreach (var canvas in canvases)
+                    {
+                        all_canvas.Add((IntPtr)(&canvas));
+                    }
                 }
                 #endregion
 
@@ -428,7 +431,6 @@ namespace Wingine
 
         public static event EventHandler OnGameUpdate;
         
-        bool firstFrame = true;
         internal void UpdateGame()
         {
             OnGameUpdate?.Invoke(this, null);
@@ -457,7 +459,7 @@ namespace Wingine
                         (comp as IUIComponent).MainThreadTick();
                     }
 
-                    if (firstFrame)
+                    if (CurrentScene.firstFrame)
                     {
                         comp.Began = false;
                     }
@@ -471,11 +473,11 @@ namespace Wingine
                     {
                         var mb = ((Script)comp);
 
-                        if (firstFrame) mb.Start();
+                        if (CurrentScene.firstFrame) mb.Start();
 
                         bool justAwake = !mb.Awaked;
 
-                        if (!mb.Awaked)
+                        if (!mb.Awaked || CurrentScene.firstFrame)
                         {
                             mb.Awaked = true;
                             mb.Awake();
@@ -492,7 +494,7 @@ namespace Wingine
                     {
                         var mb = ((MonoBehaviour)comp);
 
-                        if (firstFrame)
+                        if (CurrentScene.firstFrame)
                         {
                             try
                             {
@@ -504,7 +506,7 @@ namespace Wingine
                             }
                         }
 
-                        if (!mb.Awaked)
+                        if (!mb.Awaked || CurrentScene.firstFrame)
                         {
                             mb.Awaked = true;
                             try
@@ -530,7 +532,7 @@ namespace Wingine
                 }
             }
 
-            firstFrame = false;
+            CurrentScene.firstFrame = false;
         }
 
         internal void FixedUpdate()
@@ -566,7 +568,7 @@ namespace Wingine
 
         public void Start()
         {
-            firstFrame = true;
+            CurrentScene.firstFrame = true;
 
             ShouldDoRendering = true;
             
@@ -596,7 +598,7 @@ namespace Wingine
         DateTime previousTime = DateTime.Now;
         internal double dt = 0;
 
-        public static int TARGET_FPS = 60;
+        public static int TARGET_FPS = 120;
 
         async void DoTicks()
         {
@@ -615,6 +617,11 @@ namespace Wingine
                     b.Tick();
 
                     await Task.Delay(500);
+
+                    if (!Runner.InEditor)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -692,6 +699,7 @@ namespace Wingine
 
             void ManageMemory()
             {
+                return;
                 GC.AddMemoryPressure(Process.GetCurrentProcess().WorkingSet64);
                 // Perform garbage collection
                 GC.WaitForPendingFinalizers();
@@ -765,4 +773,3 @@ namespace Wingine
         public static Vector2 SizeFToVector(SizeF size, float ox = 0f, float oy = 0f) => new Vector2(size.Width, size.Height);
     }
 }
-

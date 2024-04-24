@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using Wingine.Editor;
 
@@ -19,15 +20,16 @@ namespace Wingine.Engine
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
-            new Thread(new ThreadStart(() =>
-            {
-                while (alive)
-                {
-                    System.Windows.Forms.Application.DoEvents();
-                }
-            }));
+            string homeAssetDir = "";
 
-            var win = new Window(proj);
+            if (File.Exists(proj) && proj.EndsWith(".wingine"))
+            {
+                string assets = Path.GetFullPath(Directory.GetParent(proj).FullName + "/assets");
+                Directory.CreateDirectory(assets);
+                homeAssetDir = assets;
+            }
+            
+            var win = new Window(proj, homeAssetDir: homeAssetDir);
             win.FormClosing += (s, e) =>
             {
                 alive = false;

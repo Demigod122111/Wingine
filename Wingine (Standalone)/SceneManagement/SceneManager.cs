@@ -16,6 +16,7 @@ namespace Wingine.SceneManagement
             try
             {
                 Runner.App.CurrentScene = Runner.CurrentProject?.Item4?[index];
+                if (Runner.App.CurrentScene != null) Runner.App.CurrentScene.firstFrame = true;
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch
@@ -31,6 +32,7 @@ namespace Wingine.SceneManagement
             try
             {
                 Runner.App.CurrentScene = Runner.CurrentProject?.Item4?.Last();
+                if (Runner.App.CurrentScene != null) Runner.App.CurrentScene.firstFrame = true;
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch
@@ -46,6 +48,7 @@ namespace Wingine.SceneManagement
             try
             {
                 Runner.App.CurrentScene = Runner.CurrentProject?.Item4?.First();
+                if(Runner.App.CurrentScene != null) Runner.App.CurrentScene.firstFrame = true;
                 if (SceneLoaded != null) SceneLoaded(Runner.App.CurrentScene);
             }
             catch

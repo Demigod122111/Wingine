@@ -124,7 +124,7 @@
   <data name="toolStripButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wQAADsEBuJFr7QAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
+        vAAADrwBlbxySQAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
         RUkUEZ0YRMS+DDI70MkTmzJnDc8iU8QT2mAEItnle90wHwTDyBduXnie5/rd133Q4ZKfAJqHFs9E08A8
         zD1emDpmYXjqRlnTFIrMk8iuGkNaxWekGEaQrHecBfw+/vPXODw6hj9whN2fh/Bt/8LSRgA3cxr/DeBZ
         9kvmTNMoHGNbIrYN+3Aj23IxgJkpds0doP3VstgmsNexhutZ9QrAms8T0zYzU5xXM46kcjsmvfvoeL2i
@@ -180,6 +180,10 @@
   <data name="clearOnPlayToolStripMenuItem.Text" xml:space="preserve">
     <value>Clear On Play</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ConsoleTabPage.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
   <data name="&gt;&gt;clearToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -194,9 +198,6 @@
   </data>
   <data name="SceneMenuTSB.Text" xml:space="preserve">
     <value>Scene Menu</value>
-  </data>
-  <data name="tabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
   </data>
   <data name="&gt;&gt;createToolStripMenuItem.Name" xml:space="preserve">
     <value>createToolStripMenuItem</value>
@@ -216,14 +217,13 @@
   <data name="&gt;&gt;duplicateToolStripMenuItem.Name" xml:space="preserve">
     <value>duplicateToolStripMenuItem</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="StatusBar.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
   <data name="toolStripDropDownButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wQAADsEBuJFr7QAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
+        vAAADrwBlbxySQAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
         RUkUEZ0YRMS+DDI70MkTmzJnDc8iU8QT2mAEItnle90wHwTDyBduXnie5/rd133Q4ZKfAJqHFs9E08A8
         zD1emDpmYXjqRlnTFIrMk8iuGkNaxWekGEaQrHecBfw+/vPXODw6hj9whN2fh/Bt/8LSRgA3cxr/DeBZ
         9kvmTNMoHGNbIrYN+3Aj23IxgJkpds0doP3VstgmsNexhutZ9QrAms8T0zYzU5xXM46kcjsmvfvoeL2i
@@ -238,6 +238,9 @@
   <data name="splitContainer1.Size" type="System.Drawing.Size, System.Drawing">
     <value>904, 509</value>
   </data>
+  <data name="SCPTSB.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
+    <value>None</value>
+  </data>
   <data name="tabPage1.Size" type="System.Drawing.Size, System.Drawing">
     <value>525, 150</value>
   </data>
@@ -247,8 +250,8 @@
   <data name="PixelEditor_TSB.Text" xml:space="preserve">
     <value>Pixel Editor</value>
   </data>
-  <data name="Inspector.AutoScroll" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="&gt;&gt;PlayStopTSB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="AssetHome.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>StretchImage</value>
@@ -265,8 +268,8 @@
   <data name="emptyToolStripMenuItem1.Text" xml:space="preserve">
     <value>Empty</value>
   </data>
-  <data name="&gt;&gt;Console.Parent" xml:space="preserve">
-    <value>ConsoleTabPage</value>
+  <data name="panel3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
   </data>
   <data name="ResourcesTabPage.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -280,14 +283,11 @@
   <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
     <value>toolStripSeparator1</value>
   </data>
-  <data name="SceneCameraSpeedTSCB.Items5" xml:space="preserve">
-    <value>50</value>
+  <data name="toolStrip1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
   </data>
-  <data name="ConsoleTabPage.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;showDiagnosticsToolStripMenuItem.Name" xml:space="preserve">
-    <value>showDiagnosticsToolStripMenuItem</value>
+  <data name="cameraToolStripMenuItem.Text" xml:space="preserve">
+    <value>Camera</value>
   </data>
   <data name="&gt;&gt;debugRepeatToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -337,11 +337,8 @@
   <data name="textToolStripMenuItem.Text" xml:space="preserve">
     <value>Text</value>
   </data>
-  <data name="BuildGameTSB.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;AssetHome.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="&gt;&gt;splitContainer2.Panel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="deleteToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>256, 24</value>
@@ -376,8 +373,8 @@
   <data name="&gt;&gt;toolStripDropDownButton1.Name" xml:space="preserve">
     <value>toolStripDropDownButton1</value>
   </data>
-  <data name="showInFileExplorerToolStripMenuItem.Text" xml:space="preserve">
-    <value>Show in File Explorer</value>
+  <data name="&gt;&gt;splitContainer2.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <data name="SceneCameraSpeedTSCB.Size" type="System.Drawing.Size, System.Drawing">
     <value>121, 25</value>
@@ -388,8 +385,8 @@
   <data name="StatusBar.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Left, Right</value>
   </data>
-  <data name="Console.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 144</value>
+  <data name="AssetListView.Alignment" type="System.Windows.Forms.ListViewAlignment, System.Windows.Forms">
+    <value>Left</value>
   </data>
   <data name="&gt;&gt;duplicateToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -402,6 +399,9 @@
   </data>
   <data name="toolStripButton1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
     <value>Magenta</value>
+  </data>
+  <data name="&gt;&gt;rtb_threads.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="splitContainer1.Location" type="System.Drawing.Point, System.Drawing">
     <value>5, 95</value>
@@ -472,9 +472,6 @@
   <data name="Console.Text" xml:space="preserve">
     <value />
   </data>
-  <data name="SceneCameraSpeedTSCB.Items10" xml:space="preserve">
-    <value>1000</value>
-  </data>
   <data name="&gt;&gt;panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -495,9 +492,6 @@
   </data>
   <data name="HierarchyCMS.Size" type="System.Drawing.Size, System.Drawing">
     <value>257, 124</value>
-  </data>
-  <data name="&gt;&gt;splitContainer2.Panel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;splitContainer3.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -538,9 +532,6 @@
   <data name="&gt;&gt;TabControl.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="ConsoleTabPage.Text" xml:space="preserve">
-    <value>Console</value>
-  </data>
   <data name="gameObjectToolStripMenuItem.Text" xml:space="preserve">
     <value>GameObject</value>
   </data>
@@ -549,9 +540,6 @@
   </data>
   <data name="deleteCurrentSceneToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Del</value>
-  </data>
-  <data name="Scene.Size" type="System.Drawing.Size, System.Drawing">
-    <value>533, 304</value>
   </data>
   <data name="Console.Font" type="System.Drawing.Font, System.Drawing">
     <value>Consolas, 11pt</value>
@@ -619,13 +607,13 @@
   <data name="Hierarchy.Font" type="System.Drawing.Font, System.Drawing">
     <value>Microsoft YaHei UI, 11pt</value>
   </data>
-  <data name="createToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>256, 24</value>
+  <data name="SceneCameraSpeedTSCB.Items10" xml:space="preserve">
+    <value>1000</value>
   </data>
   <data name="SCPTSB.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wQAADsEBuJFr7QAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
+        vAAADrwBlbxySQAAAgNJREFUOE+lkutLk2EYxvePhJaHShFBUTEPiCieQOmDiEZgrEbpYGiCQxkqA80I
         RUkUEZ0YRMS+DDI70MkTmzJnDc8iU8QT2mAEItnle90wHwTDyBduXnie5/rd133Q4ZKfAJqHFs9E08A8
         zD1emDpmYXjqRlnTFIrMk8iuGkNaxWekGEaQrHecBfw+/vPXODw6hj9whN2fh/Bt/8LSRgA3cxr/DeBZ
         9kvmTNMoHGNbIrYN+3Aj23IxgJkpds0doP3VstgmsNexhutZ9QrAms8T0zYzU5xXM46kcjsmvfvoeL2i
@@ -679,11 +667,8 @@
   <data name="sceneToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>161, 24</value>
   </data>
-  <data name="&gt;&gt;PlayStopTSB.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="clearToolStripMenuItem.Text" xml:space="preserve">
-    <value>Clear</value>
+  <data name="Inspector.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
   <data name="toolStripButton1.Font" type="System.Drawing.Font, System.Drawing">
     <value>Segoe UI, 10pt, style=Bold</value>
@@ -707,8 +692,8 @@
         B3ZhbHVlX18ACAIAAAACAAAACgYFAAAACUZpbGVHcm91cAs=
 </value>
   </data>
-  <data name="cameraToolStripMenuItem.Text" xml:space="preserve">
-    <value>Camera</value>
+  <data name="BuildGameTSB.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
+    <value>Magenta</value>
   </data>
   <data name="newProjectToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>272, 24</value>
@@ -785,47 +770,8 @@
   <data name="&gt;&gt;CurrentSceneNameTSTB.Name" xml:space="preserve">
     <value>CurrentSceneNameTSTB</value>
   </data>
-  <data name="AssetsImageList.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
-    <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
-        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
-        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAe
-        CAAAAk1TRnQBSQFMAwEBAAEgAQEBKAEBASABAAEgAQAE/wEJARAI/wFCAU0BNgEEBgABNgEEAgABKAMA
-        AYADAAEgAwABAQEAAQgGAAEQGAABgAIAAYADAAKAAQABgAMAAYABAAGAAQACgAIAA8ABAAHAAdwBwAEA
-        AfABygGmAQABMwUAATMBAAEzAQABMwEAAjMCAAMWAQADHAEAAyIBAAMpAQADVQEAA00BAANCAQADOQEA
-        AYABfAH/AQACUAH/AQABkwEAAdYBAAH/AewBzAEAAcYB1gHvAQAB1gLnAQABkAGpAa0CAAH/ATMDAAFm
-        AwABmQMAAcwCAAEzAwACMwIAATMBZgIAATMBmQIAATMBzAIAATMB/wIAAWYDAAFmATMCAAJmAgABZgGZ
-        AgABZgHMAgABZgH/AgABmQMAAZkBMwIAAZkBZgIAApkCAAGZAcwCAAGZAf8CAAHMAwABzAEzAgABzAFm
-        AgABzAGZAgACzAIAAcwB/wIAAf8BZgIAAf8BmQIAAf8BzAEAATMB/wIAAf8BAAEzAQABMwEAAWYBAAEz
-        AQABmQEAATMBAAHMAQABMwEAAf8BAAH/ATMCAAMzAQACMwFmAQACMwGZAQACMwHMAQACMwH/AQABMwFm
-        AgABMwFmATMBAAEzAmYBAAEzAWYBmQEAATMBZgHMAQABMwFmAf8BAAEzAZkCAAEzAZkBMwEAATMBmQFm
-        AQABMwKZAQABMwGZAcwBAAEzAZkB/wEAATMBzAIAATMBzAEzAQABMwHMAWYBAAEzAcwBmQEAATMCzAEA
-        ATMBzAH/AQABMwH/ATMBAAEzAf8BZgEAATMB/wGZAQABMwH/AcwBAAEzAv8BAAFmAwABZgEAATMBAAFm
-        AQABZgEAAWYBAAGZAQABZgEAAcwBAAFmAQAB/wEAAWYBMwIAAWYCMwEAAWYBMwFmAQABZgEzAZkBAAFm
-        ATMBzAEAAWYBMwH/AQACZgIAAmYBMwEAA2YBAAJmAZkBAAJmAcwBAAFmAZkCAAFmAZkBMwEAAWYBmQFm
-        AQABZgKZAQABZgGZAcwBAAFmAZkB/wEAAWYBzAIAAWYBzAEzAQABZgHMAZkBAAFmAswBAAFmAcwB/wEA
-        AWYB/wIAAWYB/wEzAQABZgH/AZkBAAFmAf8BzAEAAcwBAAH/AQAB/wEAAcwBAAKZAgABmQEzAZkBAAGZ
-        AQABmQEAAZkBAAHMAQABmQMAAZkCMwEAAZkBAAFmAQABmQEzAcwBAAGZAQAB/wEAAZkBZgIAAZkBZgEz
-        AQABmQEzAWYBAAGZAWYBmQEAAZkBZgHMAQABmQEzAf8BAAKZATMBAAKZAWYBAAOZAQACmQHMAQACmQH/
-        AQABmQHMAgABmQHMATMBAAFmAcwBZgEAAZkBzAGZAQABmQLMAQABmQHMAf8BAAGZAf8CAAGZAf8BMwEA
-        AZkBzAFmAQABmQH/AZkBAAGZAf8BzAEAAZkC/wEAAcwDAAGZAQABMwEAAcwBAAFmAQABzAEAAZkBAAHM
-        AQABzAEAAZkBMwIAAcwCMwEAAcwBMwFmAQABzAEzAZkBAAHMATMBzAEAAcwBMwH/AQABzAFmAgABzAFm
-        ATMBAAGZAmYBAAHMAWYBmQEAAcwBZgHMAQABmQFmAf8BAAHMAZkCAAHMAZkBMwEAAcwBmQFmAQABzAKZ
-        AQABzAGZAcwBAAHMAZkB/wEAAswCAALMATMBAALMAWYBAALMAZkBAAPMAQACzAH/AQABzAH/AgABzAH/
-        ATMBAAGZAf8BZgEAAcwB/wGZAQABzAH/AcwBAAHMAv8BAAHMAQABMwEAAf8BAAFmAQAB/wEAAZkBAAHM
-        ATMCAAH/AjMBAAH/ATMBZgEAAf8BMwGZAQAB/wEzAcwBAAH/ATMB/wEAAf8BZgIAAf8BZgEzAQABzAJm
-        AQAB/wFmAZkBAAH/AWYBzAEAAcwBZgH/AQAB/wGZAgAB/wGZATMBAAH/AZkBZgEAAf8CmQEAAf8BmQHM
-        AQAB/wGZAf8BAAH/AcwCAAH/AcwBMwEAAf8BzAFmAQAB/wHMAZkBAAH/AswBAAH/AcwB/wEAAv8BMwEA
-        AcwB/wFmAQAC/wGZAQAC/wHMAQACZgH/AQABZgH/AWYBAAFmAv8BAAH/AmYBAAH/AWYB/wEAAv8BZgEA
-        ASEBAAGlAQADXwEAA3cBAAOGAQADlgEAA8sBAAOyAQAD1wEAA90BAAPjAQAD6gEAA/EBAAP4AQAB8AH7
-        Af8BAAGkAqABAAOAAwAB/wIAAf8DAAL/AQAB/wMAAf8BAAH/AQAC/wIAA///AIUAARoFmQ50AXkFmQGa
-        AfZiABwyAQkBdAEyYAABGxwyAgkBMmAAHTgCCQEyYAAdOAIJATJgAB04AgkBMmAAHTgCCQEyYAAdOAK8
-        ATJgAB04AbwB8AEyYAAdOALwATJgAB04AfAB8QEyYAAdOAHwAfEBMmAAHTgB8AHxATJgAB04AfAB8gEy
-        YAAdOAHxAfIBMmAAHTgB8QHyATJgAB04AfEB8gEyYAAdOAHxAfMBMmAAHTgB8wH0ATJgABw4AfIC9AFT
-        YAAbOAT0AVNgAAo4B2oBvA30AThgAAEaCDgIag30AjhhAAg4B2oQOGIAAZoEOAH2AQABGwRqAeMPOAGa
-        /wD/AGMAAUIBTQE+BwABPgMAASgDAAGAAwABIAMAAQEBAAEBBgABAhYAA/8BAAT/DAAE/wwABP8MAAHg
-        AgABAQwAAYD/AGAAAYAPAAHAAYABAAEBDAAE/wwABP8MAAT/DAAE/yIACw==
-</value>
+  <data name="panel2.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;emptyToolStripMenuItem1.Name" xml:space="preserve">
     <value>emptyToolStripMenuItem1</value>
@@ -862,9 +808,6 @@
   </data>
   <data name="SCPTSB.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 22</value>
-  </data>
-  <data name="AssetListView.Alignment" type="System.Windows.Forms.ListViewAlignment, System.Windows.Forms">
-    <value>Left</value>
   </data>
   <data name="CurrentSceneNameTSTB.ToolTipText" xml:space="preserve">
     <value>Current Scene Name</value>
@@ -953,8 +896,8 @@
   <data name="saveAsToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+S</value>
   </data>
-  <data name="toolStrip2.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
-    <value>None</value>
+  <data name="toolStripButton1.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
+    <value>No</value>
   </data>
   <data name="toolStrip2.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1001,9 +944,6 @@
   <data name="&gt;&gt;Scene.Parent" xml:space="preserve">
     <value>splitContainer3.Panel1</value>
   </data>
-  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 23</value>
-  </data>
   <data name="splitContainer1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -1019,9 +959,6 @@
   <data name="tabPage1.Text" xml:space="preserve">
     <value>Diagnostics</value>
   </data>
-  <data name="toolStripButton1.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
-    <value>No</value>
-  </data>
   <data name="&gt;&gt;AssetsImageList.Type" xml:space="preserve">
     <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -1031,8 +968,8 @@
   <data name="&gt;&gt;toolStripButton1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripDropDownButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tabPage1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>519, 23</value>
   </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
     <value>519, 21</value>
@@ -1061,8 +998,14 @@
   <data name="&gt;&gt;Console.Name" xml:space="preserve">
     <value>Console</value>
   </data>
+  <data name="Console.Size" type="System.Drawing.Size, System.Drawing">
+    <value>519, 144</value>
+  </data>
   <data name="&gt;&gt;InspectorUpdater.Type" xml:space="preserve">
     <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="toolStrip2.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
+    <value>None</value>
   </data>
   <data name="panel3.Size" type="System.Drawing.Size, System.Drawing">
     <value>533, 25</value>
@@ -1087,6 +1030,9 @@
   </data>
   <data name="&gt;&gt;Inspector.Name" xml:space="preserve">
     <value>Inspector</value>
+  </data>
+  <data name="SceneCameraSpeedTSCB.Items5" xml:space="preserve">
+    <value>50</value>
   </data>
   <data name="TabControl.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1154,8 +1100,8 @@
   <data name="SCPTSB.ToolTipText" xml:space="preserve">
     <value>Scene Camera Position</value>
   </data>
-  <data name="toolStrip1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
+  <data name="showInFileExplorerToolStripMenuItem.Text" xml:space="preserve">
+    <value>Show in File Explorer</value>
   </data>
   <data name="&gt;&gt;splitContainer2.Panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1171,6 +1117,9 @@
   </data>
   <data name="SceneMenuTSB.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
     <value>No</value>
+  </data>
+  <data name="&gt;&gt;AssetHome.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <data name="AssetBack.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>16, 3, 3, 3</value>
@@ -1196,11 +1145,8 @@
   <data name="&gt;&gt;showFPSToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;emptyToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;Hierarchy.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="deleteToolStripMenuItem.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 10pt, style=Bold</value>
   </data>
   <data name="SceneCameraSpeedTSCB.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -1426,6 +1372,48 @@
   <data name="&gt;&gt;canvasToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="AssetsImageList.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
+        ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAe
+        CAAAAk1TRnQBSQFMAwEBAAEgAQEBQAEBASABAAEgAQAE/wEJARAI/wFCAU0BNgEEBgABNgEEAgABKAMA
+        AYADAAEgAwABAQEAAQgGAAEQGAABgAIAAYADAAKAAQABgAMAAYABAAGAAQACgAIAA8ABAAHAAdwBwAEA
+        AfABygGmAQABMwUAATMBAAEzAQABMwEAAjMCAAMWAQADHAEAAyIBAAMpAQADVQEAA00BAANCAQADOQEA
+        AYABfAH/AQACUAH/AQABkwEAAdYBAAH/AewBzAEAAcYB1gHvAQAB1gLnAQABkAGpAa0CAAH/ATMDAAFm
+        AwABmQMAAcwCAAEzAwACMwIAATMBZgIAATMBmQIAATMBzAIAATMB/wIAAWYDAAFmATMCAAJmAgABZgGZ
+        AgABZgHMAgABZgH/AgABmQMAAZkBMwIAAZkBZgIAApkCAAGZAcwCAAGZAf8CAAHMAwABzAEzAgABzAFm
+        AgABzAGZAgACzAIAAcwB/wIAAf8BZgIAAf8BmQIAAf8BzAEAATMB/wIAAf8BAAEzAQABMwEAAWYBAAEz
+        AQABmQEAATMBAAHMAQABMwEAAf8BAAH/ATMCAAMzAQACMwFmAQACMwGZAQACMwHMAQACMwH/AQABMwFm
+        AgABMwFmATMBAAEzAmYBAAEzAWYBmQEAATMBZgHMAQABMwFmAf8BAAEzAZkCAAEzAZkBMwEAATMBmQFm
+        AQABMwKZAQABMwGZAcwBAAEzAZkB/wEAATMBzAIAATMBzAEzAQABMwHMAWYBAAEzAcwBmQEAATMCzAEA
+        ATMBzAH/AQABMwH/ATMBAAEzAf8BZgEAATMB/wGZAQABMwH/AcwBAAEzAv8BAAFmAwABZgEAATMBAAFm
+        AQABZgEAAWYBAAGZAQABZgEAAcwBAAFmAQAB/wEAAWYBMwIAAWYCMwEAAWYBMwFmAQABZgEzAZkBAAFm
+        ATMBzAEAAWYBMwH/AQACZgIAAmYBMwEAA2YBAAJmAZkBAAJmAcwBAAFmAZkCAAFmAZkBMwEAAWYBmQFm
+        AQABZgKZAQABZgGZAcwBAAFmAZkB/wEAAWYBzAIAAWYBzAEzAQABZgHMAZkBAAFmAswBAAFmAcwB/wEA
+        AWYB/wIAAWYB/wEzAQABZgH/AZkBAAFmAf8BzAEAAcwBAAH/AQAB/wEAAcwBAAKZAgABmQEzAZkBAAGZ
+        AQABmQEAAZkBAAHMAQABmQMAAZkCMwEAAZkBAAFmAQABmQEzAcwBAAGZAQAB/wEAAZkBZgIAAZkBZgEz
+        AQABmQEzAWYBAAGZAWYBmQEAAZkBZgHMAQABmQEzAf8BAAKZATMBAAKZAWYBAAOZAQACmQHMAQACmQH/
+        AQABmQHMAgABmQHMATMBAAFmAcwBZgEAAZkBzAGZAQABmQLMAQABmQHMAf8BAAGZAf8CAAGZAf8BMwEA
+        AZkBzAFmAQABmQH/AZkBAAGZAf8BzAEAAZkC/wEAAcwDAAGZAQABMwEAAcwBAAFmAQABzAEAAZkBAAHM
+        AQABzAEAAZkBMwIAAcwCMwEAAcwBMwFmAQABzAEzAZkBAAHMATMBzAEAAcwBMwH/AQABzAFmAgABzAFm
+        ATMBAAGZAmYBAAHMAWYBmQEAAcwBZgHMAQABmQFmAf8BAAHMAZkCAAHMAZkBMwEAAcwBmQFmAQABzAKZ
+        AQABzAGZAcwBAAHMAZkB/wEAAswCAALMATMBAALMAWYBAALMAZkBAAPMAQACzAH/AQABzAH/AgABzAH/
+        ATMBAAGZAf8BZgEAAcwB/wGZAQABzAH/AcwBAAHMAv8BAAHMAQABMwEAAf8BAAFmAQAB/wEAAZkBAAHM
+        ATMCAAH/AjMBAAH/ATMBZgEAAf8BMwGZAQAB/wEzAcwBAAH/ATMB/wEAAf8BZgIAAf8BZgEzAQABzAJm
+        AQAB/wFmAZkBAAH/AWYBzAEAAcwBZgH/AQAB/wGZAgAB/wGZATMBAAH/AZkBZgEAAf8CmQEAAf8BmQHM
+        AQAB/wGZAf8BAAH/AcwCAAH/AcwBMwEAAf8BzAFmAQAB/wHMAZkBAAH/AswBAAH/AcwB/wEAAv8BMwEA
+        AcwB/wFmAQAC/wGZAQAC/wHMAQACZgH/AQABZgH/AWYBAAFmAv8BAAH/AmYBAAH/AWYB/wEAAv8BZgEA
+        ASEBAAGlAQADXwEAA3cBAAOGAQADlgEAA8sBAAOyAQAD1wEAA90BAAPjAQAD6gEAA/EBAAP4AQAB8AH7
+        Af8BAAGkAqABAAOAAwAB/wIAAf8DAAL/AQAB/wMAAf8BAAH/AQAC/wIAA///AIUAARoFmQ50AXkFmQGa
+        AfZiABwyAQkBdAEyYAABGxwyAgkBMmAAHTgCCQEyYAAdOAIJATJgAB04AgkBMmAAHTgCCQEyYAAdOAK8
+        ATJgAB04AbwB8AEyYAAdOALwATJgAB04AfAB8QEyYAAdOAHwAfEBMmAAHTgB8AHxATJgAB04AfAB8gEy
+        YAAdOAHxAfIBMmAAHTgB8QHyATJgAB04AfEB8gEyYAAdOAHxAfMBMmAAHTgB8wH0ATJgABw4AfIC9AFT
+        YAAbOAT0AVNgAAo4B2oBvA30AThgAAEaCDgIag30AjhhAAg4B2oQOGIAAZoEOAH2AQABGwRqAeMPOAGa
+        /wD/AGMAAUIBTQE+BwABPgMAASgDAAGAAwABIAMAAQEBAAEBBgABAhYAA/8BAAT/DAAE/wwABP8MAAHg
+        AgABAQwAAYD/AGAAAYAPAAHAAYABAAEBDAAE/wwABP8MAAT/DAAE/yIACw==
+</value>
+  </data>
   <data name="&gt;&gt;splitContainer2.Name" xml:space="preserve">
     <value>splitContainer2</value>
   </data>
@@ -1444,8 +1432,8 @@
   <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
     <value>Assets</value>
   </data>
-  <data name="deleteToolStripMenuItem.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 10pt, style=Bold</value>
+  <data name="tabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
   </data>
   <data name="splitContainer3.Orientation" type="System.Windows.Forms.Orientation, System.Windows.Forms">
     <value>Horizontal</value>
@@ -1456,8 +1444,8 @@
   <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
     <value>toolStripSeparator3</value>
   </data>
-  <data name="&gt;&gt;Inspector.Parent" xml:space="preserve">
-    <value>splitContainer2.Panel2</value>
+  <data name="Scene.Size" type="System.Drawing.Size, System.Drawing">
+    <value>533, 304</value>
   </data>
   <data name="&gt;&gt;emptyToolStripMenuItem.Name" xml:space="preserve">
     <value>emptyToolStripMenuItem</value>
@@ -1471,8 +1459,8 @@
   <data name="&gt;&gt;openProjectToolStripMenuItem.Name" xml:space="preserve">
     <value>openProjectToolStripMenuItem</value>
   </data>
-  <data name="panel3.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
+  <data name="&gt;&gt;tabPage1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
     <value>toolStripSeparator4</value>
@@ -1480,8 +1468,8 @@
   <data name="Inspector.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="duplicateToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Shift+D</value>
+  <data name="&gt;&gt;emptyToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStrip2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1534,9 +1522,6 @@
   <data name="&gt;&gt;CurrentSceneNameTSTB.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;StatusBar.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
   <data name="&gt;&gt;AssetLocation.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
@@ -1560,6 +1545,9 @@
   </data>
   <data name="ToolsBar.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
+  </data>
+  <data name="&gt;&gt;Inspector.Parent" xml:space="preserve">
+    <value>splitContainer2.Panel2</value>
   </data>
   <data name="Inspector.Size" type="System.Drawing.Size, System.Drawing">
     <value>188, 509</value>
@@ -1600,14 +1588,14 @@
   <data name="ResourcesTable.ColumnCount" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;splitContainer2.Panel2.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="&gt;&gt;showDiagnosticsToolStripMenuItem.Name" xml:space="preserve">
+    <value>showDiagnosticsToolStripMenuItem</value>
   </data>
   <data name="debugRepeatToolStripMenuItem.ToolTipText" xml:space="preserve">
     <value>Determines if the same message and type can be logged consecutively</value>
   </data>
-  <data name="panel3.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+  <data name="createToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>256, 24</value>
   </data>
   <data name="Console.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -1615,8 +1603,8 @@
   <data name="&gt;&gt;clearOnPlayToolStripMenuItem.Name" xml:space="preserve">
     <value>clearOnPlayToolStripMenuItem</value>
   </data>
-  <data name="panel2.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="&gt;&gt;rtb_threads.Parent" xml:space="preserve">
+    <value>tabPage1</value>
   </data>
   <data name="ResourcesTable.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -1629,6 +1617,9 @@
   </data>
   <data name="&gt;&gt;toolStripButton1.Name" xml:space="preserve">
     <value>toolStripButton1</value>
+  </data>
+  <data name="&gt;&gt;uIToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="AssetBack.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>StretchImage</value>
@@ -1696,9 +1687,6 @@
   <data name="AssetLocation.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="SceneCameraSpeedTSCB.Items3" xml:space="preserve">
     <value>10</value>
   </data>
@@ -1708,20 +1696,20 @@
   <data name="&gt;&gt;AssetBack.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="Inspector.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PixelEditor_TSB.RightToLeft" type="System.Windows.Forms.RightToLeft, System.Windows.Forms">
     <value>No</value>
   </data>
-  <data name="SCPTSB.BackgroundImageLayout" type="System.Windows.Forms.ImageLayout, System.Windows.Forms">
-    <value>None</value>
+  <data name="&gt;&gt;StatusBar.Parent" xml:space="preserve">
+    <value>$this</value>
   </data>
   <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
     <value>901, 23</value>
   </data>
-  <data name="ResourcesTable.RowCount" type="System.Int32, mscorlib">
-    <value>2</value>
+  <data name="&gt;&gt;Console.Parent" xml:space="preserve">
+    <value>ConsoleTabPage</value>
   </data>
   <data name="&gt;&gt;newProjectToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -1729,14 +1717,14 @@
   <data name="&gt;&gt;splitContainer1.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="AssetLocation.Multiline" type="System.Boolean, mscorlib">
-    <value>False</value>
+  <data name="panel3.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
   </data>
   <data name="canvasToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>125, 24</value>
   </data>
-  <data name="&gt;&gt;uIToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;Hierarchy.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;saveAsToolStripMenuItem.Name" xml:space="preserve">
     <value>saveAsToolStripMenuItem</value>
@@ -1746,24 +1734,6 @@
   </data>
   <data name="&gt;&gt;showFPSToolStripMenuItem.Name" xml:space="preserve">
     <value>showFPSToolStripMenuItem</value>
-  </data>
-  <data name="AssetListView.Items" mimetype="application/x-microsoft.net.object.binary.base64">
-    <value>
-        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
-        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkMAwAAAFFTeXN0
-        ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2Vu
-        PWIwM2Y1ZjdmMTFkNTBhM2EFAQAAACFTeXN0ZW0uV2luZG93cy5Gb3Jtcy5MaXN0Vmlld0l0ZW0HAAAA
-        BFRleHQKSW1hZ2VJbmRleAlCYWNrQ29sb3IHQ2hlY2tlZARGb250CUZvcmVDb2xvchdVc2VJdGVtU3R5
-        bGVGb3JTdWJJdGVtcwEABAAEBAAIFFN5c3RlbS5EcmF3aW5nLkNvbG9yAwAAAAETU3lzdGVtLkRyYXdp
-        bmcuRm9udAMAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IDAAAAAQIAAAAGBAAAAAlTY3JpcHQuY3MAAAAA
-        Bfv///8UU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAABG5hbWUFdmFsdWUKa25vd25Db2xvcgVzdGF0ZQEA
-        AAAJBwcDAAAACiIiIv8AAAAAAAACAAAJBgAAAAH5////+////woAAAAAAAAAACEAAQABBQYAAAATU3lz
-        dGVtLkRyYXdpbmcuRm9udAQAAAAETmFtZQRTaXplBVN0eWxlBFVuaXQBAAQECxhTeXN0ZW0uRHJhd2lu
-        Zy5Gb250U3R5bGUDAAAAG1N5c3RlbS5EcmF3aW5nLkdyYXBoaWNzVW5pdAMAAAADAAAABggAAAAUTWlj
-        cm9zb2Z0IFNhbnMgU2VyaWYAADBBBff///8YU3lzdGVtLkRyYXdpbmcuRm9udFN0eWxlAQAAAAd2YWx1
-        ZV9fAAgDAAAAAQAAAAX2////G1N5c3RlbS5EcmF3aW5nLkdyYXBoaWNzVW5pdAEAAAAHdmFsdWVfXwAI
-        AwAAAAMAAAAL
-</value>
   </data>
   <data name="&gt;&gt;HierarchyUpdater.Name" xml:space="preserve">
     <value>HierarchyUpdater</value>
@@ -1789,14 +1759,20 @@
   <data name="ConsoleTabPage.Size" type="System.Drawing.Size, System.Drawing">
     <value>525, 150</value>
   </data>
+  <data name="Inspector.AutoScroll" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <data name="changeProjectNameToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>242, 24</value>
   </data>
   <data name="&gt;&gt;cameraToolStripMenuItem.Name" xml:space="preserve">
     <value>cameraToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;ResourcesTable.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="ResourcesTable.RowCount" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="ConsoleTabPage.Text" xml:space="preserve">
+    <value>Console</value>
   </data>
   <data name="&gt;&gt;toolStrip2.Parent" xml:space="preserve">
     <value>panel3</value>
@@ -1852,14 +1828,20 @@
   <data name="&gt;&gt;BuildGameTSB.Name" xml:space="preserve">
     <value>BuildGameTSB</value>
   </data>
+  <data name="AssetLocation.Multiline" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="PixelEditor_TSB.Size" type="System.Drawing.Size, System.Drawing">
     <value>23, 26</value>
+  </data>
+  <data name="duplicateToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Shift+D</value>
   </data>
   <data name="&gt;&gt;ResourcesTable.Type" xml:space="preserve">
     <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;rtb_threads.Parent" xml:space="preserve">
-    <value>tabPage1</value>
+  <data name="clearToolStripMenuItem.Text" xml:space="preserve">
+    <value>Clear</value>
   </data>
   <data name="splitContainer1.SplitterDistance" type="System.Int32, mscorlib">
     <value>175</value>
@@ -1879,8 +1861,23 @@
   <data name="tabPage1.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;rtb_threads.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="AssetListView.Items" mimetype="application/x-microsoft.net.object.binary.base64">
+    <value>
+        AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
+        LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkMAwAAAFFTeXN0
+        ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2Vu
+        PWIwM2Y1ZjdmMTFkNTBhM2EFAQAAACFTeXN0ZW0uV2luZG93cy5Gb3Jtcy5MaXN0Vmlld0l0ZW0HAAAA
+        BFRleHQKSW1hZ2VJbmRleAlCYWNrQ29sb3IHQ2hlY2tlZARGb250CUZvcmVDb2xvchdVc2VJdGVtU3R5
+        bGVGb3JTdWJJdGVtcwEABAAEBAAIFFN5c3RlbS5EcmF3aW5nLkNvbG9yAwAAAAETU3lzdGVtLkRyYXdp
+        bmcuRm9udAMAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IDAAAAAQIAAAAGBAAAAAlTY3JpcHQuY3MAAAAA
+        Bfv///8UU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAABG5hbWUFdmFsdWUKa25vd25Db2xvcgVzdGF0ZQEA
+        AAAJBwcDAAAACiIiIv8AAAAAAAACAAAJBgAAAAH5////+////woAAAAAAAAAACEAAQABBQYAAAATU3lz
+        dGVtLkRyYXdpbmcuRm9udAQAAAAETmFtZQRTaXplBVN0eWxlBFVuaXQBAAQECxhTeXN0ZW0uRHJhd2lu
+        Zy5Gb250U3R5bGUDAAAAG1N5c3RlbS5EcmF3aW5nLkdyYXBoaWNzVW5pdAMAAAADAAAABggAAAAUTWlj
+        cm9zb2Z0IFNhbnMgU2VyaWYAADBBBff///8YU3lzdGVtLkRyYXdpbmcuRm9udFN0eWxlAQAAAAd2YWx1
+        ZV9fAAgDAAAAAQAAAAX2////G1N5c3RlbS5EcmF3aW5nLkdyYXBoaWNzVW5pdAEAAAAHdmFsdWVfXwAI
+        AwAAAAMAAAAL
+</value>
   </data>
   <data name="duplicateToolStripMenuItem.Font" type="System.Drawing.Font, System.Drawing">
     <value>Segoe UI, 10pt, style=Bold</value>
@@ -1893,6 +1890,9 @@
   </data>
   <data name="&gt;&gt;gameObjectToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;ResourcesTable.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="&gt;&gt;Inspector.ZOrder" xml:space="preserve">
     <value>0</value>
